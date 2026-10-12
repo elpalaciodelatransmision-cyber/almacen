@@ -28,7 +28,8 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <style>
 :root{--bg:#e9edf1;--panel:#fff;--ink:#17202a;--mute:#5a6674;--line:#d3dae2;--in:#12794c;--out:#c2302d;--look:#2a5ca3;--onmode:#fff;--mode:var(--in);--r:10px}
-@media (prefers-color-scheme:dark){:root{--bg:#10161c;--panel:#19212a;--ink:#e7ecf1;--mute:#97a3b0;--line:#2b3641;--in:#3dbd84;--out:#ff7570;--look:#74a8f0;--onmode:#0c1117}}
+@media (prefers-color-scheme:dark){:root:not([data-tema="claro"]){--bg:#10161c;--panel:#19212a;--ink:#e7ecf1;--mute:#97a3b0;--line:#2b3641;--in:#3dbd84;--out:#ff7570;--look:#74a8f0;--onmode:#0c1117}}
+:root[data-tema="oscuro"]{--bg:#10161c;--panel:#19212a;--ink:#e7ecf1;--mute:#97a3b0;--line:#2b3641;--in:#3dbd84;--out:#ff7570;--look:#74a8f0;--onmode:#0c1117}
 body[data-mode=in]{--mode:var(--in)}
 body[data-mode=out]{--mode:var(--out)}
 body[data-mode=look]{--mode:var(--look)}
@@ -172,7 +173,7 @@ td.acts button{padding:4px 10px;font-size:14px;margin-left:4px}
 footer{margin-top:14px;font-size:13px;color:var(--mute)}
 #saveWarn{color:var(--out);font-weight:700}
 .login{position:fixed;inset:0;z-index:60;background:var(--bg);display:grid;grid-template-columns:minmax(0,1fr);place-items:center;padding:16px;overflow:auto}
-.login form{width:100%;max-width:460px;display:grid;gap:8px;justify-self:center}.login h1{font-size:clamp(28px,7.5vw,42px);line-height:1.05;font-weight:900;letter-spacing:.01em;text-align:center;margin:4px 0 0}.login label{font-weight:700;font-size:14px}.lgimg{display:block;width:100%;max-width:420px;margin:0 auto;opacity:.9}@media (prefers-color-scheme:dark){.lgimg{filter:invert(1)}}
+.login form{width:100%;max-width:460px;display:grid;gap:8px;justify-self:center}.login h1{font-size:clamp(28px,7.5vw,42px);line-height:1.05;font-weight:900;letter-spacing:.01em;text-align:center;margin:4px 0 0}.login label{font-weight:700;font-size:14px}.lgimg{display:block;width:100%;max-width:420px;margin:0 auto;opacity:.9}@media (prefers-color-scheme:dark){:root:not([data-tema="claro"]) .lgimg{filter:invert(1)}}:root[data-tema="oscuro"] .lgimg{filter:invert(1)}
 body.locked .app,body.locked dialog{display:none!important}
 .cloud{margin:4px 0 0;font-size:13px;font-weight:700;color:var(--mute)}
 .cloud::before{content:"";display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;background:currentColor;vertical-align:1px}
@@ -252,6 +253,15 @@ svg.bcsvg{max-width:100%;background:#fff;border-radius:6px;margin-top:8px}
       <button id="btnExport">Exportar a Excel</button>
       <details class="more"><summary>Más</summary>
         <div class="menu">
+          <!-- Antes el color lo decidía el aparato: la misma aplicación se veía
+               clara en la PC y oscura en el celular. Ahora manda el usuario. -->
+          <label style="font-size:13px;font-weight:700;display:block;padding:2px 2px 4px">Colores
+            <select id="selTema" style="margin-top:4px">
+              <option value="auto">Como el aparato</option>
+              <option value="claro">Siempre claro</option>
+              <option value="oscuro">Siempre oscuro</option>
+            </select>
+          </label>
           <button id="btnImport">Cargar inventario desde Excel</button>
           <button id="btnRestore">Vaciar esta pestaña</button>
           <button id="btnLogout">Cerrar sesión</button>
@@ -1515,6 +1525,39 @@ $('#sIn').addEventListener('keydown', e => {
 $('#sClose').onclick = () => $('#seaDlg').close();
 
 /* ---------- Foto del código de barras (para el celular) ---------- */
+/* ---------- Colores: manda el usuario, no el aparato ----------
+   Antes la misma aplicación se veía clara en la PC y oscura en el celular,
+   porque seguía la configuración de cada equipo. Ahora se elige y se
+   recuerda en ese aparato. El color de la barra del sistema también cambia,
+   si no, en el celular queda una franja que no pega con nada. */
+function aplicarTema(t){
+  const raiz = document.documentElement;
+  if (t === 'claro' || t === 'oscuro') raiz.setAttribute('data-tema', t);
+  else raiz.removeAttribute('data-tema');
+  const oscuro = t === 'oscuro' || (t !== 'claro' && matchMedia('(prefers-color-scheme: dark)').matches);
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (meta) meta.setAttribute('content', oscuro ? '#10161c' : '#17202a');
+}
+(function(){
+  let t = 'auto';
+  try { t = localStorage.getItem('palacio_tema') || 'auto'; } catch(e) {}
+  aplicarTema(t);
+  const sel = document.getElementById('selTema');
+  if (sel) {
+    sel.value = t;
+    sel.addEventListener('change', () => {
+      aplicarTema(sel.value);
+      try { localStorage.setItem('palacio_tema', sel.value); } catch(e) {}
+      const d = document.querySelector('details.more'); if (d) d.open = false;
+    });
+  }
+  // Si quedó en "como el aparato" y el aparato cambia (modo noche), seguirlo.
+  try { matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+    let a = 'auto'; try { a = localStorage.getItem('palacio_tema') || 'auto'; } catch(e) {}
+    if (a === 'auto') aplicarTema('auto');
+  }); } catch(e) {}
+})();
+
 /* ---------- Pedido: qué hay que comprar antes de que se acabe ----------
    Cada pieza tiene un "mínimo antes de pedir". Cuando el stock baja hasta
    ahí, la pieza entra sola en esta lista. Las que estén en cero o en
