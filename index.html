@@ -2,7 +2,21 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" id="vp" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<script>
+/* Si el dueño eligió "como en la PC", hay que decidirlo ANTES de que la
+   página se dibuje; si se cambia después, se ve el salto. Por eso va aquí
+   arriba y no con el resto del programa.
+   Con width fijo, el celular arma la pantalla igual que una computadora y
+   la encoge para que quepa: misma composición, mismas pestañas, mismas
+   columnas. Se agranda con los dedos. */
+(function(){
+  try {
+    if (localStorage.getItem('palacio_diseno') === 'pc')
+      document.getElementById('vp').setAttribute('content', 'width=1180');
+  } catch(e) {}
+})();
+</script>
 <title>Módulo de escaneo · Almacén del Palacio</title>
 
 <!-- Lo que convierte esta página en una aplicación instalable: el manifiesto
@@ -260,6 +274,12 @@ svg.bcsvg{max-width:100%;background:#fff;border-radius:6px;margin-top:8px}
               <option value="auto">Como el aparato</option>
               <option value="claro">Siempre claro</option>
               <option value="oscuro">Siempre oscuro</option>
+            </select>
+          </label>
+          <label style="font-size:13px;font-weight:700;display:block;padding:2px 2px 4px">Pantalla
+            <select id="selDiseno" style="margin-top:4px">
+              <option value="movil">Adaptada al celular</option>
+              <option value="pc">Igual que en la PC</option>
             </select>
           </label>
           <button id="btnImport">Cargar inventario desde Excel</button>
@@ -1551,6 +1571,20 @@ function aplicarTema(t){
       const d = document.querySelector('details.more'); if (d) d.open = false;
     });
   }
+  /* Pantalla: adaptada al celular (se apila y cambian las columnas) o igual
+     que en la PC (misma composición y mismas pestañas, encogida). Hay que
+     recargar porque el ancho de la pantalla se decide al dibujar la página. */
+  const selD = document.getElementById('selDiseno');
+  if (selD) {
+    let d = 'movil';
+    try { d = localStorage.getItem('palacio_diseno') || 'movil'; } catch(e) {}
+    selD.value = d;
+    selD.addEventListener('change', () => {
+      try { localStorage.setItem('palacio_diseno', selD.value); } catch(e) {}
+      location.reload();
+    });
+  }
+
   // Si quedó en "como el aparato" y el aparato cambia (modo noche), seguirlo.
   try { matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
     let a = 'auto'; try { a = localStorage.getItem('palacio_tema') || 'auto'; } catch(e) {}
