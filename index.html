@@ -18,8 +18,13 @@
 <link rel="apple-touch-icon" href="img/icono-180.png">
 <link rel="icon" type="image/png" sizes="192x192" href="img/icono-192.png">
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js"></script>
+<!-- Estas dos van guardadas DENTRO de la aplicación, no traídas de internet.
+     La que lee los códigos pesa 328 KB: en el almacén, con mala señal, podía
+     no llegar nunca, y sin ella el programa se queda sin lector y dice que no
+     está disponible. Si por lo que sea el archivo local faltara, se cae de
+     vuelta a internet. -->
+<script src="lib/jsbarcode.min.js" onerror="this.onerror=null;document.write('<scr'+'ipt src=&quot;https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js&quot;><\/scr'+'ipt>')"></script>
+<script src="lib/zxing.min.js" onerror="this.onerror=null;document.write('<scr'+'ipt src=&quot;https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js&quot;><\/scr'+'ipt>')"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <style>
 :root{--bg:#e9edf1;--panel:#fff;--ink:#17202a;--mute:#5a6674;--line:#d3dae2;--in:#12794c;--out:#c2302d;--look:#2a5ca3;--onmode:#fff;--mode:var(--in);--r:10px}
@@ -258,7 +263,7 @@ svg.bcsvg{max-width:100%;background:#fff;border-radius:6px;margin-top:8px}
     <div class="row2">
       <div class="notew"><label for="note" id="noteLbl">Nota (opcional)</label><input id="note" type="text" autocomplete="off"></div>
       <button id="btnGo" class="primary">Aceptar</button>
-      <button id="btnPhoto" type="button">Escanear con foto</button>
+      <button id="btnPhoto" type="button">Escanear con la cámara</button>
       <button id="btnUndo">Deshacer último</button>
     </div>
     <div id="result" aria-live="polite"></div>
@@ -331,7 +336,7 @@ svg.bcsvg{max-width:100%;background:#fff;border-radius:6px;margin-top:8px}
       <div><label for="nPrice">Precio de compra</label><input id="nPrice" type="number" min="0" step="0.01"></div>
       <div><label for="nRac">RAC (estante)</label><input id="nRac" autocomplete="off" placeholder="Ej. RAC 3 · nivel B"></div><div><label for="nLoc">Ubicación (detalle)</label><input id="nLoc" autocomplete="off"></div>
       <div class="full"><label for="nCode">Código de barras</label>
-        <div class="codebox"><input id="nCode" class="mono" inputmode="numeric" autocomplete="off"><button type="button" id="btnGen">Generar código interno</button><button type="button" id="nPhoto">Foto del código</button></div>
+        <div class="codebox"><input id="nCode" class="mono" inputmode="numeric" autocomplete="off"><button type="button" id="btnGen">Generar código interno</button><button type="button" id="nPhoto">Escanear con la cámara</button></div>
         <div class="muted" id="codeHint" style="font-size:13px;margin-top:4px"></div>
       </div>
     </div>
@@ -351,7 +356,7 @@ svg.bcsvg{max-width:100%;background:#fff;border-radius:6px;margin-top:8px}
       </div>
       <div class="full"><label for="eTipo">Pestaña (mover la pieza a Mecánica, Eléctrica o Insumos)</label><select id="eTipo"></select></div>
       <div class="full"><label for="eCode">Código de barras</label>
-        <div class="codebox"><input id="eCode" class="mono" inputmode="numeric" autocomplete="off"><button type="button" id="eGen">Generar código interno</button><button type="button" id="ePhoto">Foto del código</button></div>
+        <div class="codebox"><input id="eCode" class="mono" inputmode="numeric" autocomplete="off"><button type="button" id="eGen">Generar código interno</button><button type="button" id="ePhoto">Escanear con la cámara</button></div>
       </div>
       <div><label for="eRef">Referencia</label><input id="eRef" list="refList" autocomplete="off"></div>
       <div><label for="eBrand">Familia / marca</label><input id="eBrand" list="brandList" autocomplete="off"></div>
@@ -380,14 +385,14 @@ svg.bcsvg{max-width:100%;background:#fff;border-radius:6px;margin-top:8px}
 <dialog id="delDlg">
   <h2>Eliminar pieza</h2>
   <label for="dScan" style="font-size:13px;font-weight:600;display:block;margin-bottom:6px">Escanea la pieza que quieres eliminar (o escribe el nombre o la referencia y presiona Enter)</label>
-  <div class="codebox" style="grid-template-columns:1fr auto"><input id="dScan" type="text" autocomplete="off" autocapitalize="off" spellcheck="false"><button type="button" id="dPhoto">Foto del código</button></div>
+  <div class="codebox" style="grid-template-columns:1fr auto"><input id="dScan" type="text" autocomplete="off" autocapitalize="off" spellcheck="false"><button type="button" id="dPhoto">Escanear con la cámara</button></div>
   <div id="dInfo" aria-live="polite"><span class="muted">Escanea una pieza para ver sus datos antes de eliminarla.</span></div>
   <div class="dlgbtns"><button type="button" id="dClose">Cerrar</button><button type="button" id="dOk" class="dangerfill" disabled>Aceptar y eliminar</button></div>
 </dialog>
 
 <dialog id="seaDlg">
   <h2>Buscar</h2>
-  <div class="codebox" style="grid-template-columns:1fr auto"><input id="sIn" type="search" autocomplete="off" spellcheck="false" placeholder="Escanea o escribe: nombre, código corto, código de barras, referencia, marca, RAC…" aria-label="Buscar"><button type="button" id="sPhoto">Foto del código</button></div>
+  <div class="codebox" style="grid-template-columns:1fr auto"><input id="sIn" type="search" autocomplete="off" spellcheck="false" placeholder="Escanea o escribe: nombre, código corto, código de barras, referencia, marca, RAC…" aria-label="Buscar"><button type="button" id="sPhoto">Escanear con la cámara</button></div>
   <div class="muted" id="sCount" style="margin-top:6px;font-size:14px"></div>
   <div id="sRes"></div>
   <div class="dlgbtns"><button type="button" id="sClose">Cerrar</button></div>
@@ -478,6 +483,26 @@ svg.bcsvg{max-width:100%;background:#fff;border-radius:6px;margin-top:8px}
 </dialog>
 
 <div id="printSheet"></div>
+
+<!-- Cámara en vivo para leer códigos de barras. Antes solo se podía tomar
+     una foto y leerla después: una foto sale movida o desenfocada y fallaba
+     seguido. En vivo se leen muchos cuadros por segundo hasta que engancha.
+     La foto sigue estando como respaldo, por si no hay cámara o no dan permiso. -->
+<dialog id="camDlg">
+  <h2 style="margin-bottom:8px">Escanear con la cámara</h2>
+  <div id="camWrap" style="position:relative;background:#000;border-radius:10px;overflow:hidden;aspect-ratio:4/3">
+    <video id="camVid" playsinline muted autoplay style="width:100%;height:100%;object-fit:cover;display:block"></video>
+    <!-- La mira: ayuda a encuadrar el código -->
+    <div style="position:absolute;inset:14% 8%;border:3px solid rgba(255,255,255,.85);border-radius:10px;box-shadow:0 0 0 2000px rgba(0,0,0,.35)"></div>
+    <div id="camLinea" style="position:absolute;left:8%;right:8%;top:50%;height:2px;background:#12794c;box-shadow:0 0 10px #12794c"></div>
+  </div>
+  <p id="camMsg" class="muted" style="margin:10px 0 0;min-height:2.6em">Apunta al código de barras. Se lee solo.</p>
+  <div class="dlgbtns">
+    <button type="button" id="camFoto">Usar una foto</button>
+    <button type="button" id="camClose">Cerrar</button>
+  </div>
+</dialog>
+
 <input type="file" id="photoIn" accept="image/*" capture="environment" class="hide">
 
 <script>
@@ -1451,6 +1476,42 @@ $('#sIn').addEventListener('keydown', e => {
 $('#sClose').onclick = () => $('#seaDlg').close();
 
 /* ---------- Foto del código de barras (para el celular) ---------- */
+/* Lee el código de un lienzo ya dibujado. Lo usan la foto Y la cámara en
+   vivo, para que las dos lean exactamente igual. Primero el lector del
+   propio navegador (rápido, va por dentro del teléfono) y si no, ZXing. */
+let _bd = null, _bdListo = false;
+async function detectorNativo(){
+  if (_bdListo) return _bd;
+  _bdListo = true;
+  if (!('BarcodeDetector' in window)) return (_bd = null);
+  try {
+    let fm = ['ean_13', 'ean_8', 'upc_a', 'upc_e', 'code_128', 'code_39', 'itf', 'codabar'];
+    if (BarcodeDetector.getSupportedFormats) { const sup = await BarcodeDetector.getSupportedFormats(); fm = fm.filter(f => sup.includes(f)); }
+    _bd = fm.length ? new BarcodeDetector({ formats: fm }) : new BarcodeDetector();
+  } catch (e) { _bd = null; }
+  return _bd;
+}
+async function decodeCanvas(cv){
+  const d = await detectorNativo();
+  if (d) {
+    try { const r = await d.detect(cv); if (r.length && r[0].rawValue) return String(r[0].rawValue).trim(); } catch (e) {}
+  }
+  if (window.ZXing) {
+    try {
+      const Z = window.ZXing, hints = new Map();
+      hints.set(Z.DecodeHintType.TRY_HARDER, true);
+      hints.set(Z.DecodeHintType.POSSIBLE_FORMATS, [Z.BarcodeFormat.EAN_13, Z.BarcodeFormat.EAN_8, Z.BarcodeFormat.UPC_A, Z.BarcodeFormat.UPC_E, Z.BarcodeFormat.CODE_128, Z.BarcodeFormat.CODE_39, Z.BarcodeFormat.ITF]);
+      const rd = new Z.MultiFormatReader(); rd.setHints(hints);
+      const bmp = new Z.BinaryBitmap(new Z.HybridBinarizer(new Z.HTMLCanvasElementLuminanceSource(cv)));
+      return String(rd.decode(bmp).getText()).trim();
+    } catch (e) {}
+  }
+  return null;
+}
+// ¿Hay alguna forma de leer códigos? Si no, conviene decirlo claro en vez
+// de echarle la culpa a la foto.
+const hayLector = () => ('BarcodeDetector' in window) || !!window.ZXing;
+
 async function decodeImage(file){
   const url = URL.createObjectURL(file);
   try {
@@ -1458,35 +1519,95 @@ async function decodeImage(file){
     const k = Math.min(1, 1600 / Math.max(img.naturalWidth, img.naturalHeight));
     const cv = document.createElement('canvas'); cv.width = Math.round(img.naturalWidth * k); cv.height = Math.round(img.naturalHeight * k);
     cv.getContext('2d').drawImage(img, 0, 0, cv.width, cv.height);
-    if ('BarcodeDetector' in window) {
-      try {
-        let fm = ['ean_13', 'ean_8', 'upc_a', 'upc_e', 'code_128', 'code_39', 'itf', 'codabar'];
-        if (BarcodeDetector.getSupportedFormats) { const sup = await BarcodeDetector.getSupportedFormats(); fm = fm.filter(f => sup.includes(f)); }
-        const r = await (fm.length ? new BarcodeDetector({ formats: fm }) : new BarcodeDetector()).detect(cv);
-        if (r.length && r[0].rawValue) return r[0].rawValue;
-      } catch (e) {}
-    }
-    if (window.ZXing) {
-      try {
-        const Z = window.ZXing, hints = new Map();
-        hints.set(Z.DecodeHintType.TRY_HARDER, true);
-        hints.set(Z.DecodeHintType.POSSIBLE_FORMATS, [Z.BarcodeFormat.EAN_13, Z.BarcodeFormat.EAN_8, Z.BarcodeFormat.UPC_A, Z.BarcodeFormat.UPC_E, Z.BarcodeFormat.CODE_128, Z.BarcodeFormat.CODE_39, Z.BarcodeFormat.ITF]);
-        const rd = new Z.MultiFormatReader(); rd.setHints(hints);
-        const bmp = new Z.BinaryBitmap(new Z.HybridBinarizer(new Z.HTMLCanvasElementLuminanceSource(cv)));
-        return rd.decode(bmp).getText();
-      } catch (e) {}
-    }
-    return null;
+    return await decodeCanvas(cv);
   } finally { URL.revokeObjectURL(url); }
 }
+
+/* ---------- Cámara en vivo ---------- */
+let camStream = null, camPedir = null, camLazo = 0, camCb = null;
+function camCerrar(){
+  if (camLazo) { cancelAnimationFrame(camLazo); camLazo = 0; }
+  if (camStream) { camStream.getTracks().forEach(t => t.stop()); camStream = null; }   // apagar de verdad: sin esto la luz queda encendida
+  const v = $('#camVid'); if (v) v.srcObject = null;
+  if ($('#camDlg').open) $('#camDlg').close();
+}
+function camDecir(t){ const m = $('#camMsg'); if (m) m.textContent = t; }
+async function abrirCamara(cb){
+  camCb = cb;
+  if (!hayLector()) { camDecir(''); return usarFoto(cb, 'Este navegador no trae lector de códigos y la librería no cargó (puede ser por falta de internet la primera vez). Toma una foto del código.'); }
+  if (!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) || !window.isSecureContext) {
+    return usarFoto(cb, !window.isSecureContext
+      ? 'La cámara solo funciona en una dirección segura (https). Abre la aplicación desde su dirección web, no como archivo.'
+      : 'Este navegador no deja usar la cámara. Toma una foto del código.');
+  }
+  camDecir('Encendiendo la cámara…');
+  $('#camDlg').showModal();
+  try {
+    camStream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } }, audio: false
+    });
+  } catch (err) {
+    camCerrar();
+    // Cada motivo con su mensaje: antes todo decía lo mismo y no se sabía qué pasaba.
+    const n = err && err.name;
+    const txt = n === 'NotAllowedError' ? 'No diste permiso para la cámara. Toca el candado de la barra de direcciones y permite la cámara, o toma una foto.'
+      : n === 'NotFoundError' || n === 'OverconstrainedError' ? 'Este equipo no tiene cámara disponible. Toma una foto del código.'
+      : n === 'NotReadableError' ? 'La cámara está ocupada por otra aplicación. Ciérrala y vuelve a intentar, o toma una foto.'
+      : 'No se pudo abrir la cámara. Toma una foto del código.';
+    return usarFoto(cb, txt);
+  }
+  const v = $('#camVid');
+  v.srcObject = camStream;
+  try { await v.play(); } catch (e) {}
+  camDecir('Apunta al código de barras. Se lee solo.');
+  const cv = document.createElement('canvas'), ctx = cv.getContext('2d', { willReadFrequently: true });
+  let ocupado = false, intentos = 0;
+  const mirar = async () => {
+    if (!camStream) return;
+    camLazo = requestAnimationFrame(mirar);
+    if (ocupado || v.readyState < 2 || !v.videoWidth) return;
+    ocupado = true;
+    try {
+      // Solo se mira la franja del centro: es donde está la mira, y leer
+      // menos superficie hace que enganche más rápido.
+      const w = v.videoWidth, h = v.videoHeight, rh = Math.round(h * 0.46);
+      cv.width = w; cv.height = rh;
+      ctx.drawImage(v, 0, Math.round((h - rh) / 2), w, rh, 0, 0, w, rh);
+      const code = await decodeCanvas(cv);
+      if (code) {
+        const fn = camCb; camCerrar(); beep('ok');
+        if (fn) fn(code);
+        return;
+      }
+      if (++intentos === 150) camDecir('Acércate un poco, que el código quede dentro del recuadro y sin reflejos.');
+    } catch (e) {} finally { ocupado = false; }
+  };
+  camLazo = requestAnimationFrame(mirar);
+}
+function usarFoto(cb, aviso){
+  if (aviso) alert(aviso);
+  photoCb = cb; $('#photoIn').value = ''; $('#photoIn').click();
+}
+$('#camClose').onclick = camCerrar;
+$('#camFoto').onclick = () => { const fn = camCb; camCerrar(); usarFoto(fn, ''); };
+$('#camDlg').addEventListener('close', camCerrar);
+// Si el teléfono se bloquea o se cambia de aplicación, apagar la cámara.
+document.addEventListener('visibilitychange', () => { if (document.hidden && camStream) camCerrar(); });
+
 let photoCb = null;
-function attachPhoto(btnSel, cb){ $(btnSel).onclick = () => { photoCb = cb; $('#photoIn').value = ''; $('#photoIn').click(); }; }
+// Los cinco botones de escanear pasan por aquí: cámara primero, foto si no.
+function attachPhoto(btnSel, cb){ $(btnSel).onclick = () => abrirCamara(cb); }
 $('#photoIn').addEventListener('change', async e => {
   const f = e.target.files[0]; if (!f || !photoCb) return;
   const cb = photoCb;
   let code = null;
   try { code = await decodeImage(f); } catch (err) {}
-  if (!code) { beep('err'); return alert('No se pudo leer el código de barras de la foto. Acércate, enfoca bien, evita reflejos y que el código salga completo. También puedes digitarlo a mano.'); }
+  if (!code) {
+    beep('err');
+    return alert(hayLector()
+      ? 'No se pudo leer el código de barras de la foto. Acércate, enfoca bien, evita reflejos y que el código salga completo. También puedes digitarlo a mano.'
+      : 'Este navegador no trae lector de códigos y la librería no cargó. Conéctate a internet una vez para que quede guardada, o digita el código a mano.');
+  }
   cb(String(code).trim());
 });
 attachPhoto('#btnPhoto', c => { $('#scan').value = c; handleScan(c); });

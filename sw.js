@@ -10,7 +10,10 @@
 // nunca, así que esas se sirven de lo guardado y listo.
 const CACHE = 'almacen-palacio-v1'
 const BASE = new URL('./', self.location).pathname
+// Las librerías del lector de códigos van en esta lista a propósito: si no
+// están guardadas, en el almacén sin señal no se puede escanear nada.
 const PROPIOS = [BASE, BASE + 'index.html', BASE + 'manifest.json',
+                 BASE + 'lib/zxing.min.js', BASE + 'lib/jsbarcode.min.js',
                  BASE + 'img/icono-192.png', BASE + 'img/icono-512.png']
 
 self.addEventListener('install', (e) => {
