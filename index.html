@@ -12,8 +12,14 @@
    columnas. Se agranda con los dedos. */
 (function(){
   try {
-    if (localStorage.getItem('palacio_diseno') === 'pc')
-      document.getElementById('vp').setAttribute('content', 'width=1180');
+    var d = localStorage.getItem('palacio_diseno');
+    // "pc"  -> arma la pantalla de 1180 y la encoge para que quepa entera.
+    // "pc1" -> la arma de 1180 y la deja a tamaño real: se ve igualita a la
+    //          computadora, con las letras del mismo tamaño, y se corre de
+    //          lado con el dedo. Es la unica forma de verla IGUAL de grande:
+    //          un celular tiene 390 px de ancho y la PC 1340.
+    if (d === 'pc')  document.getElementById('vp').setAttribute('content', 'width=1180');
+    if (d === 'pc1') document.getElementById('vp').setAttribute('content', 'width=1180, initial-scale=1');
   } catch(e) {}
 })();
 </script>
@@ -279,7 +285,8 @@ svg.bcsvg{max-width:100%;background:#fff;border-radius:6px;margin-top:8px}
           <label style="font-size:13px;font-weight:700;display:block;padding:2px 2px 4px">Pantalla
             <select id="selDiseno" style="margin-top:4px">
               <option value="movil">Adaptada al celular</option>
-              <option value="pc">Igual que en la PC</option>
+              <option value="pc">Como la PC, cabe en la pantalla</option>
+              <option value="pc1">Como la PC, tamaño real (se corre de lado)</option>
             </select>
           </label>
           <button id="btnImport">Cargar inventario desde Excel</button>
