@@ -2260,13 +2260,24 @@ else if (scNew) showMsg('warn', 'Códigos cortos asignados', `${fmt(scNew)} piez
   window.addEventListener('load', function(){
     navigator.serviceWorker.register('sw.js').then(function(reg){
       // Si hay una versión nueva, entra sola en cuanto esté lista.
+      var recargando = false;
+      navigator.serviceWorker.addEventListener('controllerchange', function(){
+        if (recargando) return; recargando = true; location.reload();
+      });
       reg.addEventListener('updatefound', function(){
         var sw = reg.installing;
         if (!sw) return;
         sw.addEventListener('statechange', function(){
-          if (sw.state === 'installed' && navigator.serviceWorker.controller) location.reload();
+          if (sw.state === 'installed' && navigator.serviceWorker.controller) reg.waiting && reg.waiting.postMessage('ya');
         });
       });
+      // La aplicación instalada puede quedarse abierta días: se revisa si hay
+      // version nueva al volver a ella y una vez por hora.
+      var revisar = function(){ try { reg.update(); } catch(e) {} };
+      document.addEventListener('visibilitychange', function(){ if (!document.hidden) revisar(); });
+      window.addEventListener('online', revisar);
+      setInterval(revisar, 3600000);
+      revisar();
     }).catch(function(){ /* sin service worker se trabaja igual, solo que sin modo sin señal */ });
   });
 })();

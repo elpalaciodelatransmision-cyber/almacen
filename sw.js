@@ -8,13 +8,19 @@
 // nueva entre sola. Si no hay señal, se sirve la última guardada. Las
 // librerías de fuera (Excel, códigos de barras, lector de fotos) no cambian
 // nunca, así que esas se sirven de lo guardado y listo.
-const CACHE = 'almacen-palacio-v1'
+// OJO: subir este número CADA VEZ que cambie algo de la aplicación. Si no
+// se sube, el teléfono no tiene motivo para botar lo que tiene guardado y
+// la gente sigue viendo la versión vieja aunque ya esté publicada la nueva.
+const CACHE = 'almacen-palacio-v2'
 const BASE = new URL('./', self.location).pathname
 // Las librerías del lector de códigos van en esta lista a propósito: si no
 // están guardadas, en el almacén sin señal no se puede escanear nada.
 const PROPIOS = [BASE, BASE + 'index.html', BASE + 'manifest.json',
                  BASE + 'lib/zxing.min.js', BASE + 'lib/jsbarcode.min.js',
                  BASE + 'img/icono-192.png', BASE + 'img/icono-512.png']
+
+// La página avisa cuando ya hay una versión nueva lista para entrar.
+self.addEventListener('message', (e) => { if (e.data === 'ya') self.skipWaiting() })
 
 self.addEventListener('install', (e) => {
   // addAll falla entero si uno solo falla; por eso van de a uno.
