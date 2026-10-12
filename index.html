@@ -190,6 +190,24 @@ dialog h2{margin:0 0 12px;font-size:20px}
 .lblprev{text-align:center}
 .lblprev .n{font-weight:700;margin-top:6px}
 #printSheet{display:none}
+/* La requisición impresa: misma forma que el formulario de mano, tres por
+   hoja Carta. Medidas en milímetros para que salga exacta. */
+.req{width:100%;padding:3mm 0 4.5mm;font-family:Arial,Helvetica,sans-serif;color:#000;page-break-inside:avoid}
+.req+.req{border-top:1px dashed #777;margin-top:2mm;padding-top:4mm}
+.req h3{margin:0;text-align:center;font-size:12.5pt;letter-spacing:.02em}
+.req h4{margin:.5mm 0 0;text-align:center;font-size:8.5pt;font-weight:700}
+.req .rdat{display:flex;justify-content:space-between;gap:6mm;margin:2.5mm 0;font-size:9.5pt;font-weight:700}
+.req .rdat u{font-weight:400}
+.req table.rtab{width:100%;border-collapse:collapse;table-layout:fixed}
+.req .rtab th,.req .rtab td{border:1.2px solid #000;font-size:8.5pt;padding:.8mm 1.5mm}
+.req .rtab th{background:#e3e3e3;font-size:8pt;height:7mm;text-align:center}
+.req .rtab td{height:8.2mm;vertical-align:middle}
+.req .rtab td.rc{text-align:center;font-weight:700;font-size:11pt}
+.req .rtab td.rcod{font-family:monospace;font-size:8pt}
+.req .rtab td.rdes{font-size:8.5pt;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.req .rfir{display:flex;justify-content:space-between;gap:8mm;margin-top:7mm;font-size:7.5pt;text-align:center}
+.req .rfir span{flex:1;border-top:1px solid #000;padding-top:1mm}
+@page{size:letter;margin:8mm 12mm}
 /* Etiqueta Zebra de 76.2 × 50.8 mm (3 × 2 in): una por página, todo centrado */
 .lbl{width:76.2mm;height:50.8mm;padding:2.5mm 3mm;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;overflow:hidden;break-inside:avoid;font-family:Arial,sans-serif;color:#000}
 .lbl+.lbl{break-before:page;page-break-before:always}
@@ -230,6 +248,7 @@ svg.bcsvg{max-width:100%;background:#fff;border-radius:6px;margin-top:8px}
       <button id="btnSearch">Buscar</button>
       <button id="btnNew">Registro</button>
       <button id="btnDel" class="danger">Eliminar registro</button>
+      <button id="btnPedido">Pedido</button>
       <button id="btnExport">Exportar a Excel</button>
       <details class="more"><summary>Más</summary>
         <div class="menu">
@@ -367,6 +386,9 @@ svg.bcsvg{max-width:100%;background:#fff;border-radius:6px;margin-top:8px}
       <div><label for="eYear">Año</label><input id="eYear" autocomplete="off"></div>
       <div><label for="eAlm">Almacén</label><input id="eAlm" readonly tabindex="-1" style="font-weight:700"></div><div><label for="eRac">RAC (estante)</label><input id="eRac" autocomplete="off" placeholder="Ej. RAC 3 · nivel B"></div><div><label for="eLoc">Ubicación (detalle)</label><input id="eLoc" autocomplete="off"></div>
       <div><label for="eQty">Stock actual (en unidades)</label><input id="eQty" type="number" step="1"></div>
+      <!-- El minimo es lo que permite pedir ANTES de que se acabe: cuando el
+           stock baja hasta aqui, la pieza aparece sola en la requisicion. -->
+      <div><label for="eMin">Mínimo antes de pedir</label><input id="eMin" type="number" min="0" step="1" placeholder="0 = sin mínimo"></div>
       <div><label for="ePackName">Empaque (opcional)</label><input id="ePackName" list="packNames" placeholder="Caja" autocomplete="off"></div>
       <div><label for="ePackN">Unidades por empaque</label><input id="ePackN" type="number" min="2" step="1" placeholder="12"></div>
       <div class="full"><label style="display:flex;gap:8px;align-items:center;font-weight:600"><input type="checkbox" id="eConv" style="width:auto;min-height:0"> El stock actual está contado en empaques: pasarlo a unidades (× unidades por empaque)</label></div>
@@ -482,6 +504,23 @@ svg.bcsvg{max-width:100%;background:#fff;border-radius:6px;margin-top:8px}
   <div class="dlgbtns"><button type="button" id="lblClose">Cerrar</button><button type="button" id="lblPrint" class="primary">Imprimir</button></div>
 </dialog>
 
+<dialog id="pedDlg">
+  <h2 style="margin-bottom:2px">Pedido de lo que hace falta</h2>
+  <p class="muted" id="pedSub" style="margin:0 0 10px"></p>
+  <div class="tools" style="margin-bottom:8px">
+    <label style="display:flex;gap:8px;align-items:center;font-weight:700"><input type="checkbox" id="pedTodo" style="width:auto;min-height:0"> Ver también las que están por debajo del doble del mínimo</label>
+  </div>
+  <div class="tablew" style="max-height:52vh;overflow:auto"><table>
+    <thead><tr><th>Pieza</th><th class="num">Hay</th><th class="num">Mínimo</th><th class="num">Pedir</th></tr></thead>
+    <tbody id="pedBody"></tbody>
+  </table></div>
+  <div class="err" id="pedErr"></div>
+  <div class="dlgbtns">
+    <button type="button" id="pedClose">Cerrar</button>
+    <button type="button" id="pedPrint" class="primary">Imprimir requisición</button>
+  </div>
+</dialog>
+
 <div id="printSheet"></div>
 
 <!-- Cámara en vivo para leer códigos de barras. Antes solo se podía tomar
@@ -508,8 +547,8 @@ svg.bcsvg{max-width:100%;background:#fff;border-radius:6px;margin-top:8px}
 <script>
 const SEED = {"items": [], "names": ["Aceite de Motor", "Aceite de Trans.", "Aditivo de Convertidor", "Aditivo de Trans", "Alternador", "Bandas", "Bomba", "Bomba de Aceite", "Bujia", "Cable", "Cadena CVT", "Caja de Transmision", "Caja de valvula", "Caja de vola", "Carter", "Cola de Trans.", "computadora", "Convertidor", "Cooland", "Diferencial", "Disco de Clucht", "Disco de Freno", "Eje", "Eje de Salida", "El tren de Engranaje", "Embrague de Clucht", "Envolvente", "Episenso", "Filtro  Metal", "Filtro Aceite", "Fresa de 1ra", "Fresa de 2da", "Fresa de 3ra", "Juego de planetarios", "Juego de sellos", "Junta de Trans.", "Liquido de Freno", "Pastilla de Freno", "Piston", "Piston de Reversa", "Piñon", "Piñon de Avance", "Radiador", "Ramal", "Retenedora", "Retenedora del cigüeñal", "Selenoide", "Selenoide de Presion", "Sello de Trans.", "Sensor", "Sepertin", "Sincronico", "Tapa", "Transfer", "Transmision", "varilla de aceite"], "serialFloor": 356};
 const KEY = 'palacio_scan_v1';
-const HEAD = ['CODIGO','Nombre unico','REFERENCIA','FAMILIA /MARCA','MODELO','Categoria','Subcategoria','SKU','Cantidad de Item','Unidad de Medida','UBICACION','AÑO','PRECIO Comp','Valor 70%','Importe','PRECIO TOTAL','EMPAQUE','UNIDADES POR EMPAQUE','CODIGO CORTO','TIPO','RAC'];
-const KEYS = ['code','name','ref','brand','model','cat','sub','sku','qty','unit','loc','year','price','v70','imp','total','packName','packN','sc','tipo','rac'];
+const HEAD = ['CODIGO','Nombre unico','REFERENCIA','FAMILIA /MARCA','MODELO','Categoria','Subcategoria','SKU','Cantidad de Item','Unidad de Medida','UBICACION','AÑO','PRECIO Comp','Valor 70%','Importe','PRECIO TOTAL','EMPAQUE','UNIDADES POR EMPAQUE','CODIGO CORTO','TIPO','RAC','MINIMO'];
+const KEYS = ['code','name','ref','brand','model','cat','sub','sku','qty','unit','loc','year','price','v70','imp','total','packName','packN','sc','tipo','rac','min'];
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const norm = c => String(c ?? '').replace(/\D/g, '').replace(/^0+/, '');
@@ -1294,7 +1333,7 @@ const EDIT_FIELDS = [
   ['name','#eName','nombre','s'],['tipo','#eTipo','tipo','s'],['code','#eCode','código','c'],['ref','#eRef','referencia','s'],['brand','#eBrand','marca','s'],
   ['model','#eModel','modelo','s'],['sku','#eSku','SKU','s'],['cat','#eCat','categoría','s'],['sub','#eSub','subcategoría','s'],
   ['year','#eYear','año','s'],['loc','#eLoc','ubicación','s'],['rac','#eRac','RAC','s'],['unit','#eUnit','unidad','s'],
-  ['price','#ePrice','precio de compra','n'],['v70','#eV70','valor 70%','n'],['imp','#eImp','importe','n'],['total','#eTotal','precio total','n']
+  ['min','#eMin','mínimo','n'],['price','#ePrice','precio de compra','n'],['v70','#eV70','valor 70%','n'],['imp','#eImp','importe','n'],['total','#eTotal','precio total','n']
 ];
 let editItem = null;
 function openEdit(it){
@@ -1476,6 +1515,83 @@ $('#sIn').addEventListener('keydown', e => {
 $('#sClose').onclick = () => $('#seaDlg').close();
 
 /* ---------- Foto del código de barras (para el celular) ---------- */
+/* ---------- Pedido: qué hay que comprar antes de que se acabe ----------
+   Cada pieza tiene un "mínimo antes de pedir". Cuando el stock baja hasta
+   ahí, la pieza entra sola en esta lista. Las que estén en cero o en
+   negativo entran siempre, tengan mínimo o no: ya se acabaron.
+   El mínimo se escribe aquí mismo, sin tener que abrir cada pieza. */
+const minDe = (it) => Math.max(0, Math.round(Number(it.min) || 0));
+function faltantes(ancho){
+  return S.items.filter(it => {
+    const m = minDe(it);
+    if (it.qty <= 0) return true;
+    if (!m) return false;
+    return ancho ? it.qty <= m * 2 : it.qty <= m;
+  }).sort((a, b) => {
+    // Lo más urgente primero: lo que ya se acabó, después lo más pegado al mínimo.
+    const fa = a.qty - minDe(a), fb = b.qty - minDe(b);
+    return fa - fb || COLL.compare(a.name, b.name);
+  });
+}
+// Cuánto pedir: lo justo para volver al doble del mínimo (una vuelta de
+// reposición), y nunca menos de 1.
+const sugerido = (it) => { const m = minDe(it); return Math.max(1, (m ? m * 2 : 1) - it.qty); };
+let pedLista = [];
+function renderPedido(){
+  const ancho = $('#pedTodo').checked;
+  pedLista = faltantes(ancho);
+  $('#pedSub').textContent = pedLista.length
+    ? `${fmt(pedLista.length)} ${pedLista.length === 1 ? 'pieza' : 'piezas'} para pedir. Ajusta el mínimo o la cantidad si hace falta.`
+    : 'No hay nada por acabarse. Ponles un mínimo a las piezas para que avisen a tiempo.';
+  $('#pedBody').innerHTML = pedLista.map((it, i) => {
+    const m = minDe(it), agotada = it.qty <= 0;
+    return `<tr><td><b>${esc(it.name)}</b><br><small class="muted mono">${esc(it.code || it.sc || 'sin código')}</small>${it.ref ? ' <small class="muted">· ' + esc(it.ref) + '</small>' : ''}</td>` +
+      `<td class="num ${agotada ? 'zero' : ''}">${fmt(it.qty)} <small class="muted">${esc(it.unit || 'UNID')}</small></td>` +
+      `<td class="num"><input type="number" min="0" step="1" value="${m}" data-min="${i}" style="width:72px;text-align:center"></td>` +
+      `<td class="num"><input type="number" min="0" step="1" value="${sugerido(it)}" data-ped="${i}" style="width:82px;text-align:center;font-weight:700"></td></tr>`;
+  }).join('') || '<tr><td colspan="4" class="muted">Nada por pedir.</td></tr>';
+}
+$('#pedBody').addEventListener('change', e => {
+  const t = e.target;
+  if (t.dataset.min !== undefined) {
+    const it = pedLista[+t.dataset.min], v = Math.max(0, parseInt(t.value, 10) || 0);
+    if (it.min !== v) { it.min = v; log('Edición', it, 0, 'Mínimo antes de pedir: ' + v); save(); renderAll(); }
+    renderPedido();
+  }
+});
+$('#pedTodo').addEventListener('change', renderPedido);
+$('#btnPedido').onclick = () => { $('#pedErr').textContent = ''; $('#pedTodo').checked = false; renderPedido(); $('#pedDlg').showModal(); };
+$('#pedClose').onclick = () => $('#pedDlg').close();
+/* La requisición impresa sale igual que el formulario de mano: tres por hoja
+   Carta, cinco renglones cada una. Si hay más de cinco piezas, se imprimen
+   las hojas que hagan falta. */
+$('#pedPrint').onclick = () => {
+  const filas = [];
+  $('#pedBody').querySelectorAll('input[data-ped]').forEach(inp => {
+    const it = pedLista[+inp.dataset.ped], c = Math.max(0, parseInt(inp.value, 10) || 0);
+    if (c > 0) filas.push({ c, it });
+  });
+  if (!filas.length) { $('#pedErr').textContent = 'Escribe cuántas piezas pedir en al menos una.'; return; }
+  const hoy = new Date(), dd = String(hoy.getDate()).padStart(2, '0'), mm = String(hoy.getMonth() + 1).padStart(2, '0'), aa = String(hoy.getFullYear());
+  const bloques = [];
+  for (let i = 0; i < filas.length; i += 5) bloques.push(filas.slice(i, i + 5));
+  $('#printSheet').innerHTML = bloques.map(b => {
+    const tr = [];
+    for (let k = 0; k < 5; k++) {
+      const f = b[k];
+      tr.push(`<tr><td class="rc">${f ? fmt(f.c) : ''}</td><td class="rcod">${f ? esc(f.it.sc || f.it.code || '') : ''}</td><td class="rdes">${f ? esc(f.it.name) + (f.it.ref ? ' · ' + esc(f.it.ref) : '') : ''}</td><td></td><td></td></tr>`);
+    }
+    return `<div class="req">
+      <h3>EL PALACIO DE LA TRANSMISIÓN</h3><h4>REQUISICIÓN DE PIEZAS</h4>
+      <div class="rdat"><span>Solicita: <u>${esc(S.name)}</u></span><span>Fecha: <u>&nbsp;${dd}&nbsp;/&nbsp;${mm}&nbsp;/&nbsp;${aa}&nbsp;</u></span></div>
+      <table class="rtab"><thead><tr><th style="width:15mm">CANT.</th><th style="width:30mm">CÓDIGO</th><th>DESCRIPCIÓN</th><th style="width:44mm">VEHÍCULO</th><th style="width:26mm">PLACA</th></tr></thead><tbody>${tr.join('')}</tbody></table>
+      <div class="rfir"><span>Solicitado por</span><span>Autorizado por</span><span>Recibido por</span></div>
+    </div>`;
+  }).join('');
+  window.print();
+  setTimeout(() => { $('#printSheet').innerHTML = ''; }, 800);
+};
+
 /* Lee el código de un lienzo ya dibujado. Lo usan la foto Y la cámara en
    vivo, para que las dos lean exactamente igual. Primero el lector del
    propio navegador (rápido, va por dentro del teléfono) y si no, ZXing. */
