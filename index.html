@@ -2,8 +2,21 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Módulo de escaneo · Almacén del Palacio</title>
+
+<!-- Lo que convierte esta página en una aplicación instalable: el manifiesto
+     le da nombre e ícono, y el service worker (sw.js) la hace abrir sin
+     internet. En el almacén la señal se cae, y el inventario ya vive en este
+     equipo, así que lo único que faltaba era guardar la propia página. -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#17202a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Almacén">
+<link rel="apple-touch-icon" href="img/icono-180.png">
+<link rel="icon" type="image/png" sizes="192x192" href="img/icono-192.png">
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js"></script>
@@ -2113,6 +2126,29 @@ renderAll(); setMode('in'); save();
 authStart();
 if (tipoNew) showMsg('warn', 'Piezas clasificadas por tipo', `${fmt(tipoNew)} piezas se clasificaron solas en Mecánica, Eléctrica o Insumo según su nombre. Revisa cada pestaña; si una pieza quedó en la equivocada, muévela con Ajustar.`);
 else if (scNew) showMsg('warn', 'Códigos cortos asignados', `${fmt(scNew)} piezas recibieron su código corto (ej. ACE-001). Puedes cambiarlo en Ajustar.`);
+</script>
+
+<script>
+/* ---------- La aplicación instalada ----------
+   Registrar el service worker es lo que hace que Windows y Android ofrezcan
+   "Instalar". Va al final y dentro de try: si algo falla aquí (navegador
+   viejo, o abierto como archivo suelto en vez de desde la web), el almacén
+   tiene que seguir funcionando igual. */
+(function(){
+  if (!('serviceWorker' in navigator) || location.protocol === 'file:') return;
+  window.addEventListener('load', function(){
+    navigator.serviceWorker.register('sw.js').then(function(reg){
+      // Si hay una versión nueva, entra sola en cuanto esté lista.
+      reg.addEventListener('updatefound', function(){
+        var sw = reg.installing;
+        if (!sw) return;
+        sw.addEventListener('statechange', function(){
+          if (sw.state === 'installed' && navigator.serviceWorker.controller) location.reload();
+        });
+      });
+    }).catch(function(){ /* sin service worker se trabaja igual, solo que sin modo sin señal */ });
+  });
+})();
 </script>
 </body>
 </html>
