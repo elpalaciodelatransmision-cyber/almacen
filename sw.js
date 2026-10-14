@@ -11,7 +11,7 @@
 // OJO: subir este número CADA VEZ que cambie algo de la aplicación. Si no
 // se sube, el teléfono no tiene motivo para botar lo que tiene guardado y
 // la gente sigue viendo la versión vieja aunque ya esté publicada la nueva.
-const CACHE = 'almacen-palacio-v2'
+const CACHE = 'almacen-palacio-v3'
 const BASE = new URL('./', self.location).pathname
 // Las librerías del lector de códigos van en esta lista a propósito: si no
 // están guardadas, en el almacén sin señal no se puede escanear nada.
