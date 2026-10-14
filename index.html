@@ -99,6 +99,9 @@ input,select,textarea{font:inherit;width:100%;padding:10px 12px;border:1px solid
 #result .stock{display:flex;flex-wrap:wrap;align-items:baseline;gap:10px;margin-top:10px}
 #result .stock b{font-size:clamp(40px,8vw,64px);line-height:1;color:var(--rc,var(--ink))}
 #result .stock span{font-size:18px}
+#result .mv{display:flex;flex-wrap:wrap;align-items:baseline;gap:10px;margin-top:6px;font-size:20px;font-weight:700}
+#result .mv b{font-size:clamp(30px,6vw,44px);line-height:1}
+#result .eqpk{font-weight:700;color:var(--look);white-space:nowrap}
 #result .alert{margin-top:8px;font-weight:700}
 .choices{display:grid;gap:8px;margin-top:10px}
 .choices button{text-align:left}
@@ -116,6 +119,9 @@ body[data-sec=ser] .modes,body[data-sec=ser] #scanCard,body[data-sec=ser] .tabs,
 body:not([data-sec=ser]) #panelS{display:none}
 .secs{grid-template-columns:repeat(4,1fr)}
 #panelS h2{font-size:18px;margin:0 0 10px}
+.svcode{font-size:16px}.svcode b{font-size:19px;color:var(--look)}
+.svc{display:inline-block;font-family:ui-monospace,Consolas,monospace;font-weight:800;color:var(--look);margin-right:6px}
+.svcard.sub{margin-left:28px;border-left:6px solid var(--look)}
 .svcreg{border-top:6px solid var(--look)}
 .iabtn{background:#6b3fa0;border-color:#6b3fa0;color:#fff;font-weight:700}
 #iaDlg{width:min(760px,96vw)}
@@ -181,6 +187,14 @@ button:disabled{opacity:.4;cursor:not-allowed}
 .secs button{border-radius:10px 10px 0 0;padding:14px 6px;font-size:19px;font-weight:800;border:2px solid var(--line);border-bottom:none;background:var(--bg);color:var(--mute)}
 .secs button small{display:block;font-size:13px;font-weight:400}
 .secs button[aria-selected=true]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.secs{grid-template-columns:repeat(5,1fr)!important}
+@media (max-width:560px){.secs{grid-template-columns:repeat(3,1fr)!important}.secs button{font-size:15px;padding:10px 2px}}
+.subsecs{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin:-4px 0 12px}
+.subsecs button{padding:10px 6px;font-size:16px;font-weight:700;border:2px solid var(--line);background:var(--panel);color:var(--mute)}
+.subsecs button small{display:block;font-size:12px;font-weight:400}
+.subsecs button[aria-selected=true]{background:var(--mode);border-color:var(--mode);color:var(--onmode)}
+body[data-sec=ser] .subsecs{display:none}
+@media (max-width:560px){.subsecs button{font-size:14px;padding:8px 3px}}
 @media (max-width:560px){.secs button{font-size:16px;padding:12px 4px}}
 .tf{display:flex;background:var(--mode);border-color:var(--mode);color:var(--onmode)}
 .askrow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px}
@@ -300,7 +314,8 @@ svg.bcsvg{max-width:100%;background:#fff;border-radius:6px;margin-top:8px}
 
   <div class="almbar"><label for="almSel">Almacén activo</label><select id="almSel"></select><button type="button" id="btnAlm">Administrar almacenes</button></div>
 
-  <div class="secs" role="tablist" aria-label="Sección del inventario" id="secTabs"></div>
+  <div class="secs" role="tablist" aria-label="Área" id="secTabs"></div>
+  <div class="subsecs" role="tablist" aria-label="Sección del inventario" id="subTabs"></div>
 
   <div class="modes" role="group" aria-label="Modo de trabajo">
     <button data-mode="in" aria-pressed="true">Entrada<small>suma al stock</small></button>
@@ -388,7 +403,7 @@ svg.bcsvg{max-width:100%;background:#fff;border-radius:6px;margin-top:8px}
       <div><label for="nQty">Cantidad inicial</label><input id="nQty" type="number" min="0" step="1" value="1"></div>
       <div><label for="nPackName">Empaque (opcional)</label><input id="nPackName" list="packNames" placeholder="Caja" autocomplete="off"></div>
       <div><label for="nPackN">Unidades por empaque</label><input id="nPackN" type="number" min="2" step="1" placeholder="12"></div>
-      <div class="full"><label for="nQtyIn">La cantidad inicial está contada en</label><select id="nQtyIn"><option value="unit">Unidades</option><option value="pack">Empaques</option></select><div id="nTotal" style="font-weight:700;margin-top:6px"></div></div>
+      <div class="full"><label for="nQtyIn">¿Cómo la estás contando?</label><select id="nQtyIn"><option value="unit">Por unidad (sueltas)</option><option value="pack">Por caja / empaque</option></select><div id="nTotal" style="font-weight:800;font-size:18px;margin-top:6px;color:var(--look)"></div></div>
       <div><label for="nPrice">Precio de compra</label><input id="nPrice" type="number" min="0" step="0.01"></div>
       <div><label for="nRac">RAC (estante)</label><input id="nRac" autocomplete="off" placeholder="Ej. RAC 3 · nivel B"></div><div><label for="nLoc">Ubicación (detalle)</label><input id="nLoc" autocomplete="off"></div>
       <div class="full"><label for="nCode">Código de barras</label>
@@ -410,7 +425,8 @@ svg.bcsvg{max-width:100%;background:#fff;border-radius:6px;margin-top:8px}
       <div class="full"><label for="eSc">Código corto</label>
         <div class="codebox" style="grid-template-columns:1fr auto"><input id="eSc" class="mono" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="12" style="font-weight:800;text-transform:uppercase"><button type="button" id="eScGen">Asignar automático</button></div>
       </div>
-      <div class="full"><label for="eTipo">Pestaña (mover la pieza a Mecánica, Eléctrica o Insumos)</label><select id="eTipo"></select></div>
+      <div><label for="eTr">Área (mover a Automática, CVT, Mecánica o Eléctrica)</label><select id="eTr"></select></div>
+      <div><label for="eTipo">Pieza o insumo</label><select id="eTipo"></select></div>
       <div class="full"><label for="eCode">Código de barras</label>
         <div class="codebox"><input id="eCode" class="mono" inputmode="numeric" autocomplete="off"><button type="button" id="eGen">Generar código interno</button><button type="button" id="ePhoto">Escanear con la cámara</button></div>
       </div>
@@ -485,7 +501,9 @@ svg.bcsvg{max-width:100%;background:#fff;border-radius:6px;margin-top:8px}
   <form id="svcForm">
     <h2 id="svcTitle">Nuevo servicio</h2>
     <div class="fg">
+      <div class="full"><label for="sPar">¿Es una parte (subdivisión) de otro servicio?</label><select id="sPar"></select></div>
       <div class="full"><label for="sName">Nombre del servicio</label><input id="sName" autocomplete="off" required></div>
+      <div class="full svcode">Código: <b class="mono" id="sCode">—</b> <span class="muted" id="sCodeTip"></span></div>
       <div class="full"><label for="sDesc">Descripción (qué incluye)</label><textarea id="sDesc" rows="3"></textarea></div>
       <div class="full"><label>Piezas e insumos que usa normalmente</label><div id="sParts"></div></div>
     </div>
@@ -584,8 +602,9 @@ svg.bcsvg{max-width:100%;background:#fff;border-radius:6px;margin-top:8px}
 <script>
 const SEED = {"items": [], "names": ["Aceite de Motor", "Aceite de Trans.", "Aditivo de Convertidor", "Aditivo de Trans", "Alternador", "Bandas", "Bomba", "Bomba de Aceite", "Bujia", "Cable", "Cadena CVT", "Caja de Transmision", "Caja de valvula", "Caja de vola", "Carter", "Cola de Trans.", "computadora", "Convertidor", "Cooland", "Diferencial", "Disco de Clucht", "Disco de Freno", "Eje", "Eje de Salida", "El tren de Engranaje", "Embrague de Clucht", "Envolvente", "Episenso", "Filtro  Metal", "Filtro Aceite", "Fresa de 1ra", "Fresa de 2da", "Fresa de 3ra", "Juego de planetarios", "Juego de sellos", "Junta de Trans.", "Liquido de Freno", "Pastilla de Freno", "Piston", "Piston de Reversa", "Piñon", "Piñon de Avance", "Radiador", "Ramal", "Retenedora", "Retenedora del cigüeñal", "Selenoide", "Selenoide de Presion", "Sello de Trans.", "Sensor", "Sepertin", "Sincronico", "Tapa", "Transfer", "Transmision", "varilla de aceite"], "serialFloor": 356};
 const KEY = 'palacio_scan_v1';
-const HEAD = ['CODIGO','Nombre unico','REFERENCIA','FAMILIA /MARCA','MODELO','Categoria','Subcategoria','SKU','Cantidad de Item','Unidad de Medida','UBICACION','AÑO','PRECIO Comp','Valor 70%','Importe','PRECIO TOTAL','EMPAQUE','UNIDADES POR EMPAQUE','CODIGO CORTO','TIPO','RAC','MINIMO'];
-const KEYS = ['code','name','ref','brand','model','cat','sub','sku','qty','unit','loc','year','price','v70','imp','total','packName','packN','sc','tipo','rac','min'];
+// Orden del Excel (decisión del dueño): primero el código interno, nombre, referencia y marca; después todo lo demás
+const HEAD = ['CODIGO INTERNO','Nombre unico','REFERENCIA','FAMILIA /MARCA','CODIGO DE BARRAS','MODELO','Categoria','Subcategoria','SKU','Cantidad de Item','Unidad de Medida','UBICACION','RAC','AÑO','PRECIO Comp','Valor 70%','Importe','PRECIO TOTAL','EMPAQUE','UNIDADES POR EMPAQUE','TIPO','AREA','MINIMO'];
+const KEYS = ['sc','name','ref','brand','code','model','cat','sub','sku','qty','unit','loc','rac','year','price','v70','imp','total','packName','packN','tipo','tr','min'];
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const norm = c => String(c ?? '').replace(/\D/g, '').replace(/^0+/, '');
@@ -654,7 +673,7 @@ function ensureSc(a){
   return n;
 }
 /* ---------- Tipo de pieza: mecánica, eléctrica o insumo ---------- */
-const TIPOS = { mec: 'Mecánica', ele: 'Eléctrica', ins: 'Insumo / gastable' };
+const TIPOS = { mec: 'Pieza', ins: 'Insumo / gastable' };
 const tipoOpts = () => Object.entries(TIPOS).map(([k, v]) => `<option value="${k}">${v}</option>`).join('');
 const TIPO_INS0 = /^(aceite|liquido|aditivo|cooland|coolant|grasa|refrigerante|valvulina|atf)\b/;
 const TIPO_INS = /\b(guantes?|tie ?w?rap|tirr?ap|tira ?rap|cintas?|tape|bombill[oa]s?|limpiador|desengrasante|trapos?|lijas?|pega|silicon[ae]?|tornillos?|tuercas?|arandelas?|abrazaderas?|teflon|spray|jabon|papel|fundas?|mascarillas?|escobas?|brochas?|thinner)\b/;
@@ -662,20 +681,32 @@ const TIPO_ELE = /\b(alternador|arranque|marcha|baterias?|bujias?|cables?|comput
 function guessTipo(name){
   const n = fold(name).replace(/[^a-z0-9 ]/g, ' ').trim();
   if (TIPO_INS0.test(n) || TIPO_INS.test(n)) return 'ins';
-  if (TIPO_ELE.test(n)) return 'ele';
   return 'mec';
 }
-function tipoFrom(v){ const f = fold(v).trim(); return f.startsWith('mec') ? 'mec' : f.startsWith('ele') ? 'ele' : (f.startsWith('ins') || f.startsWith('gast')) ? 'ins' : ''; }
-function ensureTipo(a){ let n = 0; a.items.forEach(i => { if (!TIPOS[i.tipo]) { i.tipo = guessTipo(i.name); n++; } }); return n; }
-// Pestaña activa: todo (escanear, buscar, crear, eliminar, movimientos) trabaja solo con sus piezas
-const SEC_LBL = { mec: 'Mecánica', ele: 'Eléctrica', ins: 'Insumos', ser: 'Servicios' };
+function tipoFrom(v){ const f = fold(v).trim(); return (f.startsWith('ins') || f.startsWith('gast')) ? 'ins' : (f.startsWith('pie') || f.startsWith('rep') || f.startsWith('mec') || f.startsWith('ele')) ? 'mec' : ''; }
+/* ---------- Área: Automática, CVT, Mecánica o Eléctrica. Cada una tiene Piezas e Insumos ----------
+   En la pieza: tr = área, tipo = 'mec' (pieza) o 'ins' (insumo). */
+const TRS = { aut: 'Automática', cvt: 'CVT', mec: 'Mecánica', ele: 'Eléctrica' };
+const trOpts = () => Object.entries(TRS).map(([k, v]) => `<option value="${k}">${v}</option>`).join('');
+// Piezas que no dicen a qué área van (las de antes en Eléctrica siguen en Eléctrica): si el nombre o la referencia dice CVT (o un modelo CVT conocido) a CVT; si no, a Automática
+const TR_CVT = /\b(cvt|e-?cvt|jf0?1[0-9][a-z]?|jf02[0-9][a-z]?|re0f1[0-9][a-z]?|k11[0-9]|k31[0-9]|k120|vt[23]|vt-?[23]|cvt[0-9]+|ccvt|multitronic|01j|0aw|0an|tr580|tr690|ek[0-9]|vt1f|vt2f|ivt|xtronic|lineartronic|hyper ?cvt)\b/;
+function guessTr(it){ return TR_CVT.test(fold([it.name, it.ref, it.model, it.cat, it.sub].join(' ')).replace(/[^a-z0-9 -]/g, ' ')) ? 'cvt' : 'aut'; }
+function trFrom(v){ const f = fold(v).trim(); return f.includes('cvt') ? 'cvt' : f.startsWith('aut') ? 'aut' : f.startsWith('mec') ? 'mec' : f.startsWith('ele') ? 'ele' : ''; }
+function ensureTipo(a){ let n = 0; a.items.forEach(i => { if (i.tipo === 'ele') { i.tipo = 'mec'; if (!TRS[i.tr]) i.tr = 'ele'; n++; } if (!TIPOS[i.tipo]) { i.tipo = guessTipo(i.name); n++; } if (!TRS[i.tr]) { i.tr = guessTr(i); n++; } }); return n; }
+// Pestaña activa (área + sección): todo (escanear, buscar, crear, eliminar, movimientos) trabaja solo con sus piezas
+const CAT_LBL = { mec: 'Piezas', ins: 'Insumos' };
+const SEC_LBL = { ser: 'Servicios' };
+Object.keys(TRS).forEach(t => Object.keys(CAT_LBL).forEach(c => { SEC_LBL[t + '_' + c] = TRS[t] + ' · ' + CAT_LBL[c]; }));
+const K = x => (TRS[x.tr] ? x.tr : 'aut') + '_' + (CAT_LBL[x.tipo] ? x.tipo : 'mec');
+const secTr = () => SEC === 'ser' ? 'aut' : SEC.split('_')[0];
+const secCat = () => SEC === 'ser' ? 'mec' : SEC.split('_')[1];
 const SEC_KEY = 'palacio_sec_v1';
-let SEC = 'mec';
-try { const v = localStorage.getItem(SEC_KEY); if (SEC_LBL[v]) SEC = v; } catch(e) {}
-const SI = () => S.items.filter(i => i.tipo === SEC);
-const SM = () => S.movements.filter(m => m.tipo === SEC);
-// Movimientos de antes de las pestañas: toman la pestaña de su pieza
-function stampMovTipo(a){ a.movements.forEach(m => { if (SEC_LBL[m.tipo]) return; const it = a.items.find(i => i.code === m.code && i.name === m.name) || (m.code && a.items.find(i => i.code === m.code)); m.tipo = it ? it.tipo : 'mec'; }); }
+let SEC = 'aut_mec';
+try { let v = localStorage.getItem(SEC_KEY); if (v === 'mec' || v === 'ins') v = 'aut_' + v; if (v === 'ele') v = 'ele_mec'; if (SEC_LBL[v]) SEC = v; } catch(e) {}
+const SI = () => S.items.filter(i => K(i) === SEC);
+const SM = () => S.movements.filter(m => K(m) === SEC);
+// Movimientos de antes de las pestañas (o de antes de Automática / CVT): toman la pestaña de su pieza
+function stampMovTipo(a){ a.movements.forEach(m => { if (m.tipo === 'ele') { m.tipo = 'mec'; if (!TRS[m.tr]) m.tr = 'ele'; } if (CAT_LBL[m.tipo] && TRS[m.tr]) return; const it = a.items.find(i => i.code === m.code && i.name === m.name) || (m.code && a.items.find(i => i.code === m.code)); if (!CAT_LBL[m.tipo]) m.tipo = it ? it.tipo : 'mec'; if (!TRS[m.tr]) m.tr = it ? it.tr : 'aut'; }); }
 const scBadge = it => it.sc ? `<span class="scb">${esc(it.sc)}</span> ` : '';
 
 /* ---------- Estado y guardado ---------- */
@@ -717,18 +748,18 @@ const saveLocal = () => { try { localStorage.setItem(KEY2, JSON.stringify(R)); $
 const inChain = fn => { cloud.chain = cloud.chain.then(fn, fn); return cloud.chain; };
 
 function ensureIds(){ R.almacenes.forEach(a => { svcOf(a); a.services.forEach(x => { if (!x.id) x.id = newId(); }); a.jobs.forEach(x => { if (!x.id) x.id = newId(); }); a.items.forEach(i => { if (!i.id) i.id = newId(); }); a.movements.forEach(m => { if (!m.id) m.id = newId(); }); }); }
-const pRow = (it, almId) => ({ id: it.id, almacen_id: almId, seccion: it.tipo || 'mec', codigo_barras: String(it.code || ''), codigo_corto: it.sc || '', nombre: it.name || '',
+const pRow = (it, almId) => ({ id: it.id, almacen_id: almId, seccion: it.tipo || 'mec', area: TRS[it.tr] ? it.tr : 'aut', codigo_barras: String(it.code || ''), codigo_corto: it.sc || '', nombre: it.name || '',
   referencia: it.ref || '', marca: it.brand || '', modelo: it.model || '', categoria: it.cat || '', subcategoria: it.sub || '', sku: it.sku || '', unidad: it.unit || '',
   ubicacion: it.loc || '', rac: it.rac || '', anio: String(it.year ?? ''), precio_compra: +it.price || 0, valor_70: +it.v70 || 0, importe: +it.imp || 0, precio_total: +it.total || 0,
   empaque_nombre: it.pack && it.pack.n > 1 ? it.pack.name : null, empaque_unidades: it.pack && it.pack.n > 1 ? it.pack.n : null, creado_ms: it.added || null });
-const pFrom = r => ({ id: r.id, tipo: r.seccion, code: r.codigo_barras, sc: r.codigo_corto, name: r.nombre, ref: r.referencia, brand: r.marca, model: r.modelo, cat: r.categoria,
+const pFrom = r => ({ id: r.id, tipo: r.seccion, tr: r.area || '', code: r.codigo_barras, sc: r.codigo_corto, name: r.nombre, ref: r.referencia, brand: r.marca, model: r.modelo, cat: r.categoria,
   sub: r.subcategoria, sku: r.sku, unit: r.unidad, loc: r.ubicacion, rac: r.rac || '', year: r.anio, price: +r.precio_compra, v70: +r.valor_70, imp: +r.importe, total: +r.precio_total,
   pack: r.empaque_unidades > 1 ? { name: r.empaque_nombre || 'Empaque', n: r.empaque_unidades } : null, added: r.creado_ms ? +r.creado_ms : undefined });
-const mRow = (m, almId) => ({ id: m.id, almacen_id: almId, seccion: m.tipo || 'mec', fecha_ms: m.t, tipo: m.type, codigo_barras: String(m.code || ''), pieza: m.name || '',
+const mRow = (m, almId) => ({ id: m.id, almacen_id: almId, seccion: m.tipo || 'mec', area: TRS[m.tr] ? m.tr : 'aut', fecha_ms: m.t, tipo: m.type, codigo_barras: String(m.code || ''), pieza: m.name || '',
   cantidad: Math.round(+m.qty || 0), stock_despues: Math.round(+m.after || 0), presentacion: m.pres || '', nota: m.note || '' });
-const mFrom = r => ({ id: r.id, t: +r.fecha_ms, type: r.tipo, tipo: r.seccion, code: r.codigo_barras, name: r.pieza, qty: r.cantidad, after: r.stock_despues, note: r.nota, pres: r.presentacion || undefined });
-const sRow = (x, almId) => ({ id: x.id, almacen_id: almId, nombre: x.name || '', descripcion: x.desc || '', piezas: (x.parts || []).map(p => ({ id: p.id, qty: Math.round(+p.qty || 0) })) });
-const sFrom = r => ({ id: r.id, name: r.nombre, desc: r.descripcion, parts: (r.piezas || []).map(p => ({ id: p.id, qty: +p.qty || 0 })) });
+const mFrom = r => ({ id: r.id, t: +r.fecha_ms, type: r.tipo, tipo: r.seccion, tr: r.area || '', code: r.codigo_barras, name: r.pieza, qty: r.cantidad, after: r.stock_despues, note: r.nota, pres: r.presentacion || undefined });
+const sRow = (x, almId) => ({ id: x.id, almacen_id: almId, codigo: x.code || '', padre_id: x.parent || '', nombre: x.name || '', descripcion: x.desc || '', piezas: (x.parts || []).map(p => ({ id: p.id, qty: Math.round(+p.qty || 0) })) });
+const sFrom = r => ({ id: r.id, code: r.codigo || '', parent: r.padre_id || '', name: r.nombre, desc: r.descripcion, parts: (r.piezas || []).map(p => ({ id: p.id, qty: +p.qty || 0 })) });
 const jbRow = (x, almId) => ({ id: x.id, almacen_id: almId, fecha_ms: x.t, servicio_id: x.sid || '', servicio: x.name || '', cliente: x.cli || '', vehiculo: x.veh || '', mecanico: x.mec || '', nota: x.note || '',
   piezas: (x.parts || []).map(p => ({ id: p.id, sc: p.sc || '', name: p.name || '', qty: Math.round(+p.qty || 0) })), anulado: !!x.void });
 const jbFrom = r => ({ id: r.id, t: +r.fecha_ms, sid: r.servicio_id, name: r.servicio, cli: r.cliente, veh: r.vehiculo, mec: r.mecanico, note: r.nota,
@@ -902,6 +933,7 @@ async function cloudPull(){
     C.forEach(r => applyRemote('config', 'UPDATE', r));
     SV.forEach(r => applyRemote('servicios', 'UPDATE', r));
     JB.sort((x, y) => y.fecha_ms - x.fecha_ms).forEach(r => applyRemote('servicios_realizados', 'UPDATE', r));
+    R.almacenes.forEach(a => { ensureTipo(a); stampMovTipo(a); ensureSvcCode(a); });
     cloud.loaded = true; fixActive(); saveSnap(); saveLocal(); renderAll();
     if (note) showMsg('warn', 'Inventario de la nube', note);
     await cloudPush();
@@ -974,7 +1006,7 @@ function beep(kind){
 
 /* ---------- Movimientos ---------- */
 function log(type, item, qty, note, extra){
-  S.movements.unshift({ id: newId(), t: Date.now(), type, tipo: item.tipo, code: item.code, name: item.name, qty, after: item.qty, note: note || '', ...(extra || {}) });
+  S.movements.unshift({ id: newId(), t: Date.now(), type, tipo: item.tipo, tr: item.tr, code: item.code, name: item.name, qty, after: item.qty, note: note || '', ...(extra || {}) });
   if (S.movements.length > 20000) S.movements.length = 20000;
 }
 
@@ -992,28 +1024,29 @@ function itemHead(it){
 function showItem(kind, it, o = {}){
   const u = esc(it.unit || 'UNID');
   let tag, color, stock = '', extra = '';
-  if (kind === 'in') {
-    tag = 'Entrada registrada'; color = 'var(--in)';
-    stock = `<div class="stock"><span>Stock</span><b>${fmt(o.after)}</b><span>${u} (antes ${fmt(o.before)}, +${fmt(o.qty)})</span></div>`;
-  } else if (kind === 'out') {
-    tag = 'Despacho registrado'; color = 'var(--out)';
-    stock = `<div class="stock"><span>Stock</span><b>${fmt(o.after)}</b><span>${u} (antes ${fmt(o.before)}, −${fmt(o.qty)})</span></div>`;
-    if (o.after === 0) extra = '<div class="alert">Se agotó esta pieza.</div>';
+  if (kind === 'in' || kind === 'out') {
+    // Lo que entró o salió, dicho una sola vez; después cuánto hay ahora
+    const inn = kind === 'in';
+    tag = inn ? 'Entrada registrada' : 'Despacho registrado'; color = inn ? 'var(--in)' : 'var(--out)';
+    const pkLine = o.pkq ? ` <span class="eqpk">= ${esc(o.pkq)}</span>` : '';
+    stock = `<div class="mv"><span>${inn ? 'Entraron' : 'Salieron'}</span><b>${fmt(o.qty)}</b><span>${esc(unitWord(it, o.qty).toLowerCase())}${pkLine}</span></div>` +
+      `<div class="stock"><span>Ahora hay</span><b>${fmt(o.after)}</b><span>${esc(unitWord(it, o.after).toLowerCase())}${stockText(it) ? ' <span class="eqpk">= ' + esc(stockText(it)) + '</span>' : ''}</span></div>` +
+      `<div class="meta">Antes había ${fmt(o.before)}.</div>`;
+    if (!inn && o.after === 0) extra = '<div class="alert">Se agotó esta pieza.</div>';
   } else if (kind === 'err') {
     tag = 'Stock insuficiente'; color = 'var(--out)';
     stock = `<div class="stock"><span>Hay</span><b>${fmt(o.before)}</b><span>${u}; pediste ${fmt(o.qty)}. No se descontó nada.</span></div>`;
   } else {
     tag = 'Consulta'; color = 'var(--look)';
     stock = `<div class="stock"><span>Stock actual</span><b>${fmt(it.qty)}</b><span>${u}</span></div>`;
-    if (it.tipo && it.tipo !== SEC && SEC_LBL[it.tipo]) stock += `<div class="meta">Está en la pestaña <b>${esc(SEC_LBL[it.tipo])}</b></div>`;
+    if (K(it) !== SEC) stock += `<div class="meta">Está en la pestaña <b>${esc(SEC_LBL[K(it)])}</b></div>`;
     if (it.qty < 0) extra = '<div class="alert">Stock negativo: falta dar entrada de ' + fmt(-it.qty) + '.</div>';
     else if (it.qty === 0) extra = '<div class="alert">Sin existencia.</div>';
   }
   if (kind === 'in' || kind === 'out') {
-    if (o.pk) stock += `<div class="meta" style="font-size:17px"><b>${kind === 'out' ? 'Salida' : 'Entrada'}:</b> ${esc(o.pk)}</div>`;
     if (o.after < 0) extra = '<div class="alert">Stock negativo: falta dar entrada de ' + fmt(-o.after) + '.</div>';
   }
-  { const st = stockText(it); if (st && kind !== 'err') stock += `<div class="meta">En empaques: ${esc(st)}</div>`; }
+  { const st = stockText(it); if (st && kind !== 'err' && kind !== 'in' && kind !== 'out') stock += `<div class="meta">En empaques: ${esc(st)}</div>`; }
   if (o.label) extra += `<div style="margin-top:10px"><button data-lbl="1">Imprimir etiqueta</button></div>`;
   setResult(color, `<div class="tag">${tag}</div>${itemHead(it)}${stock}${extra}`);
   if (o.label) $('#result [data-lbl]').onclick = () => openLabel(it);
@@ -1042,7 +1075,7 @@ function handleScan(raw){
   if (/^\d+$/.test(v)) m = find(v);
   if (!m.length) m = findSc(v, S.items);
   if (!m.length) { const low = v.toLowerCase(); m = S.items.filter(i => i.ref.toLowerCase() === low || i.sku.toLowerCase() === low); }
-  if (mode !== 'look') { const o = m.find(i => i.tipo !== SEC); m = m.filter(i => i.tipo === SEC); if (!m.length && o) return otherSec(o, qty); }
+  if (mode !== 'look') { const o = m.find(i => K(i) !== SEC); m = m.filter(i => K(i) === SEC); if (!m.length && o) return otherSec(o, qty); }
   if (m.length === 1) return go(m[0], qty);
   if (m.length > 1) { beep('ok'); return choose(m, qty, `Hay ${m.length} piezas con ese código. Elige cuál es:`); }
   if (/^\d{6,}$/.test(v)) {
@@ -1059,36 +1092,39 @@ function handleScan(raw){
 // La pieza escaneada está en otra pestaña
 function otherSec(it, qty){
   beep('err'); done(false);
-  setResult('var(--look)', `<div class="tag">Esta pieza está en la pestaña ${SEC_LBL[it.tipo]}</div>${itemHead(it)}` +
+  setResult('var(--look)', `<div class="tag">Esta pieza está en la pestaña ${SEC_LBL[K(it)]}</div>${itemHead(it)}` +
     `<div class="meta" style="margin-top:8px">Estás en ${SEC_LBL[SEC]}. No se registró nada.</div>` +
-    `<div class="choices" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr))"><button type="button" id="osGo" class="primary">Ir a ${SEC_LBL[it.tipo]} y continuar</button><button type="button" id="osNo">Quedarme en ${SEC_LBL[SEC]}</button></div>`);
-  $('#osGo').onclick = () => { setSec(it.tipo); go(it, qty); };
+    `<div class="choices" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr))"><button type="button" id="osGo" class="primary">Ir a ${SEC_LBL[K(it)]} y continuar</button><button type="button" id="osNo">Quedarme en ${SEC_LBL[SEC]}</button></div>`);
+  $('#osGo').onclick = () => { setSec(K(it)); go(it, qty); };
   $('#osNo').onclick = () => setMode(mode);
 }
 function pkText(pk, qty, units, it){ return pk ? `${fmt(qty)} ${plural(pk.name, qty)} × ${pk.n} = ${fmt(units)} ${it.unit || 'UNID'}` : ''; }
-function apply(it, qty, presArg){
+function apply(it, qty, presArg, sure){
   const note = $('#note').value.trim();
   if (mode === 'look') { beep('ok'); showItem('look', it); return done(); }
   let units = qty, pk = null;
   if ((presArg || $('#pres').value) === 'pack') {
     if (!it.pack || !(it.pack.n > 1)) return openPack(it, qty, 'pack');
     pk = it.pack; units = qty * pk.n;
+    if (!sure && qty === pk.n) return askPackOrUnits(it, qty);
   }
   if (mode === 'out' && it.qty < units) { beep('err'); showShort(it, units, qty, pk, note); return done(false); }
   commit(it, units, qty, pk, note);
 }
 const unitWord = (it, n) => /^unid/i.test(it.unit || 'UNID') ? (n === 1 ? 'Unidad' : 'Unidades') : (it.unit || 'UNID');
 const presTxt = (it, units, qty, pk) => pk ? `${fmt(qty)} ${plural(pk.name, qty)} × ${pk.n}` : `${fmt(units)} ${unitWord(it, units)}`;
+// "1 caja de 24" / "3 cajas de 24"
+const pkQty = (pk, qty) => pk ? `${fmt(qty)} ${plural(pk.name, qty).toLowerCase()} de ${pk.n}` : '';
 function commit(it, units, qty, pk, note){
   const before = it.qty, pres = presTxt(it, units, qty, pk);
   if (mode === 'in') {
     it.qty = before + units; log('Entrada', it, units, note, { pres }); beep('in');
-    showItem('in', it, { before, after: it.qty, qty: units, pk: pk ? pkText(pk, qty, units, it) : pres });
+    showItem('in', it, { before, after: it.qty, qty: units, pkq: pkQty(pk, qty) });
   } else {
     it.qty = before - units; log('Despacho', it, units, note, { pres }); beep('out');
-    showItem('out', it, { before, after: it.qty, qty: units, pk: pk ? pkText(pk, qty, units, it) : pres });
+    showItem('out', it, { before, after: it.qty, qty: units, pkq: pkQty(pk, qty) });
   }
-  if (mode === 'out') { $('#pres').value = 'unit'; $('#pres').classList.remove('pk'); }
+  $('#pres').value = 'unit'; $('#pres').classList.remove('pk');
   save(); renderAll(); done();
 }
 /* Escanear primero y digitar la cantidad después */
@@ -1139,6 +1175,20 @@ function showAsk(it){
   });
   hint(); $('#scan').value = ''; if (!COARSE) { $('#aQty').focus(); $('#aQty').select(); }
 }
+// Ej.: caja de 24 y se escribió 24. Casi siempre se quería decir 24 unidades (una caja), no 24 cajas (576)
+function askPackOrUnits(it, qty){
+  beep('err'); const pk = it.pack, pl = plural(pk.name, qty).toLowerCase(), un = unitWord(it, 2).toLowerCase();
+  setResult('var(--look)', `<div class="tag">¿Qué quisiste decir?</div>${itemHead(it)}` +
+    `<div class="meta" style="font-size:18px;margin-top:8px">Escribiste <b>${fmt(qty)}</b> y cada ${esc(pk.name.toLowerCase())} trae ${pk.n}.</div>` +
+    `<div class="choices" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr))">` +
+    `<button type="button" id="puU" class="primary" style="font-size:19px"><b>${fmt(qty)} ${esc(un)}</b><br><small>(1 ${esc(pk.name.toLowerCase())})</small></button>` +
+    `<button type="button" id="puP" style="font-size:19px"><b>${fmt(qty)} ${esc(pl)}</b><br><small>(${fmt(qty * pk.n)} ${esc(un)})</small></button>` +
+    `<button type="button" id="puNo">Cancelar</button></div>`);
+  $('#puU').onclick = () => apply(it, qty, 'unit', true);
+  $('#puP').onclick = () => apply(it, qty, 'pack', true);
+  $('#puNo').onclick = () => { $('#pres').value = 'unit'; $('#pres').classList.remove('pk'); setMode(mode); };
+  $('#scan').value = '';
+}
 function showShort(it, units, qty, pk, note){
   const u = esc(it.unit || 'UNID');
   setResult('var(--out)', `<div class="tag">Stock insuficiente</div>${itemHead(it)}` +
@@ -1176,7 +1226,7 @@ function done(resetQty = true){ $('#scan').value = ''; if (resetQty) $('#qty').v
 function focusScan(){ if (COARSE || document.querySelector('dialog[open]')) return; $('#scan').focus({ preventScroll: true }); }
 
 function undo(){
-  const k = S.movements.findIndex(x => x.tipo === SEC), m = S.movements[k];
+  const k = S.movements.findIndex(x => K(x) === SEC), m = S.movements[k];
   if (!m) return showMsg('warn', 'Nada que deshacer', 'Todavía no hay movimientos en ' + SEC_LBL[SEC] + '.');
   if (!['Entrada', 'Despacho', 'Ajuste'].includes(m.type)) return showMsg('warn', 'No se puede deshacer', 'El último movimiento es "' + m.type + '".');
   const it = S.items.find(i => i.code === m.code && i.name === m.name);
@@ -1194,7 +1244,7 @@ function updNTotal(){
   $('#nTotal').textContent = ($('#nQtyIn').value === 'pack' && n >= 2) ? `${fmt(q)} ${plural(nm, q)} × ${n} = ${fmt(q * n)} unidades en stock` : (q ? `${fmt(q)} unidades en stock` : '');
 }
 ['nQty', 'nPackName'].forEach(id => $('#' + id).addEventListener('input', updNTotal));
-$('#nPackN').addEventListener('input', () => { if ((parseInt($('#nPackN').value, 10) || 0) >= 2 && !nQtyInTouched) $('#nQtyIn').value = 'pack'; updNTotal(); });
+$('#nPackN').addEventListener('input', updNTotal);   // ya no cambia solo a empaques: lo elige quien registra
 $('#nQtyIn').addEventListener('change', () => { nQtyInTouched = true; updNTotal(); });
 function openNew(pref = {}){
   $('#newForm').reset(); $('#newErr').textContent = '';
@@ -1203,7 +1253,7 @@ function openNew(pref = {}){
   $('#codeHint').textContent = pref.code ? 'Código leído con el lector. Puedes conservarlo o generar uno interno.' : 'Si la pieza no trae código, genera uno interno e imprime la etiqueta.';
   $('#codeHint').style.color = '';
   const m = pref.code ? memByCode(pref.code) : null;
-  if (m && m.tipo && SEC_LBL[m.tipo] && m.tipo !== 'ser' && m.tipo !== SEC) setSec(m.tipo);
+  if (m && CAT_LBL[m.tipo]) { const k = (TRS[m.tr] ? m.tr : secTr()) + '_' + m.tipo; if (k !== SEC) setSec(k); }
   $('#newDlg h2').textContent = 'Nueva pieza · ' + SEC_LBL[SEC]; nScTip(); $('#newDlg').showModal();
   if (m) { memFillNew(m, 'este código ya se registró antes'); $('#nQty').focus(); $('#nQty').select(); } else $('#nName').focus();
 }
@@ -1228,10 +1278,11 @@ $('#newForm').onsubmit = e => {
   const pack = pN >= 2 ? { name: pName, n: pN } : null;
   const q0 = Math.max(0, parseInt($('#nQty').value, 10) || 0);
   const inPack = !!pack && $('#nQtyIn').value === 'pack';
+  if (inPack && q0 === pack.n && !confirm(`Escribiste ${q0} y elegiste contar en ${plural(pack.name, 2).toLowerCase()}.\n\nEso es ${q0} ${plural(pack.name, q0).toLowerCase()} × ${pack.n} = ${fmt(q0 * pack.n)} unidades.\n\n¿Es correcto? (Si querías decir ${q0} unidades, pulsa Cancelar y cambia "Contar en" a Unidades.)`)) { $('#nQtyIn').value = 'unit'; nQtyInTouched = true; updNTotal(); return $('#newErr').textContent = 'Revisa la cantidad: ahora está en unidades.'; }
   const qty = inPack ? q0 * pack.n : q0;
   const price = parseFloat($('#nPrice').value) || 0;
   const v70 = +(price * 1.7).toFixed(4), imp = +(v70 * 0.18).toFixed(4);
-  const it = { added: Date.now(), pack, sc: sc || genSc(name, S.items), tipo: SEC, code, name, ref: $('#nRef').value.trim(), brand: $('#nBrand').value.trim(), model: '', cat: '', sub: '', sku: '', qty, unit: $('#nUnit').value, loc: $('#nLoc').value.trim(), rac: $('#nRac').value.trim(), year: '', price, v70: price ? v70 : 0, imp: price ? imp : 0, total: price ? +(v70 + imp).toFixed(4) : 0 };
+  const it = { added: Date.now(), pack, sc: sc || genSc(name, S.items), tipo: secCat(), tr: secTr(), code, name, ref: $('#nRef').value.trim(), brand: $('#nBrand').value.trim(), model: '', cat: '', sub: '', sku: '', qty, unit: $('#nUnit').value, loc: $('#nLoc').value.trim(), rac: $('#nRac').value.trim(), year: '', price, v70: price ? v70 : 0, imp: price ? imp : 0, total: price ? +(v70 + imp).toFixed(4) : 0 };
   S.items.push(it); log('Alta', it, qty, 'Stock inicial', { pres: inPack ? `${fmt(q0)} ${plural(pack.name, q0)} × ${pack.n} = ${fmt(qty)} ${it.unit}` : `${fmt(qty)} ${unitWord(it, qty)}` }); $('#q').value = ''; lastAdded = it; tab(true); save(); renderAll();
   $('#newDlg').close(); beep('in');
   showItem('in', it, { before: 0, after: qty, qty, label: true });
@@ -1286,7 +1337,7 @@ function renderParts(){
   const words = $('#q').value.trim().toLowerCase().split(/\s+/).filter(Boolean);
   const rows = [];
   S.items.forEach((it, i) => {
-    if (it.tipo !== SEC) return;
+    if (K(it) !== SEC) return;
     const h = ((it.sc || '') + ' ' + scKey(it.sc) + ' ' + it.name + ' ' + it.code + ' ' + it.ref + ' ' + it.brand + ' ' + it.model + ' ' + it.loc + ' ' + (it.rac || '')).toLowerCase();
     if (words.every(w => h.includes(w))) rows.push([it, i]);
   });
@@ -1323,14 +1374,20 @@ function renderStat(){
 }
 function renderSecs(){
   document.body.dataset.sec = SEC;
-  $('#secTabs').innerHTML = Object.keys(SEC_LBL).map(t => `<button type="button" role="tab" data-sec="${t}" aria-selected="${t === SEC}">${SEC_LBL[t]}<small>${t === 'ser' ? fmt(svcOf(S).services.length) + ' servicios' : fmt(S.items.filter(i => i.tipo === t).length) + ' piezas'}</small></button>`).join('');
+  const n = k => S.items.filter(i => K(i).startsWith(k)).length;
+  $('#secTabs').innerHTML = Object.keys(TRS).map(t => `<button type="button" role="tab" data-tr="${t}" aria-selected="${secTr() === t && SEC !== 'ser'}">${TRS[t]}<small>${fmt(n(t + '_'))} piezas</small></button>`).join('') +
+    `<button type="button" role="tab" data-sec="ser" aria-selected="${SEC === 'ser'}">Servicios<small>${fmt(svcOf(S).services.length)} servicios</small></button>`;
+  $('#subTabs').innerHTML = SEC === 'ser' ? '' : Object.keys(CAT_LBL).map(c => { const k = secTr() + '_' + c; return `<button type="button" role="tab" data-sec="${k}" aria-selected="${k === SEC}">${CAT_LBL[c]}<small>${fmt(n(k))} piezas</small></button>`; }).join('');
 }
+// Al volver a una transmisión se abre la última sección que se usó en ella
+const lastCat = { aut: 'mec', cvt: 'mec', mec: 'mec', ele: 'mec' };
 function setSec(t){
   if (!SEC_LBL[t]) return;
-  SEC = t; try { localStorage.setItem(SEC_KEY, t); } catch(e) {}
+  SEC = t; if (t !== 'ser') lastCat[secTr()] = secCat(); try { localStorage.setItem(SEC_KEY, t); } catch(e) {}
   lastAdded = null; $('#q').value = ''; renderAll(); setMode(mode);
 }
-$('#secTabs').addEventListener('click', e => { const b = e.target.closest('button[data-sec]'); if (b && b.dataset.sec !== SEC) setSec(b.dataset.sec); });
+$('#secTabs').addEventListener('click', e => { const b = e.target.closest('button[data-sec],button[data-tr]'); if (!b) return; const k = b.dataset.sec || (b.dataset.tr + '_' + lastCat[b.dataset.tr]); if (k !== SEC) setSec(k); });
+$('#subTabs').addEventListener('click', e => { const b = e.target.closest('button[data-sec]'); if (b && b.dataset.sec !== SEC) setSec(b.dataset.sec); });
 function renderAll(){ R.almacenes.forEach(svcOf); renderSecs(); renderParts(); renderMoves(); renderSvc(); renderStat(); renderAlmBar(); scanList(); }
 
 $('#partsBody').addEventListener('click', e => {
@@ -1367,7 +1424,7 @@ let eNameBefore = '';
 
 /* ---------- Ajustar pieza (editar todos los datos) ---------- */
 const EDIT_FIELDS = [
-  ['name','#eName','nombre','s'],['tipo','#eTipo','tipo','s'],['code','#eCode','código','c'],['ref','#eRef','referencia','s'],['brand','#eBrand','marca','s'],
+  ['name','#eName','nombre','s'],['tr','#eTr','área','s'],['tipo','#eTipo','tipo','s'],['code','#eCode','código','c'],['ref','#eRef','referencia','s'],['brand','#eBrand','marca','s'],
   ['model','#eModel','modelo','s'],['sku','#eSku','SKU','s'],['cat','#eCat','categoría','s'],['sub','#eSub','subcategoría','s'],
   ['year','#eYear','año','s'],['loc','#eLoc','ubicación','s'],['rac','#eRac','RAC','s'],['unit','#eUnit','unidad','s'],
   ['min','#eMin','mínimo','n'],['price','#ePrice','precio de compra','n'],['v70','#eV70','valor 70%','n'],['imp','#eImp','importe','n'],['total','#eTotal','precio total','n']
@@ -1409,7 +1466,7 @@ $('#eName').addEventListener('change', () => {
 });
 $('#editForm').onsubmit = e => {
   e.preventDefault();
-  const it = editItem, oldTipo = it.tipo, oldCode = it.code, oldName = it.name; const err = m => { $('#editErr').style.color = ''; $('#editErr').textContent = m; };
+  const it = editItem, oldTipo = K(it), oldCode = it.code, oldName = it.name; const err = m => { $('#editErr').style.color = ''; $('#editErr').textContent = m; };
   const name = $('#eName').value.trim();
   if (!name) return err('Escribe el nombre de la pieza.');
   if (looksCode(name)) return err('El nombre no puede ser un código de barras. El código va en el campo Código.');
@@ -1446,10 +1503,10 @@ $('#editForm').onsubmit = e => {
   $('#editDlg').close();
   if (!changed.length && !diff) return;
   save(); renderAll(); beep('ok');
-  if (it.tipo !== oldTipo) {
-    S.movements.forEach(m => { if (oldCode ? m.code === oldCode : m.name === oldName) m.tipo = it.tipo; });
+  if (K(it) !== oldTipo) {
+    S.movements.forEach(m => { if (oldCode ? m.code === oldCode : m.name === oldName) { m.tipo = it.tipo; m.tr = it.tr; } });
     save(); renderAll();
-    return showMsg('warn', 'Pieza movida a ' + SEC_LBL[it.tipo], it.name + ' ya no aparece en ' + SEC_LBL[oldTipo] + '. Búscala en la pestaña ' + SEC_LBL[it.tipo] + '.');
+    return showMsg('warn', 'Pieza movida a ' + SEC_LBL[K(it)], it.name + ' ya no aparece en ' + SEC_LBL[oldTipo] + '. Búscala en la pestaña ' + SEC_LBL[K(it)] + '.');
   }
   showMsg('warn', 'Pieza actualizada', it.name);
 };
@@ -1480,7 +1537,7 @@ function delScan(raw){
     m = SI().filter(i => { const h = ((i.sc || '') + ' ' + i.name + ' ' + i.ref + ' ' + i.brand + ' ' + i.model).toLowerCase(); return words.every(w => h.includes(w)); }).slice(0, 8);
   }
   $('#dScan').value = '';
-  { const o = m.find(i => i.tipo !== SEC); m = m.filter(i => i.tipo === SEC); if (!m.length && o) { beep('err'); return delReset(`"${o.name}" está en la pestaña ${SEC_LBL[o.tipo]}. Cámbiate a esa pestaña para eliminarla.`, true); } }
+  { const o = m.find(i => K(i) !== SEC); m = m.filter(i => K(i) === SEC); if (!m.length && o) { beep('err'); return delReset(`"${o.name}" está en la pestaña ${SEC_LBL[K(o)]}. Cámbiate a esa pestaña para eliminarla.`, true); } }
   if (!m.length) { beep('err'); return delReset('No hay ninguna pieza con "' + v + '".', true); }
   if (m.length === 1) { beep('ok'); return delSelect(m[0]); }
   beep('ok'); delItem = null; $('#dOk').disabled = true;
@@ -1499,7 +1556,7 @@ $('#dOk').onclick = () => {
   const it = delItem; if (!it) return;
   const i = S.items.indexOf(it); if (i < 0) return delReset('La pieza ya no existe.', true);
   S.items.splice(i, 1);
-  S.movements.unshift({ id: newId(), t: Date.now(), type: 'Baja', tipo: it.tipo, code: it.code, name: it.name, qty: it.qty, after: 0, note: 'Pieza eliminada' });
+  S.movements.unshift({ id: newId(), t: Date.now(), type: 'Baja', tipo: it.tipo, tr: it.tr, code: it.code, name: it.name, qty: it.qty, after: 0, note: 'Pieza eliminada' });
   save(); renderAll(); beep('out');
   delReset('Eliminada: ' + it.name, false); $('#dScan').focus();
 };
@@ -1524,16 +1581,16 @@ function seaRender(){
   const words = fold($('#sIn').value).split(/\s+/).filter(Boolean);
   $('#sRes').innerHTML = '';
   if (!words.length) { $('#sCount').textContent = 'Escribe para buscar. Los resultados aparecen mientras escribes.'; return; }
-  // Busca en todas las pestañas: piezas mecánicas, eléctricas e insumos
+  // Busca en todas las pestañas: todas las áreas, piezas e insumos
   const found = S.items.filter(it => {
-    const h = fold([it.sc, scKey(it.sc), it.name, it.code, it.ref, it.brand, it.model, it.sku, it.cat, it.sub, it.loc, it.rac, it.year, SEC_LBL[it.tipo]].join(' '));
+    const h = fold([it.sc, scKey(it.sc), it.name, it.code, it.ref, it.brand, it.model, it.sku, it.cat, it.sub, it.loc, it.rac, it.year, SEC_LBL[K(it)]].join(' '));
     return words.every(w => h.includes(w));
   }).sort((a, b) => COLL.compare(a.name, b.name));
   $('#sCount').textContent = found.length ? (found.length > 60 ? `Mostrando 60 de ${found.length}. Escribe más para afinar.` : `${found.length} ${found.length === 1 ? 'resultado' : 'resultados'}. Toca una pieza para ver sus datos.`) : 'No hay piezas que coincidan.';
   found.slice(0, 60).forEach(it => {
     const w = document.createElement('div'); w.className = 'sitem';
     const b = document.createElement('button'); b.type = 'button'; b.setAttribute('aria-expanded', 'false');
-    const bits = [SEC_LBL[it.tipo], it.ref, it.brand].filter(Boolean).map(esc).join(' · ');
+    const bits = [SEC_LBL[K(it)], it.ref, it.brand].filter(Boolean).map(esc).join(' · ');
     b.innerHTML = `<b>${scBadge(it)}${esc(it.name)}</b><span class="st" style="${it.qty <= 0 ? 'color:var(--out)' : ''}">${fmt(it.qty)} <small class="muted">${esc(it.unit)}</small></span>` +
       `<span class="muted">${bits}</span>`;
     const det = document.createElement('div'); det.className = 'sdet hide';
@@ -1859,12 +1916,51 @@ function partPicker(box, parts){
 }
 const partsTxt = parts => parts.map(p => { const it = itemById(p.id); return `${it ? (it.sc || it.name) : (p.sc || p.name || '?')} × ${fmt(p.qty)}`; }).join(', ');
 
+// Código de cada servicio: SEV-LETRAS-01. Sus partes siguen el código de la rama (SEV-LETRAS-01.1, 01.2…)
+// y el siguiente servicio principal sigue la numeración de antes de la subdivisión (SEV-OTRO-02).
+const SV_STOP = new Set(['de', 'del', 'la', 'las', 'el', 'los', 'y', 'e', 'o', 'a', 'en', 'con', 'para', 'por', 'al', 'un', 'una']);
+const svAbbr = name => { const w = fold(name).replace(/[^a-z0-9 ]/g, ' ').split(/\s+/).filter(Boolean); const p = w.find(x => !SV_STOP.has(x) && x.length >= 3) || w[0] || 'serv'; return p.slice(0, 4).toUpperCase(); };
+const svTail = c => { const m = /^SEV-[A-Z0-9]+-([\d.]+)$/.exec(c || ''); return m ? m[1].split('.').map(Number) : null; };
+const svPad = n => String(n).padStart(2, '0');
+function svNextCode(a, name, parent){
+  if (parent) {
+    const p = svTail(parent.code);
+    const kids = a.services.filter(x => x.parent === parent.id).map(x => { const t = svTail(x.code); return t && p && t.length === p.length + 1 ? t[t.length - 1] : 0; });
+    return parent.code + '.' + (Math.max(0, ...kids) + 1);
+  }
+  const mains = a.services.filter(x => !x.parent).map(x => { const t = svTail(x.code); return t ? t[0] : 0; });
+  return 'SEV-' + svAbbr(name) + '-' + svPad(Math.max(0, ...mains) + 1);
+}
+// Servicios de antes de los códigos: reciben su código en el orden en que se crearon
+function ensureSvcCode(a){
+  let n = 0; svcOf(a);
+  a.services.filter(x => !x.parent && !svTail(x.code)).forEach(x => { x.code = svNextCode(a, x.name, null); n++; });
+  for (let pass = 0; pass < 6; pass++) a.services.filter(x => x.parent && !svTail(x.code)).forEach(x => { const p = a.services.find(y => y.id === x.parent); if (!p) { x.parent = ''; x.code = svNextCode(a, x.name, null); n++; } else if (svTail(p.code)) { x.code = svNextCode(a, x.name, p); n++; } });
+  return n;
+}
+const svCmp = (x, y) => { const a = svTail(x.code) || [1e9], b = svTail(y.code) || [1e9]; for (let i = 0; i < Math.max(a.length, b.length); i++) { const d = (a[i] ?? -1) - (b[i] ?? -1); if (d) return d; } return COLL.compare(x.name, y.name); };
+const svSorted = a => [...svcOf(a).services].sort(svCmp);
+const svDepth = s => Math.max(0, (svTail(s.code) || [0]).length - 1);
+const svLbl = s => (s.code ? s.code + ' · ' : '') + s.name;
+const svOpt = s => '<option value="' + esc(s.id) + '">' + '\u2003'.repeat(svDepth(s)) + esc(svLbl(s)) + '</option>';
+
 // Catálogo
 let svcEdit = null, svcParts = [];
+function svCodeTip(){
+  const a = svcOf(S);
+  if (svcEdit) { $('#sCode').textContent = svcEdit.code || '—'; $('#sCodeTip').textContent = '(el código no cambia)'; return; }
+  const p = a.services.find(x => x.id === $('#sPar').value);
+  $('#sCode').textContent = svNextCode(a, $('#sName').value.trim() || 'serv', p);
+  $('#sCodeTip').textContent = p ? '(parte de ' + p.code + ')' : '(servicio principal)';
+}
+$('#sName').addEventListener('input', svCodeTip);
+$('#sPar').addEventListener('change', svCodeTip);
 function openSvc(s){
   svcEdit = s || null; svcParts = s ? s.parts.map(p => ({ ...p })) : [];
   $('#svcTitle').textContent = s ? 'Editar servicio' : 'Nuevo servicio';
   $('#sName').value = s ? s.name : ''; $('#sDesc').value = s ? s.desc : ''; $('#svcErr').textContent = '';
+  $('#sPar').innerHTML = '<option value="">No, es un servicio principal</option>' + svSorted(S).map(svOpt).join('');
+  $('#sPar').value = s ? (s.parent || '') : ''; $('#sPar').disabled = !!s; svCodeTip();
   partPicker($('#sParts'), svcParts);
   $('#svcDlg').showModal(); $('#sName').focus();
 }
@@ -1876,7 +1972,8 @@ $('#svcForm').onsubmit = e => {
   if (!name) return $('#svcErr').textContent = 'Escribe el nombre del servicio.';
   if (a.services.some(x => x !== svcEdit && fold(x.name) === fold(name))) return $('#svcErr').textContent = 'Ya existe un servicio con ese nombre.';
   const data = { name, desc: $('#sDesc').value.trim(), parts: svcParts.filter(p => itemById(p.id)).map(p => ({ id: p.id, qty: p.qty })) };
-  if (svcEdit) Object.assign(svcEdit, data); else a.services.push({ id: newId(), ...data });
+  if (svcEdit) Object.assign(svcEdit, data);
+  else { const p = a.services.find(x => x.id === $('#sPar').value); a.services.push({ id: newId(), code: svNextCode(a, name, p), parent: p ? p.id : '', ...data }); }
   $('#svcDlg').close(); save(); renderAll(); beep('ok');
 };
 
@@ -1902,13 +1999,13 @@ $('#rOk').onclick = () => {
   const short = parts.filter(p => p.it.qty < p.qty);
   if (short.length && !confirm('No hay suficiente stock de:\n' + short.map(p => `• ${partLbl(p.it)}: hay ${fmt(p.it.qty)}, se usan ${fmt(p.qty)}`).join('\n') + '\n\nSi registras igual, el stock quedará en negativo hasta que le des entrada. ¿Registrar igual?')) return;
   const veh = $('#rVeh').value.trim(), cli = $('#rCli').value.trim(), mec = $('#rMec').value.trim();
-  const note = 'Servicio: ' + s.name + (veh ? ' · ' + veh : '') + (cli ? ' · ' + cli : '');
+  const note = 'Servicio: ' + svLbl(s) + (veh ? ' · ' + veh : '') + (cli ? ' · ' + cli : '');
   parts.forEach(p => { p.it.qty -= p.qty; log('Despacho', p.it, p.qty, note, { pres: `${fmt(p.qty)} ${unitWord(p.it, p.qty)}` }); });
-  a.jobs.unshift({ id: newId(), t: Date.now(), sid: s.id, name: s.name, cli, veh, mec, note: $('#rNota').value.trim(),
+  a.jobs.unshift({ id: newId(), t: Date.now(), sid: s.id, name: svLbl(s), cli, veh, mec, note: $('#rNota').value.trim(),
     parts: parts.map(p => ({ id: p.id, sc: p.it.sc || '', name: p.it.name, qty: p.qty })), void: false });
   save(); renderAll(); beep('out');
   regReset(true);
-  err.style.color = 'var(--in)'; err.textContent = `Registrado: ${s.name}.` + (parts.length ? ` Se descontaron ${parts.length} ${parts.length === 1 ? 'pieza' : 'piezas'} del stock.` : '');
+  err.style.color = 'var(--in)'; err.textContent = `Registrado: ${svLbl(s)}.` + (parts.length ? ` Se descontaron ${parts.length} ${parts.length === 1 ? 'pieza' : 'piezas'} del stock.` : '');
   setTimeout(() => { err.style.color = ''; }, 6000);
 };
 // Anular un servicio hecho: devuelve las piezas al stock
@@ -1921,13 +2018,13 @@ function voidJob(j){
 
 function renderSvc(){
   const a = svcOf(S);
-  const list = [...a.services].sort((x, y) => COLL.compare(x.name, y.name));
+  const list = svSorted(a);
   const cur = $('#rSvc').value;
-  $('#rSvc').innerHTML = '<option value="">— Elige un servicio —</option>' + list.map(s => `<option value="${esc(s.id)}">${esc(s.name)}</option>`).join('');
+  $('#rSvc').innerHTML = '<option value="">— Elige un servicio —</option>' + list.map(svOpt).join('');
   if (list.some(s => s.id === cur)) $('#rSvc').value = cur; else if (cur) { $('#rSvc').value = ''; regLoad(); }
   $('#partList').innerHTML = [...S.items].sort((x, y) => COLL.compare(x.name, y.name)).map(i => `<option value="${esc(partLbl(i))}">`).join('');
   $('#mecList').innerHTML = [...new Set(a.jobs.map(j => j.mec).filter(Boolean))].map(m => `<option value="${esc(m)}">`).join('');
-  $('#svcList').innerHTML = list.map(s => `<div class="svcard"><div><b>${esc(s.name)}</b>${s.desc ? `<div class="muted">${esc(s.desc)}</div>` : ''}` +
+  $('#svcList').innerHTML = list.map(s => `<div class="svcard${s.parent ? ' sub' : ''}"${svDepth(s) > 1 ? ` style="margin-left:${28 * svDepth(s)}px"` : ''}><div><span class="svc">${esc(s.code)}</span><b>${esc(s.name)}</b>${a.services.some(x => x.parent === s.id) ? ' <span class="muted">(tiene partes)</span>' : ''}${s.desc ? `<div class="muted">${esc(s.desc)}</div>` : ''}` +
     `<div class="muted" style="margin-top:4px">${s.parts.length ? 'Usa: ' + esc(partsTxt(s.parts)) : 'Sin piezas asignadas'}</div></div>` +
     `<div class="acts"><button type="button" data-use="${esc(s.id)}" class="primary">Registrar</button><button type="button" data-edit="${esc(s.id)}">Editar</button></div></div>`).join('')
     || '<div class="muted card">Todavía no hay servicios. Pulsa "Nuevo servicio" para agregar los que ofrecen.</div>';
@@ -1947,16 +2044,16 @@ function sdShow(){
   const a = svcOf(S), s = a.services.find(x => x.id === $('#sdSel').value);
   $('#sdOk').disabled = !s;
   if (!s) { $('#sdInfo').innerHTML = '<span class="muted">Elige un servicio para ver sus datos antes de eliminarlo.</span>'; return; }
-  const n = a.jobs.filter(j => j.sid === s.id).length;
+  const n = a.jobs.filter(j => j.sid === s.id).length, kids = a.services.filter(x => x.parent === s.id);
+  if (kids.length) { $('#sdOk').disabled = true; $('#sdInfo').innerHTML = `<div style="font-weight:700;color:var(--out)">${esc(svLbl(s))} tiene ${kids.length} ${kids.length === 1 ? 'parte' : 'partes'} (${esc(kids.map(x => x.code).join(', '))}). Elimina primero sus partes.</div>`; return; }
   $('#sdInfo').innerHTML = `<div style="border:2px solid var(--line);border-left:10px solid var(--out);border-radius:var(--r);padding:12px">` +
-    `<div style="font-size:20px;font-weight:800">${esc(s.name)}</div>${s.desc ? `<div class="muted">${esc(s.desc)}</div>` : ''}` +
+    `<div style="font-size:20px;font-weight:800">${esc(svLbl(s))}</div>${s.desc ? `<div class="muted">${esc(s.desc)}</div>` : ''}` +
     `<div class="muted" style="margin-top:4px">${s.parts.length ? 'Usa: ' + esc(partsTxt(s.parts)) : 'Sin piezas asignadas'}</div>` +
     `<div style="margin-top:8px">${n ? `Se ha registrado ${fmt(n)} ${n === 1 ? 'vez' : 'veces'}. Esos registros <b>no</b> se borran.` : 'Nunca se ha registrado.'}</div>` +
     `<div style="margin-top:8px;font-weight:700">Para eliminarlo del catálogo pulsa "Aceptar y eliminar".</div></div>`;
 }
 $('#btnSvcDel').onclick = () => {
-  const list = [...svcOf(S).services].sort((x, y) => COLL.compare(x.name, y.name));
-  $('#sdSel').innerHTML = '<option value="">— Elige un servicio —</option>' + list.map(x => `<option value="${esc(x.id)}">${esc(x.name)}</option>`).join('');
+  $('#sdSel').innerHTML = '<option value="">— Elige un servicio —</option>' + svSorted(S).map(svOpt).join('');
   sdShow(); $('#svcDelDlg').showModal(); $('#sdSel').focus();
 };
 $('#sdSel').addEventListener('change', sdShow);
@@ -1965,15 +2062,15 @@ $('#sdOk').onclick = () => {
   const a = svcOf(S), s = a.services.find(x => x.id === $('#sdSel').value); if (!s) return;
   a.services = a.services.filter(x => x !== s);
   $('#svcDelDlg').close(); save(); renderAll(); beep('out');
-  const err = $('#rErr'); err.style.color = 'var(--in)'; err.textContent = `Se eliminó del catálogo: ${s.name}.`; setTimeout(() => { err.style.color = ''; }, 6000);
+  const err = $('#rErr'); err.style.color = 'var(--in)'; err.textContent = `Se eliminó del catálogo: ${svLbl(s)}.`; setTimeout(() => { err.style.color = ''; }, 6000);
 };
 $('#jobBody').addEventListener('click', e => { const b = e.target.closest('button[data-void]'); if (b) { const j = svcOf(S).jobs.find(x => x.id === b.dataset.void); if (j) voidJob(j); } });
 function exportSvc(){
   const a = svcOf(S), stamp = new Date().toISOString().slice(0, 10);
-  const sRows = [['Servicio', 'Descripción', 'Piezas que usa'], ...a.services.map(s => [s.name, s.desc, partsTxt(s.parts)])];
+  const sRows = [['Código', 'Servicio', 'Parte de', 'Descripción', 'Piezas que usa'], ...svSorted(a).map(s => { const p = a.services.find(x => x.id === s.parent); return [s.code, s.name, p ? p.code : '', s.desc, partsTxt(s.parts)]; })];
   const jRows = [['Fecha', 'Servicio', 'Cliente', 'Vehículo / placa', 'Mecánico', 'Piezas usadas', 'Nota', 'Estado'], ...a.jobs.map(j => [new Date(j.t).toLocaleString('es-DO'), j.name, j.cli, j.veh, j.mec, partsTxt(j.parts), j.note, j.void ? 'Anulado' : 'Hecho'])];
   const fname = `servicios_${slug(S.name)}_${stamp}.xlsx`;
-  download(makeXlsx([{ name: 'SERVICIOS', rows: sRows, widths: [34, 50, 50], styles: {} }, { name: 'REALIZADOS', rows: jRows, widths: [20, 30, 24, 22, 18, 50, 30, 10], styles: {} }]), fname);
+  download(makeXlsx([{ name: 'SERVICIOS', rows: sRows, widths: [18, 34, 16, 50, 50], styles: {} }, { name: 'REALIZADOS', rows: jRows, widths: [20, 30, 24, 22, 18, 50, 30, 10], styles: {} }]), fname);
   showMsg('warn', 'Excel descargado', `${fname}. Búscalo en tu carpeta de Descargas.`);
 }
 
@@ -2073,6 +2170,8 @@ async function iaAsk(){
 }
 $('#iaSend').onclick = iaAsk;
 $('#iaQ').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); iaAsk(); } });
+// La IA dice mec / ele / ins: eléctrica va al área Eléctrica; lo demás, al área en que se está
+const iaSec = x => x.pestana === 'ele' ? 'ele_mec' : (SEC === 'ser' ? 'aut' : secTr()) + (x.pestana === 'ins' ? '_ins' : '_mec');
 function iaShow(x, usadas, limite){
   const li = a => (a || []).filter(Boolean);
   const veh = li(x.vehiculos_compatibles), refs = li(x.referencias);
@@ -2081,7 +2180,7 @@ function iaShow(x, usadas, limite){
     (x.es_pieza_vehicular === false ? '<div class="alert" style="color:var(--out)">La IA no cree que esto sea una pieza de vehículo.</div>' : '') +
     `<div class="name">${esc(x.nombre_tecnico)}</div>` +
     (li(x.nombres_comunes).length ? `<div style="margin-top:4px">En el taller le dicen: <b>${esc(li(x.nombres_comunes).join(' · '))}</b></div>` : '') +
-    `<div style="margin-top:6px"><span class="iaconf ${esc(x.confianza)}">Confianza ${esc(x.confianza)}</span> · Va en la pestaña <b>${esc(SEC_LBL[x.pestana] || x.pestana)}</b></div>` +
+    `<div style="margin-top:6px"><span class="iaconf ${esc(x.confianza)}">Confianza ${esc(x.confianza)}</span> · Va en la pestaña <b>${esc(SEC_LBL[iaSec(x)])}</b></div>` +
     `<dl>${row('Para qué sirve', x.funcion)}${row('Versión / variantes', x.version_variantes)}${row('Texto visible en la pieza', x.texto_visible)}</dl>` +
     (veh.length ? `<b>Vehículos en que sirve</b><div class="tablew" style="margin:6px 0 10px"><table><thead><tr><th>Marca</th><th>Modelo</th><th>Años</th><th>Motor / transmisión</th></tr></thead><tbody>` +
       veh.map(v => `<tr><td>${esc(v.marca)}</td><td>${esc(v.modelo)}</td><td>${esc(v.anios)}</td><td>${esc(v.motor_transmision)}</td></tr>`).join('') + '</tbody></table></div>' : '') +
@@ -2092,15 +2191,14 @@ function iaShow(x, usadas, limite){
   $('#iaNew').onclick = () => {
     const ref = refs[0];
     $('#iaDlg').close();
-    if (SEC_LBL[x.pestana] && x.pestana !== 'ser' && x.pestana !== SEC) setSec(x.pestana);
-    if (SEC === 'ser') setSec('mec');
+    if (iaSec(x) !== SEC) setSec(iaSec(x));
     openNew();
     $('#nName').value = x.nombre_tecnico || ''; $('#nName').dispatchEvent(new Event('input'));
     if (ref) { $('#nRef').value = ref.numero || ''; $('#nBrand').value = ref.fabricante || ''; }
   };
   $('#iaFind').onclick = () => {
     $('#iaDlg').close();
-    if (SEC === 'ser') setSec(SEC_LBL[x.pestana] && x.pestana !== 'ser' ? x.pestana : 'mec');
+    if (SEC === 'ser') setSec(iaSec(x));
     $('#btnSearch').click(); $('#sIn').value = (li(x.nombres_comunes)[0] || x.nombre_tecnico || '').split(/\s+/).slice(0, 2).join(' '); seaRender();
   };
 }
@@ -2112,7 +2210,7 @@ try { MEM = new Map(Object.entries(JSON.parse(localStorage.getItem(MEM_KEY) || '
 const memKey = it => it.code && norm(it.code) ? 'c:' + norm(it.code) : 'n:' + fold(it.name || '').replace(/\s+/g, ' ').trim();
 // Solo datos que no cambian: nada de stock, cantidades ni precios
 const memData = it => ({ code: String(it.code || ''), name: it.name || '', ref: it.ref || '', brand: it.brand || '', model: it.model || '', cat: it.cat || '', sub: it.sub || '',
-  unit: it.unit || '', pack: it.pack && it.pack.n > 1 ? { name: it.pack.name, n: it.pack.n } : null, tipo: it.tipo || '', rac: it.rac || '', loc: it.loc || '', sc: it.sc || '' });
+  unit: it.unit || '', pack: it.pack && it.pack.n > 1 ? { name: it.pack.name, n: it.pack.n } : null, tipo: it.tipo || '', tr: it.tr || '', rac: it.rac || '', loc: it.loc || '', sc: it.sc || '' });
 function memRemember(){
   let changed = false;
   R.almacenes.forEach(a => a.items.forEach(it => {
@@ -2343,11 +2441,12 @@ $('#btnExport').onclick = () => {
   if (SEC === 'ser') return exportSvc();
   try {
     const stamp = new Date().toISOString().slice(0, 10);
-    const itemRows = [HEAD, ...SI().map(i => KEYS.map(k => k === 'code' ? (i.code ? Number(i.code) : '') : k === 'packName' ? (i.pack ? i.pack.name : '') : k === 'packN' ? (i.pack ? i.pack.n : '') : k === 'tipo' ? (TIPOS[i.tipo] || '') : i[k]))];
-    const movRows = [['Fecha', 'Tipo', 'Código', 'Pieza', 'Presentación', 'Unidades', 'Stock después', 'Nota'], ...SM().map(m => [new Date(m.t).toLocaleString('es-DO'), m.type, m.code ? Number(m.code) : '', m.name, movPres(m), movSigned(m), m.after, movNote(m)])];
+    const itemRows = [HEAD, ...SI().map(i => KEYS.map(k => k === 'code' ? (i.code ? Number(i.code) : '') : k === 'packName' ? (i.pack ? i.pack.name : '') : k === 'packN' ? (i.pack ? i.pack.n : '') : k === 'tipo' ? (TIPOS[i.tipo] || '') : k === 'tr' ? (TRS[i.tr] || '') : i[k]))];
+    const scOf = new Map(); S.items.forEach(i => { if (i.code) scOf.set(String(i.code), i.sc); scOf.set('n:' + i.name, i.sc); });
+    const movRows = [['Fecha', 'Tipo', 'Código interno', 'Pieza', 'Código de barras', 'Presentación', 'Unidades', 'Stock después', 'Nota'], ...SM().map(m => [new Date(m.t).toLocaleString('es-DO'), m.type, (m.code && scOf.get(String(m.code))) || scOf.get('n:' + m.name) || '', m.name, m.code ? Number(m.code) : '', movPres(m), movSigned(m), m.after, movNote(m)])];
     const blob = makeXlsx([
-      { name: 'ITEM', rows: itemRows, widths: [15, 38, 18, 18, 18, 12, 12, 22, 12, 10, 14, 10, 12, 12, 12, 12, 12, 12, 14, 18, 14], styles: { 0: 1, 12: 3, 13: 3, 14: 3, 15: 3 } },
-      { name: 'MOVIMIENTOS', rows: movRows, widths: [20, 11, 15, 38, 22, 10, 13, 30], styles: { 2: 1 } }
+      { name: 'ITEM', rows: itemRows, widths: [15, 38, 18, 18, 17, 18, 12, 12, 14, 12, 10, 14, 10, 8, 12, 12, 12, 12, 12, 12, 14, 14, 10], styles: { 4: 1, 14: 3, 15: 3, 16: 3, 17: 3 } },
+      { name: 'MOVIMIENTOS', rows: movRows, widths: [20, 11, 15, 38, 17, 22, 10, 13, 30], styles: { 4: 1 } }
     ]);
     const fname = `inventario_${slug(S.name)}_${slug(SEC_LBL[SEC])}_${stamp}.xlsx`;
     download(blob, fname);
@@ -2358,7 +2457,7 @@ $('#btnImport').onclick = () => { document.querySelector('details.more').open = 
 /* Cargar desde Excel: reconoce los títulos de columna aunque cambien de nombre, salta filas de TOTAL
    y, si el libro trae hojas Mecánica / Eléctrica / Insumos (como la copia del inventario), carga cada una en su pestaña. */
 const IMP_ALIAS = {
-  sc: ['codigo corto', 'cod. corto', 'cod corto', 'cod.corto'],
+  sc: ['codigo interno', 'cod. interno', 'cod interno', 'codigo corto', 'cod. corto', 'cod corto', 'cod.corto'],
   code: ['codigo', 'codigo de barras', 'cod. de barras', 'barcode', 'upc', 'ean'],
   name: ['nombre unico', 'pieza', 'nombre', 'descripcion', 'producto', 'articulo', 'nombre de la pieza'],
   ref: ['referencia', 'ref', 'ref.', 'numero de parte', 'no. de parte', 'part number'],
@@ -2370,7 +2469,7 @@ const IMP_ALIAS = {
   year: ['ano', 'anio', 'año'],
   price: ['precio comp', 'precio compra', 'precio de compra', 'costo'], v70: ['valor 70%'], imp: ['importe'], total: ['precio total', 'precio venta', 'precio'],
   packName: ['empaque'], packN: ['unidades por empaque', 'unid. por empaque', 'unid por empaque'],
-  tipo: ['tipo', 'pestana', 'seccion'],
+  tipo: ['tipo', 'pestana', 'seccion', 'pieza o insumo'], tr: ['area', 'transmision', 'departamento'],
 };
 const impKey = h => fold(h).replace(/\s+/g, ' ').trim();
 function impHeader(rows){
@@ -2395,7 +2494,7 @@ function impSheet(ws){
     let code = g('code');
     code = typeof code === 'number' ? (Number.isInteger(code) ? String(code) : '') : String(code ?? '').replace(/\D/g, '');
     const pn = t('packName'), pq = Math.round(n('packN'));
-    items.push({ pack: (pn && pq >= 2) ? { name: pn, n: pq } : null, sc: scClean(t('sc')), tipo: tipoFrom(t('tipo')), code, name, ref: t('ref'), brand: t('brand'), model: t('model'),
+    items.push({ pack: (pn && pq >= 2) ? { name: pn, n: pq } : null, sc: scClean(t('sc')), tipo: tipoFrom(t('tipo')), tr: trFrom(t('tr')), code, name, ref: t('ref'), brand: t('brand'), model: t('model'),
       cat: t('cat'), sub: t('sub'), sku: t('sku'), qty: Math.round(n('qty')), unit: t('unit') || 'UNID', loc: t('loc'), rac: t('rac'), year: t('year'),
       price: n('price'), v70: n('v70'), imp: n('imp'), total: n('total') });
   }
@@ -2408,21 +2507,22 @@ $('#fileIn').addEventListener('change', e => {
   rd.onload = ev => {
     try {
       const wb = XLSX.read(ev.target.result, { type: 'array' });
-      const bySec = { mec: [], ele: [], ins: [] }, used = [];
-      // Hojas con nombre de pestaña: cada una va a su pestaña
-      const secSheet = { mecanica: 'mec', electrica: 'ele', insumos: 'ins', insumo: 'ins', suministros: 'ins' };
-      wb.SheetNames.forEach(nm => { const t = secSheet[impKey(nm)]; if (!t) return; const its = impSheet(wb.Sheets[nm]); if (its && its.length) { its.forEach(i => { i.tipo = t; }); bySec[t].push(...its); used.push(nm); } });
+      const bySec = {}; Object.keys(SEC_LBL).forEach(k => { if (k !== 'ser') bySec[k] = []; }); const used = [];
+      const curTr = SEC === 'ser' ? 'aut' : secTr();
+      // Hojas con nombre de pestaña ("CVT", "CVT Insumos", "Eléctrica Piezas", "Insumos"…): cada una va a su pestaña
+      const sheetSec = nm => { const k = impKey(nm), tr = trFrom(k.replace(/\b(piezas?|insumos?|suministros?)\b/g, '').trim()), ins = /\b(insumos?|suministros?)\b/.test(k);
+        return tr ? tr + (ins ? '_ins' : '_mec') : ins ? curTr + '_ins' : ''; };
+      wb.SheetNames.forEach(nm => { const t = sheetSec(nm); if (!t) return; const its = impSheet(wb.Sheets[nm]); if (its && its.length) { its.forEach(i => { [i.tr, i.tipo] = t.split('_'); }); bySec[t].push(...its); used.push(nm); } });
       if (!used.length) {
-        // Una sola hoja de piezas (la primera que tenga columna de nombre): usa la columna TIPO si la trae, si no la pestaña activa
-        const target = SEC === 'ser' ? 'mec' : SEC;
+        // Una sola hoja de piezas (la primera que tenga columna de nombre): usa las columnas ÁREA y TIPO si las trae, si no la pestaña activa
         const nm = ['ITEM', ...wb.SheetNames].find(x => wb.Sheets[x] && (impSheet(wb.Sheets[x]) || []).length);
-        if (nm) { impSheet(wb.Sheets[nm]).forEach(i => { bySec[TIPOS[i.tipo] ? i.tipo : target].push(i); }); used.push(nm); }
+        if (nm) { impSheet(wb.Sheets[nm]).forEach(i => { if (!TRS[i.tr]) i.tr = curTr; if (!TIPOS[i.tipo]) i.tipo = SEC === 'ser' ? 'mec' : secCat(); bySec[K(i)].push(i); }); used.push(nm); }
       }
       const secs = Object.keys(bySec).filter(k => bySec[k].length), total = secs.reduce((a, k) => a + bySec[k].length, 0);
       if (!total) return alert('No se encontraron piezas en el archivo. El Excel debe tener una columna con el nombre de la pieza (por ejemplo "Pieza", "Nombre" o "Descripción").');
       const det = secs.map(k => `• ${SEC_LBL[k]}: ${bySec[k].length} piezas, ${fmt(bySec[k].reduce((a, i) => a + i.qty, 0))} unidades`).join('\n');
       if (!confirm(`Se cargará desde "${f.name}" (hoja${used.length > 1 ? 's' : ''}: ${used.join(', ')}):\n\n${det}\n\nEsto REEMPLAZA las piezas que tienen ahora esas pestañas en el almacén "${S.name}". Las demás pestañas no se tocan. ¿Continuar?`)) return;
-      S.items = S.items.filter(i => !secs.includes(i.tipo)).concat(...secs.map(k => bySec[k]));
+      S.items = S.items.filter(i => !secs.includes(K(i))).concat(...secs.map(k => bySec[k]));
       const nsc = ensureSc(S); save(); renderAll();
       if (SEC === 'ser' || !secs.includes(SEC)) setSec(secs[0]);
       showMsg('warn', 'Inventario cargado', `${total} piezas desde ${f.name}: ${secs.map(k => SEC_LBL[k] + ' ' + bySec[k].length).join(', ')}` + (nsc ? ` · ${nsc} recibieron código corto.` : ''));
@@ -2433,19 +2533,20 @@ $('#fileIn').addEventListener('change', e => {
 $('#btnRestore').onclick = () => {
   document.querySelector('details.more').open = false;
   if (!confirm(`Se borrarán TODAS las piezas y movimientos de la pestaña ${SEC_LBL[SEC]} del almacén "${S.name}". Las otras pestañas y almacenes no se tocan. ¿Continuar?`)) return;
-  S.items = S.items.filter(i => i.tipo !== SEC); S.movements = S.movements.filter(m => m.tipo !== SEC); save(); renderAll(); showMsg('warn', SEC_LBL[SEC] + ' vaciada', 'No hay piezas en esta pestaña. Empieza escaneando en modo Entrada.');
+  S.items = S.items.filter(i => K(i) !== SEC); S.movements = S.movements.filter(m => K(m) !== SEC); save(); renderAll(); showMsg('warn', SEC_LBL[SEC] + ' vaciada', 'No hay piezas en esta pestaña. Empieza escaneando en modo Entrada.');
 };
 
 
 /* ---------- Inicio ---------- */
 memLists();
-$('#eTipo').innerHTML = tipoOpts();
+$('#eTipo').innerHTML = tipoOpts(); $('#eTr').innerHTML = trOpts();
 const tipoNew = R.almacenes.reduce((n, a) => n + ensureTipo(a), 0);
 R.almacenes.forEach(stampMovTipo);
 const scNew = R.almacenes.reduce((n, a) => n + ensureSc(a), 0);
+R.almacenes.forEach(ensureSvcCode);
 renderAll(); setMode('in'); save();
 authStart();
-if (tipoNew) showMsg('warn', 'Piezas clasificadas por tipo', `${fmt(tipoNew)} piezas se clasificaron solas en Mecánica, Eléctrica o Insumo según su nombre. Revisa cada pestaña; si una pieza quedó en la equivocada, muévela con Ajustar.`);
+if (tipoNew) showMsg('warn', 'Piezas acomodadas por área', `${fmt(tipoNew)} piezas se acomodaron solas: las que dicen CVT en CVT, las de Eléctrica en Eléctrica y las demás en Automática. Revisa cada pestaña; si una pieza quedó en la equivocada, muévela con Ajustar.`);
 else if (scNew) showMsg('warn', 'Códigos cortos asignados', `${fmt(scNew)} piezas recibieron su código corto (ej. ACE-001). Puedes cambiarlo en Ajustar.`);
 </script>
 
