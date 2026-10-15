@@ -61,7 +61,7 @@
   --sombra:0 1px 2px rgba(16,24,32,.06),0 6px 18px rgba(16,24,32,.08);
   --acento:#f2a900;--onacento:#1b1405;--acento-t:#8f5c00;
   --ok:#12794c;--bajo:#8f5a00;--cero:#c2302d;
-  --a-aut:#2a5ca3;--a-cvt:#0a7070;--a-mec:#b8430f;--a-ele:#7a49c4;--a-ser:#5b6572;--onarea:#fff;
+  --a-aut:#2a5ca3;--a-cvt:#0a7070;--a-mec:#b8430f;--a-ele:#7a49c4;--a-ser:#5b6572;--a-cat:#8a5a00;--onarea:#fff;
   --hdr-a:#454e59;--hdr-b:#1b2127;--hdr:#1b2127;--onhdr:#f2f5f8;--hdrmute:#d0d7df;--atf:#c8102e;--onatf:#fff;--atf-h:#ff4a57;
   --area:var(--a-aut);
 }
@@ -70,7 +70,7 @@
   --in:#3dbd84;--out:#ff7570;--look:#74a8f0;--onmode:#0c1117;
   --sombra:0 1px 2px rgba(0,0,0,.4),0 6px 18px rgba(0,0,0,.35);
   --acento-t:#f2a900;--ok:#3dbd84;--bajo:#ffb020;--cero:#ff7570;
-  --a-aut:#74a8f0;--a-cvt:#3cc7c7;--a-mec:#ff8a50;--a-ele:#b595f0;--a-ser:#aab4c0;--onarea:#0c1117;
+  --a-aut:#74a8f0;--a-cvt:#3cc7c7;--a-mec:#ff8a50;--a-ele:#b595f0;--a-ser:#aab4c0;--a-cat:#f2a900;--onarea:#0c1117;
   --hdr-a:#2d343c;--hdr-b:#0d1115;--hdr:#0d1115;--atf:#ff5a5f;--onatf:#0c1117;--atf-h:#ff4a57;
 }}
 :root[data-tema="oscuro"]{
@@ -78,7 +78,7 @@
   --in:#3dbd84;--out:#ff7570;--look:#74a8f0;--onmode:#0c1117;
   --sombra:0 1px 2px rgba(0,0,0,.4),0 6px 18px rgba(0,0,0,.35);
   --acento-t:#f2a900;--ok:#3dbd84;--bajo:#ffb020;--cero:#ff7570;
-  --a-aut:#74a8f0;--a-cvt:#3cc7c7;--a-mec:#ff8a50;--a-ele:#b595f0;--a-ser:#aab4c0;--onarea:#0c1117;
+  --a-aut:#74a8f0;--a-cvt:#3cc7c7;--a-mec:#ff8a50;--a-ele:#b595f0;--a-ser:#aab4c0;--a-cat:#f2a900;--onarea:#0c1117;
   --hdr-a:#2d343c;--hdr-b:#0d1115;--hdr:#0d1115;--atf:#ff5a5f;--onatf:#0c1117;--atf-h:#ff4a57;
 }
 body[data-mode=in]{--mode:var(--in)}
@@ -90,8 +90,9 @@ body[data-sec^=cvt]{--area:var(--a-cvt)}
 body[data-sec^=mec]{--area:var(--a-mec)}
 body[data-sec^=ele]{--area:var(--a-ele)}
 body[data-sec^=ser]{--area:var(--a-ser)}
+body[data-sec=cat]{--area:var(--a-cat)}
 /* el mismo color en cualquier pieza suelta (ficha, chip, tarjeta): poner la clase a-xxx */
-.a-aut{--area:var(--a-aut)}.a-cvt{--area:var(--a-cvt)}.a-mec{--area:var(--a-mec)}.a-ele{--area:var(--a-ele)}.a-ser{--area:var(--a-ser)}
+.a-aut{--area:var(--a-aut)}.a-cvt{--area:var(--a-cvt)}.a-mec{--area:var(--a-mec)}.a-ele{--area:var(--a-ele)}.a-ser{--area:var(--a-ser)}.a-cat{--area:var(--a-cat)}
 
 /* ---------- 2. Base ---------- */
 *{box-sizing:border-box}
@@ -184,7 +185,7 @@ details.more .menu button.danger{color:var(--out);border-color:var(--out)}
 .subsecs button small{display:none}
 .subsecs button .ico{width:16px;height:16px}
 .subsecs button[aria-selected=true]{background:var(--area);color:var(--onarea)}
-body[data-sec^=ser] .subsecs{display:none}
+body[data-inv=no] .subsecs{display:none}
 /* fila de control: Piezas/Insumos + Entrada/Despacho/Consulta en un solo renglón (envolver #subTabs y .modes en <div class="ctl">) */
 .ctl{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;margin:0 0 10px}
 .ctl /* Selector de modos como compuerta de palanca (P-R-N-D): caja de acero oscuro, el modo activo se ilumina */
@@ -246,6 +247,8 @@ body[data-sec^=ser] .subsecs{display:none}
 .pcard.st-bajo{--st:var(--bajo)}
 .pcard.st-cero{--st:var(--cero);background:color-mix(in srgb,var(--cero) 6%,var(--panel))}
 .pcard.hl{box-shadow:0 0 0 3px var(--acento)}
+.pcard.con-foto{grid-template-columns:56px minmax(0,1fr) auto;grid-template-areas:"foto top stock" "foto main stock" "acts acts acts"}
+.pc-foto{grid-area:foto;width:56px;height:56px;object-fit:contain;background:#fff;border:1px solid var(--line);border-radius:8px;padding:2px}
 .pc-top{grid-area:top;display:flex;align-items:center;gap:6px;flex-wrap:wrap;min-width:0}
 .pc-main{grid-area:main;min-width:0;display:grid;gap:2px}
 .pc-st{display:inline-flex;align-items:center;gap:4px;padding:0 8px;border-radius:999px;font-size:10.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;line-height:18px;color:var(--st);background:color-mix(in srgb,var(--st) 13%,var(--panel));border:1px solid color-mix(in srgb,var(--st) 45%,var(--panel))}
@@ -267,6 +270,8 @@ body[data-sec^=ser] .subsecs{display:none}
   /* en PC: lista compacta tipo tabla, una pieza por renglón */
   .pgrid{gap:0;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--panel)}
   .pcard{grid-template-columns:150px minmax(0,1fr) 150px auto;grid-template-areas:"top main stock acts";align-items:center;border-radius:0;border-width:0 0 1px 0;border-left:5px solid var(--st);border-bottom:1px solid var(--line);padding:6px 12px 6px 10px;min-height:52px}
+  .pcard.con-foto{grid-template-columns:44px 150px minmax(0,1fr) 150px auto;grid-template-areas:"foto top main stock acts"}
+  .pcard.con-foto .pc-foto{width:44px;height:44px}
   .pcard:last-child{border-bottom:0}
   .pcard:hover{background:color-mix(in srgb,var(--ink) 4%,var(--panel))}
   .pcard.st-cero:hover{background:color-mix(in srgb,var(--cero) 9%,var(--panel))}
@@ -277,6 +282,26 @@ body[data-sec^=ser] .subsecs{display:none}
   .pc-txt{grid-column:1/-1}
   .pc-acts{margin:0;flex-wrap:nowrap}
 }
+
+/* ---------- 9b. Catálogo de suplidor: marcar productos y pasarlos al almacén o eliminarlos ---------- */
+.cat-bar{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;padding:8px 10px;margin-bottom:10px;background:var(--panel);border:1px solid var(--line);border-left:5px solid var(--area);border-radius:12px;box-shadow:var(--sombra)}
+.cat-bar label{display:inline-flex;align-items:center;gap:6px;font-weight:700;font-size:14px;white-space:nowrap}
+.cat-bar select{width:auto;max-width:100%;height:36px;min-height:36px;padding:0 10px;font-weight:700}
+.cat-bar input[type=checkbox],.ccard input{width:18px;height:18px;min-height:0;padding:0;flex:0 0 auto;accent-color:var(--area)}
+.cat-bar .cat-acc{display:inline-flex;flex-wrap:wrap;align-items:center;gap:8px;margin-left:auto}
+#cSel{font-weight:800;color:var(--area)}
+.cgrid{display:grid;gap:8px;grid-template-columns:repeat(auto-fill,minmax(min(100%,320px),1fr))}
+.ccard{display:grid;grid-template-columns:auto 72px minmax(0,1fr);gap:10px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:8px 10px;cursor:pointer;overflow-wrap:anywhere}
+.ccard.sel{border-color:var(--area);box-shadow:0 0 0 2px var(--area);background:color-mix(in srgb,var(--area) 8%,var(--panel))}
+.cc-foto{width:72px;height:72px;object-fit:contain;background:#fff;border:1px solid var(--line);border-radius:8px;padding:2px;cursor:zoom-in}
+.cc-sin{display:grid;place-items:center;font-size:11px;font-weight:700;color:var(--mute);background:var(--bg);cursor:default}
+.cc-txt{display:grid;gap:4px;min-width:0}
+.cc-name{font-size:14.5px;font-weight:700;line-height:1.25}
+#cPasar{background:var(--area);border-color:var(--area);color:var(--onarea)}
+.cat-bar button:disabled{opacity:.45;cursor:not-allowed}
+.cat-aviso{padding:14px;border:1px dashed var(--line);border-radius:12px;color:var(--mute);font-weight:600}
+#fotoDlg{--dw:600px}
+#fotoDlg img{display:block;max-width:100%;max-height:62vh;margin:0 auto;object-fit:contain;background:#fff;border-radius:10px}
 
 /* ---------- 10. Chips ---------- */
 .chip{display:inline-flex;align-items:center;gap:4px;max-width:100%;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:700;line-height:1.5;letter-spacing:.08em;text-transform:uppercase;background:color-mix(in srgb,var(--ink) 8%,var(--panel));color:var(--ink);border:1px solid var(--line)}
@@ -300,8 +325,9 @@ td.acts button{padding:4px 10px;font-size:14px;margin-left:4px}
 tr.hl td{background:color-mix(in srgb,var(--in) 16%,var(--panel))}
 tr.voided td{opacity:.55;text-decoration:line-through}tr.voided td.acts{opacity:1;text-decoration:none}
 .in-t{color:var(--in);font-weight:700}.out-t{color:var(--out);font-weight:700}
-body[data-sec^=ser] .modes,body[data-sec^=ser] #scanCard,body[data-sec^=ser] .tabs,body[data-sec^=ser] #panelP,body[data-sec^=ser] #panelM,body[data-sec^=ser] #btnSearch,body[data-sec^=ser] #btnNew,body[data-sec^=ser] #btnDel,body[data-sec^=ser] details.more{display:none!important}
-body:not([data-sec^=ser]) #panelS{display:none}
+body[data-inv=no] .modes,body[data-inv=no] #scanCard,body[data-inv=no] .tabs,body[data-inv=no] #panelP,body[data-inv=no] #panelM,body[data-inv=no] #btnSearch,body[data-inv=no] #btnNew{display:none!important}
+body:not([data-sec=ser]) #panelS{display:none}
+body:not([data-sec=cat]) #panelC{display:none}
 #panelS h2{font-size:18px;margin:0 0 10px}
 .svcode{font-size:16px}.svcode b{font-size:19px;color:var(--look)}
 .svc{display:inline-block;font-family:ui-monospace,Consolas,monospace;font-weight:800;color:var(--look);margin-right:6px}
@@ -538,9 +564,8 @@ body.locked .app,body.locked dialog{display:none!important}
 @media print{.noprint,.appbar,#tablero{display:none!important}}
 
 /* ---------- 19. Ajustes del módulo real ---------- */
-/* Servicios: el menú Más sigue a mano (colores, exportar, cerrar sesión); lo que no aplica a servicios se oculta */
-body[data-sec^=ser] details.more{display:revert!important}
-body[data-sec^=ser] #btnReacomodar,body[data-sec^=ser] #btnImport,body[data-sec^=ser] #btnRestore,body[data-sec^=ser] #btnDel,body[data-sec^=ser] details.more .zona-roja,body[data-sec^=ser] #tablero{display:none!important}
+/* Servicios y Catálogo: el menú Más sigue a mano (colores, cerrar sesión); lo que es del inventario se oculta */
+body[data-inv=no] #btnReacomodar,body[data-inv=no] #btnImport,body[data-inv=no] #btnRestore,body[data-inv=no] #btnDel,body[data-inv=no] details.more .zona-roja,body[data-inv=no] #tablero,body[data-sec=cat] #btnExport{display:none!important}
 details.more .menu button .ico{width:16px;height:16px}
 /* Franja de cifras: solo texto */
 #tablero{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 14px;margin:10px 2px 6px;font-size:14px;color:var(--mute)}
@@ -718,6 +743,21 @@ details.more .menu button .ico{width:16px;height:16px}
     <datalist id="mecList"></datalist><datalist id="partList"></datalist>
   </section>
 
+  <section id="panelC">
+    <div class="tools"><input id="cq" type="search" placeholder="Buscar en el catálogo por nombre o referencia" aria-label="Buscar en el catálogo"><select id="cFil" aria-label="Filtrar por lugar sugerido" style="width:auto"></select><span class="muted" id="cCount"></span></div>
+    <div class="cat-bar">
+      <label><input type="checkbox" id="cAll">Marcar todos los de la lista</label>
+      <span id="cSel">0 marcados</span>
+      <div class="cat-acc">
+        <label for="cDest">Pasar a</label><select id="cDest"></select>
+        <button type="button" id="cPasar" class="primary" disabled>Pasar al almacén</button>
+        <button type="button" id="cQuitar" class="danger" disabled>Eliminar del catálogo</button>
+      </div>
+    </div>
+    <div id="cGrid" class="cgrid"></div>
+    <button type="button" id="cMas" class="vermas hide">Ver más</button>
+  </section>
+
   <section id="panelM" class="hide">
     <div class="tablew"><table>
       <thead><tr><th>Fecha</th><th>Tipo</th><th class="nw">Cód. corto</th><th>Pieza</th><th>Presentación</th><th class="num">Unidades</th><th class="num">Stock después</th><th>Nota</th></tr></thead>
@@ -730,6 +770,15 @@ details.more .menu button .ico{width:16px;height:16px}
     Los cambios se guardan en la nube y se ven en todos los equipos. Si se va el internet, se guardan en este equipo y se suben al volver.
   </footer>
 </div>
+
+<dialog id="fotoDlg">
+  <form method="dialog">
+    <h2 id="fotoTit"></h2>
+    <img id="fotoImg" alt="">
+    <p class="muted" id="fotoRef"></p>
+    <div class="dlgbtns"><button class="primary">Cerrar</button></div>
+  </form>
+</dialog>
 
 <dialog id="newDlg">
   <form id="newForm">
@@ -1122,12 +1171,18 @@ function trFrom(v){ const f = fold(v).trim(); return f.includes('cvt') ? 'cvt' :
 function ensureTipo(a){ let n = 0; a.items.forEach(i => { if (i.tipo === 'ele') { i.tipo = 'mec'; if (!TRS[i.tr]) i.tr = 'ele'; n++; } if (!TIPOS[i.tipo]) { i.tipo = guessTipo(i.name); n++; } if (!TRS[i.tr]) { i.tr = guessTr(i); n++; } }); return n; }
 // Pestaña activa (área + sección): todo (escanear, buscar, crear, eliminar, movimientos) trabaja solo con sus piezas
 const CAT_LBL = { mec: 'Piezas', ins: 'Insumos' };
-const SEC_LBL = { ser: 'Servicios' };
+const SEC_LBL = { ser: 'Servicios', cat: 'Catálogo' };
 Object.keys(TRS).forEach(t => Object.keys(CAT_LBL).forEach(c => { SEC_LBL[t + '_' + c] = TRS[t] + ' · ' + CAT_LBL[c]; }));
 const K = x => (TRS[x.tr] ? x.tr : 'aut') + '_' + (CAT_LBL[x.tipo] ? x.tipo : 'mec');
-const secTr = () => SEC === 'ser' ? 'aut' : SEC.split('_')[0];
-const secCat = () => SEC === 'ser' ? 'mec' : SEC.split('_')[1];
+// Las pestañas de inventario son área_sección (aut_mec…); Servicios y Catálogo no son inventario
+const enInv = () => SEC.includes('_');
+const secTr = () => enInv() ? SEC.split('_')[0] : 'aut';
+const secCat = () => enInv() ? SEC.split('_')[1] : 'mec';
 const SEC_KEY = 'palacio_sec_v1';
+// Catálogo de suplidor (lo trae catPull de la nube; ver la sección Catálogo más abajo)
+const CAT_VER = 150;
+let CAT = [], catEstado = 'cargando', catVer = CAT_VER;
+const catSel = new Set();
 let SEC = 'aut_mec';
 try { let v = localStorage.getItem(SEC_KEY); if (v === 'mec' || v === 'ins') v = 'aut_' + v; if (v === 'ele') v = 'ele_mec'; if (SEC_LBL[v]) SEC = v; } catch(e) {}
 const SI = () => S.items.filter(i => K(i) === SEC);
@@ -1178,10 +1233,10 @@ function ensureIds(){ R.almacenes.forEach(a => { svcOf(a); a.services.forEach(x 
 const pRow = (it, almId) => ({ id: it.id, almacen_id: almId, seccion: it.tipo || 'mec', area: TRS[it.tr] ? it.tr : 'aut', codigo_barras: String(it.code || ''), codigo_corto: it.sc || '', nombre: it.name || '',
   referencia: it.ref || '', marca: it.brand || '', modelo: it.model || '', categoria: it.cat || '', subcategoria: it.sub || '', sku: it.sku || '', unidad: it.unit || '',
   ubicacion: it.loc || '', rac: it.rac || '', anio: String(it.year ?? ''), precio_compra: +it.price || 0, valor_70: +it.v70 || 0, importe: +it.imp || 0, precio_total: +it.total || 0,
-  empaque_nombre: it.pack && it.pack.n > 1 ? it.pack.name : null, empaque_unidades: it.pack && it.pack.n > 1 ? it.pack.n : null, creado_ms: it.added || null });
+  empaque_nombre: it.pack && it.pack.n > 1 ? it.pack.name : null, empaque_unidades: it.pack && it.pack.n > 1 ? it.pack.n : null, creado_ms: it.added || null, foto: it.foto || '' });
 const pFrom = r => ({ id: r.id, tipo: r.seccion, tr: r.area || '', code: r.codigo_barras, sc: r.codigo_corto, name: r.nombre, ref: r.referencia, brand: r.marca, model: r.modelo, cat: r.categoria,
   sub: r.subcategoria, sku: r.sku, unit: r.unidad, loc: r.ubicacion, rac: r.rac || '', year: r.anio, price: +r.precio_compra, v70: +r.valor_70, imp: +r.importe, total: +r.precio_total,
-  pack: r.empaque_unidades > 1 ? { name: r.empaque_nombre || 'Empaque', n: r.empaque_unidades } : null, added: r.creado_ms ? +r.creado_ms : undefined });
+  pack: r.empaque_unidades > 1 ? { name: r.empaque_nombre || 'Empaque', n: r.empaque_unidades } : null, added: r.creado_ms ? +r.creado_ms : undefined, foto: r.foto || '' });
 const mRow = (m, almId) => ({ id: m.id, almacen_id: almId, seccion: m.tipo || 'mec', area: TRS[m.tr] ? m.tr : 'aut', fecha_ms: m.t, tipo: m.type, codigo_barras: String(m.code || ''), pieza: m.name || '',
   cantidad: Math.round(+m.qty || 0), stock_despues: Math.round(+m.after || 0), presentacion: m.pres || '', nota: m.note || '' });
 const mFrom = r => ({ id: r.id, t: +r.fecha_ms, type: r.tipo, tipo: r.seccion, tr: r.area || '', code: r.codigo_barras, name: r.pieza, qty: r.cantidad, after: r.stock_despues, note: r.nota, pres: r.presentacion || undefined });
@@ -1304,6 +1359,12 @@ function applyRemote(t, ev, n, o){
     } else if (jrow(toRow(cur, a.id)) === old) Object.assign(cur, fresh);
     SNAP[K][n.id] = js; return;
   }
+  if (t === 'catalogo') {
+    const id = (n || o || {}).id; if (!id) return;
+    CAT = CAT.filter(c => c.id !== id); catSel.delete(id);
+    if (ev !== 'DELETE' && n) { CAT.push(cFrom(n)); CAT.sort((a, b) => a.orden - b.orden); }
+    return;
+  }
   if (t === 'config' && n && n.clave === 'serialFloor') { R.serialFloor = Math.max(R.serialFloor || 0, +n.valor || 0); SNAP.serial = +n.valor || 0; }
 }
 function fixActive(){
@@ -1380,13 +1441,13 @@ function cloudStart(){
   if (!sb) return cloudStatus('nolib');
   if (cloud.started) return; cloud.started = true;
   ensureIds(); saveLocal();
-  inChain(cloudPull); inChain(memPull);
+  inChain(cloudPull); inChain(memPull); inChain(catPull);
   sb.channel('inventario')
     .on('postgres_changes', { event: '*', schema: 'public' }, p => {
       cloud.inbox.push(p);
       if (!cloud.drainQueued) { cloud.drainQueued = true; inChain(drainInbox); }
     })
-    .subscribe(st => { if (st === 'SUBSCRIBED' && cloud.loaded) inChain(cloudPull); });
+    .subscribe(st => { if (st === 'SUBSCRIBED' && cloud.loaded) { inChain(cloudPull); inChain(catPull); } });
   window.addEventListener('online', () => inChain(cloudPull));
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') inChain(cloudPull); });
   setInterval(() => inChain(cloudPull), 5 * 60 * 1000);
@@ -1764,9 +1825,9 @@ $('#lblPrint').onclick = () => {
 /* ---------- Íconos y señales visuales (solo apariencia) ---------- */
 const ico = n => `<svg class="ico" aria-hidden="true"><use href="#i-${n}"/></svg>`;
 // Los íconos de área van en línea (no con <use>) para que su animación corra
-const ICO_AREA = {"aut":"<circle cx=\"12\" cy=\"12\" r=\"10\"/><g class=\"an-sun\"><circle cx=\"12\" cy=\"12\" r=\"2\"/><path d=\"M12 12h1.2\"/></g><g class=\"an-car\"><g class=\"an-pl\" style=\"transform-origin:12.00px 6.60px\"><circle cx=\"12.00\" cy=\"6.60\" r=\"2.2\"/><path d=\"M12.00 6.60h1.3\"/></g><g class=\"an-pl\" style=\"transform-origin:16.68px 14.70px\"><circle cx=\"16.68\" cy=\"14.70\" r=\"2.2\"/><path d=\"M16.68 14.70h1.3\"/></g><g class=\"an-pl\" style=\"transform-origin:7.32px 14.70px\"><circle cx=\"7.32\" cy=\"14.70\" r=\"2.2\"/><path d=\"M7.32 14.70h1.3\"/></g></g>","cvt":"<circle class=\"an-p1\" cx=\"7\" cy=\"12\" r=\"4.5\"/><circle class=\"an-p2\" cx=\"17.5\" cy=\"12\" r=\"2.5\"/><path class=\"an-bt\" d=\"M7.86 7.58L17.98 9.55M7.86 16.42L17.98 14.45\"/><circle cx=\"7\" cy=\"12\" r=\".6\"/><circle cx=\"17.5\" cy=\"12\" r=\".6\"/>","mec":"<path d=\"M2 12h5M16 12h6\"/><rect x=\"16\" y=\"8\" width=\"5\" height=\"8\" rx=\".8\"/><path d=\"M14.2 9.3v1.4M14.2 13.3v1.4\"/><g class=\"an-sinc\"><rect x=\"6\" y=\"9\" width=\"5.5\" height=\"6\" rx=\"1\"/><path d=\"M8.7 9V4.5M6.7 4.5h4\"/></g>","ele":"<circle class=\"an-pulso\" cx=\"12\" cy=\"12\" r=\"3\" stroke-width=\"1.2\"/><path class=\"an-bolt\" d=\"M13 2.5 4.5 13.5H11L10 21.5l9-11.5h-6.5z\"/>","ser":"<rect x=\"4.5\" y=\"4.5\" width=\"15\" height=\"17\" rx=\"2\"/><path d=\"M9 4.5V3.2h6v1.3\"/><path d=\"M8.5 18 14 12.5\"/><circle cx=\"15\" cy=\"11.5\" r=\"2\"/><path d=\"M7.5 19l1.6-1.6\"/>"};
+const ICO_AREA = {"aut":"<circle cx=\"12\" cy=\"12\" r=\"10\"/><g class=\"an-sun\"><circle cx=\"12\" cy=\"12\" r=\"2\"/><path d=\"M12 12h1.2\"/></g><g class=\"an-car\"><g class=\"an-pl\" style=\"transform-origin:12.00px 6.60px\"><circle cx=\"12.00\" cy=\"6.60\" r=\"2.2\"/><path d=\"M12.00 6.60h1.3\"/></g><g class=\"an-pl\" style=\"transform-origin:16.68px 14.70px\"><circle cx=\"16.68\" cy=\"14.70\" r=\"2.2\"/><path d=\"M16.68 14.70h1.3\"/></g><g class=\"an-pl\" style=\"transform-origin:7.32px 14.70px\"><circle cx=\"7.32\" cy=\"14.70\" r=\"2.2\"/><path d=\"M7.32 14.70h1.3\"/></g></g>","cvt":"<circle class=\"an-p1\" cx=\"7\" cy=\"12\" r=\"4.5\"/><circle class=\"an-p2\" cx=\"17.5\" cy=\"12\" r=\"2.5\"/><path class=\"an-bt\" d=\"M7.86 7.58L17.98 9.55M7.86 16.42L17.98 14.45\"/><circle cx=\"7\" cy=\"12\" r=\".6\"/><circle cx=\"17.5\" cy=\"12\" r=\".6\"/>","mec":"<path d=\"M2 12h5M16 12h6\"/><rect x=\"16\" y=\"8\" width=\"5\" height=\"8\" rx=\".8\"/><path d=\"M14.2 9.3v1.4M14.2 13.3v1.4\"/><g class=\"an-sinc\"><rect x=\"6\" y=\"9\" width=\"5.5\" height=\"6\" rx=\"1\"/><path d=\"M8.7 9V4.5M6.7 4.5h4\"/></g>","ele":"<circle class=\"an-pulso\" cx=\"12\" cy=\"12\" r=\"3\" stroke-width=\"1.2\"/><path class=\"an-bolt\" d=\"M13 2.5 4.5 13.5H11L10 21.5l9-11.5h-6.5z\"/>","cat":"<path d=\"M5 4.5A1.5 1.5 0 0 1 6.5 3H19v15H6.5A1.5 1.5 0 0 0 5 19.5z\"/><path d=\"M5 19.5A1.5 1.5 0 0 0 6.5 21H19v-3\"/><path class=\"an-sinc\" d=\"M9 7.5h6M9 10.5h4\"/>","ser":"<rect x=\"4.5\" y=\"4.5\" width=\"15\" height=\"17\" rx=\"2\"/><path d=\"M9 4.5V3.2h6v1.3\"/><path d=\"M8.5 18 14 12.5\"/><circle cx=\"15\" cy=\"11.5\" r=\"2\"/><path d=\"M7.5 19l1.6-1.6\"/>"};
 const icoArea = k => `<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICO_AREA[k]}</svg>`;
-const AREA_PILL = { aut: 'Automáticas', cvt: 'CVT', mec: 'Mecánicas', ele: 'Eléctricas', ser: 'Servicios' };
+const AREA_PILL = { aut: 'Automáticas', cvt: 'CVT', mec: 'Mecánicas', ele: 'Eléctricas', ser: 'Servicios', cat: 'Catálogo' };
 // Giro corto del planetario del encabezado: algo se guardó o se escaneó bien
 function okGiro(){ const b = document.querySelector('.appbar'); if (!b) return; b.classList.remove('ok'); void b.offsetWidth; b.classList.add('ok'); clearTimeout(okGiro.t); okGiro.t = setTimeout(() => b.classList.remove('ok'), 700); }
 // Sacudida corta: el escaneo no salió
@@ -1778,7 +1839,8 @@ function pcardHtml(it, i){
   const p = st === 'cero' ? 0 : m > 0 ? Math.min(100, Math.round(q / (m * 2) * 100)) : 100;
   const txt = [st === 'cero' ? 'Sin stock' : stockText(it), m ? 'Mínimo ' + fmt(m) : ''].filter(Boolean).join(' · ');
   const rac = it.rac || it.loc || '';
-  return `<article class="pcard st-${st}${it === lastAdded ? ' hl' : ''}">` +
+  return `<article class="pcard st-${st}${it === lastAdded ? ' hl' : ''}${it.foto ? ' con-foto' : ''}">` +
+    (it.foto ? `<img class="pc-foto" src="${esc(it.foto)}" alt="" loading="lazy" decoding="async" onerror="this.remove()">` : '') +
     `<div class="pc-top">${it.sc ? `<span class="scb">${esc(it.sc)}</span>` : ''}<span class="pc-st">${ico(ST_TXT[st][1])}${ST_TXT[st][0]}</span></div>` +
     `<div class="pc-main"><h3 class="pc-name">${esc(it.name)}</h3><div class="pc-chips"><span class="chip a-${tr}">${AREA_PILL[tr]}</span>${it.ref ? `<span class="chip">Ref ${esc(it.ref)}</span>` : ''}${it.brand ? `<span class="chip">${esc(it.brand)}</span>` : ''}</div>` +
     `${rac ? `<p class="pc-rac">${ico('estante')}${esc(rac)}</p>` : ''}</div>` +
@@ -1819,34 +1881,36 @@ function renderMoves(){
 }
 function renderStat(){
   if (SEC === 'ser') { const a = svcOf(S); $('#stat').textContent = `Servicios: ${fmt(a.services.length)} en el catálogo · ${fmt(a.jobs.filter(j => !j.void).length)} realizados`; return; }
+  if (SEC === 'cat') { $('#stat').textContent = `Catálogo de suplidor: ${fmt(CAT.length)} productos por revisar`; return; }
   const its = SI(), u = its.reduce((a, i) => a + (i.qty || 0), 0);
   $('#stat').textContent = `${SEC_LBL[SEC]}: ${fmt(its.length)} piezas · ${fmt(u)} unidades en stock`;
 }
 function renderSecs(){
-  document.body.dataset.sec = SEC;
+  document.body.dataset.sec = SEC; document.body.dataset.inv = enInv() ? 'si' : 'no';
   const n = k => S.items.filter(i => K(i).startsWith(k)).length;
   // Solo se vuelve a pintar si cambió algo: así la animación del área activa no se reinicia en cada escaneo
-  const h1 = Object.keys(TRS).map(t => `<button type="button" role="tab" class="a-${t}" data-tr="${t}" aria-selected="${secTr() === t && SEC !== 'ser'}">${icoArea(t)}<span class="fn">${AREA_PILL[t]}</span><span class="fc" title="${fmt(n(t + '_'))} piezas">${fmt(n(t + '_'))}</span></button>`).join('') +
-    `<button type="button" role="tab" class="a-ser" data-sec="ser" aria-selected="${SEC === 'ser'}">${icoArea('ser')}<span class="fn">Servicios</span><span class="fc" title="${fmt(svcOf(S).services.length)} servicios">${fmt(svcOf(S).services.length)}</span></button>`;
+  const h1 = Object.keys(TRS).map(t => `<button type="button" role="tab" class="a-${t}" data-tr="${t}" aria-selected="${enInv() && secTr() === t}">${icoArea(t)}<span class="fn">${AREA_PILL[t]}</span><span class="fc" title="${fmt(n(t + '_'))} piezas">${fmt(n(t + '_'))}</span></button>`).join('') +
+    `<button type="button" role="tab" class="a-ser" data-sec="ser" aria-selected="${SEC === 'ser'}">${icoArea('ser')}<span class="fn">Servicios</span><span class="fc" title="${fmt(svcOf(S).services.length)} servicios">${fmt(svcOf(S).services.length)}</span></button>` +
+    `<button type="button" role="tab" class="a-cat" data-sec="cat" aria-selected="${SEC === 'cat'}">${icoArea('cat')}<span class="fn">Catálogo</span><span class="fc" title="${fmt(CAT.length)} productos por revisar">${fmt(CAT.length)}</span></button>`;
   if ($('#secTabs').dataset.h !== h1) { $('#secTabs').innerHTML = h1; $('#secTabs').dataset.h = h1; }
-  $('#subTabs').innerHTML = SEC === 'ser' ? '' : Object.keys(CAT_LBL).map(c => { const k = secTr() + '_' + c; return `<button type="button" role="tab" data-sec="${k}" aria-selected="${k === SEC}">${ico(c === 'ins' ? 'gota' : 'tuerca')}${CAT_LBL[c]}<small>${fmt(n(k))} piezas</small></button>`; }).join('');
+  $('#subTabs').innerHTML = !enInv() ? '' : Object.keys(CAT_LBL).map(c => { const k = secTr() + '_' + c; return `<button type="button" role="tab" data-sec="${k}" aria-selected="${k === SEC}">${ico(c === 'ins' ? 'gota' : 'tuerca')}${CAT_LBL[c]}<small>${fmt(n(k))} piezas</small></button>`; }).join('');
 }
 // Al volver a una transmisión se abre la última sección que se usó en ella
 const lastCat = { aut: 'mec', cvt: 'mec', mec: 'mec', ele: 'mec' };
 function setSec(t){
   if (!SEC_LBL[t]) return;
-  SEC = t; if (t !== 'ser') lastCat[secTr()] = secCat(); try { localStorage.setItem(SEC_KEY, t); } catch(e) {}
+  SEC = t; if (enInv()) lastCat[secTr()] = secCat(); try { localStorage.setItem(SEC_KEY, t); } catch(e) {}
   lastAdded = null; $('#q').value = ''; renderAll(); setMode(mode); okGiro();
 }
 $('#secTabs').addEventListener('click', e => { const b = e.target.closest('button[data-sec],button[data-tr]'); if (!b) return; const k = b.dataset.sec || (b.dataset.tr + '_' + lastCat[b.dataset.tr]); if (k !== SEC) setSec(k); });
 $('#subTabs').addEventListener('click', e => { const b = e.target.closest('button[data-sec]'); if (b && b.dataset.sec !== SEC) setSec(b.dataset.sec); });
-function renderAll(){ R.almacenes.forEach(svcOf); renderSecs(); renderParts(); renderMoves(); renderSvc(); renderStat(); renderAlmBar(); scanList(); renderTablero(); }
+function renderAll(){ R.almacenes.forEach(svcOf); renderSecs(); renderParts(); renderMoves(); renderSvc(); renderCat(); renderStat(); renderAlmBar(); scanList(); renderTablero(); }
 // Franja de cifras (solo texto) e insignia del botón Pedido
 function renderTablero(){
   const fal = faltantes(false), ins = $('#btnPedido .insignia');
   if (ins) { ins.dataset.n = fal.length; ins.textContent = fal.length ? fmt(fal.length) : ''; }
   const el = $('#tablero'); if (!el) return;
-  if (SEC === 'ser') { el.innerHTML = ''; return; }
+  if (!enInv()) { el.innerHTML = ''; return; }
   const its = SI(), fs = new Set(fal);
   const u = its.reduce((a, i) => a + (i.qty || 0), 0), ped = its.filter(i => fs.has(i)).length, ago = its.filter(i => (Number(i.qty) || 0) <= 0).length;
   const rea = planReacomodo(S.items).mover.filter(x => x.conf === 'alta').length;
@@ -2636,7 +2700,7 @@ async function iaAsk(){
 $('#iaSend').onclick = iaAsk;
 $('#iaQ').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); iaAsk(); } });
 // La IA dice mec / ele / ins: eléctrica va al área Eléctrica; lo demás, al área en que se está
-const iaSec = x => x.pestana === 'ele' ? 'ele_mec' : (SEC === 'ser' ? 'aut' : secTr()) + (x.pestana === 'ins' ? '_ins' : '_mec');
+const iaSec = x => x.pestana === 'ele' ? 'ele_mec' : secTr() + (x.pestana === 'ins' ? '_ins' : '_mec');
 function iaShow(x, usadas, limite){
   const li = a => (a || []).filter(Boolean);
   const veh = li(x.vehiculos_compatibles), refs = li(x.referencias);
@@ -2663,7 +2727,7 @@ function iaShow(x, usadas, limite){
   };
   $('#iaFind').onclick = () => {
     $('#iaDlg').close();
-    if (SEC === 'ser') setSec(iaSec(x));
+    if (!enInv()) setSec(iaSec(x));
     $('#btnSearch').click(); $('#sIn').value = (li(x.nombres_comunes)[0] || x.nombre_tecnico || '').split(/\s+/).slice(0, 2).join(' '); seaRender();
   };
 }
@@ -2723,7 +2787,7 @@ function memLists(){
   $('#modelList').innerHTML = opts(uniq([...vals.map(d => d.model), ...S.items.map(i => i.model)]));
 }
 // Sugerencias del cuadro de escaneo: piezas de la pestaña activa por código corto y nombre
-function scanList(){ $('#scanList').innerHTML = SEC === 'ser' ? '' : [...SI()].sort((a, b) => COLL.compare(a.name, b.name)).map(i => `<option value="${esc(i.sc || i.name)}">${esc(i.name)}</option>`).join(''); }
+function scanList(){ $('#scanList').innerHTML = !enInv() ? '' : [...SI()].sort((a, b) => COLL.compare(a.name, b.name)).map(i => `<option value="${esc(i.sc || i.name)}">${esc(i.name)}</option>`).join(''); }
 // Llena en "Nueva pieza" los campos vacíos con lo que recuerda la memoria (nunca cantidades ni precios)
 function memFillNew(d, why){
   if (!d) return false;
@@ -2972,8 +3036,8 @@ $('#fileIn').addEventListener('change', e => {
   rd.onload = ev => {
     try {
       const wb = XLSX.read(ev.target.result, { type: 'array' });
-      const bySec = {}; Object.keys(SEC_LBL).forEach(k => { if (k !== 'ser') bySec[k] = []; }); const used = [];
-      const curTr = SEC === 'ser' ? 'aut' : secTr();
+      const bySec = {}; Object.keys(SEC_LBL).forEach(k => { if (k.includes('_')) bySec[k] = []; }); const used = [];
+      const curTr = secTr();
       // Hojas con nombre de pestaña ("CVT", "CVT Insumos", "Eléctrica Piezas", "Insumos"…): cada una va a su pestaña
       const sheetSec = nm => { const k = impKey(nm), tr = trFrom(k.replace(/\b(piezas?|insumos?|suministros?)\b/g, '').trim()), ins = /\b(insumos?|suministros?)\b/.test(k);
         return tr ? tr + (ins ? '_ins' : '_mec') : ins ? curTr + '_ins' : ''; };
@@ -2981,7 +3045,7 @@ $('#fileIn').addEventListener('change', e => {
       if (!used.length) {
         // Una sola hoja de piezas (la primera que tenga columna de nombre): usa las columnas ÁREA y TIPO si las trae, si no la pestaña activa
         const nm = ['ITEM', ...wb.SheetNames].find(x => wb.Sheets[x] && (impSheet(wb.Sheets[x]) || []).length);
-        if (nm) { impSheet(wb.Sheets[nm]).forEach(i => { if (!TRS[i.tr]) i.tr = curTr; if (!TIPOS[i.tipo]) i.tipo = SEC === 'ser' ? 'mec' : secCat(); bySec[K(i)].push(i); }); used.push(nm); }
+        if (nm) { impSheet(wb.Sheets[nm]).forEach(i => { if (!TRS[i.tr]) i.tr = curTr; if (!TIPOS[i.tipo]) i.tipo = secCat(); bySec[K(i)].push(i); }); used.push(nm); }
       }
       const secs = Object.keys(bySec).filter(k => bySec[k].length), total = secs.reduce((a, k) => a + bySec[k].length, 0);
       if (!total) return alert('No se encontraron piezas en el archivo. El Excel debe tener una columna con el nombre de la pieza (por ejemplo "Pieza", "Nombre" o "Descripción").');
@@ -2989,12 +3053,125 @@ $('#fileIn').addEventListener('change', e => {
       if (!confirm(`Se cargará desde "${f.name}" (hoja${used.length > 1 ? 's' : ''}: ${used.join(', ')}):\n\n${det}\n\nEsto REEMPLAZA las piezas que tienen ahora esas pestañas en el almacén "${S.name}". Las demás pestañas no se tocan. ¿Continuar?`)) return;
       S.items = S.items.filter(i => !secs.includes(K(i))).concat(...secs.map(k => bySec[k]));
       const nsc = ensureSc(S); save(); renderAll();
-      if (SEC === 'ser' || !secs.includes(SEC)) setSec(secs[0]);
+      if (!secs.includes(SEC)) setSec(secs[0]);
       showMsg('warn', 'Inventario cargado', `${total} piezas desde ${f.name}: ${secs.map(k => SEC_LBL[k] + ' ' + bySec[k].length).join(', ')}` + (nsc ? ` · ${nsc} recibieron código corto.` : ''));
     } catch(err) { alert('No se pudo leer el archivo: ' + err.message); }
   };
   rd.readAsArrayBuffer(f);
 });
+/* ---------- Catálogo de suplidor (pestaña Catálogo) ----------
+   Los productos del catálogo NO son inventario: se marcan y se pasan al almacén (al área que se elija)
+   o se eliminan del catálogo. Al pasarlo, sale del catálogo y queda como pieza con su foto y existencia 0.
+   Si ya tenías una pieza con el mismo nombre, se queda UNA sola: nombre, referencia y foto del catálogo,
+   pero con TU código corto, tu código de barras, tu existencia y su historial. */
+const cFrom = r => ({ id: r.id, orden: +r.orden || 0, sup: r.suplidor || '', ref: r.referencia || '', name: r.nombre || '', foto: r.foto || '', tr: TRS[r.area_sug] ? r.area_sug : 'mec', tipo: CAT_LBL[r.seccion_sug] ? r.seccion_sug : 'mec' });
+const catKey = s => fold(s).replace(/[^a-z0-9]/g, '');
+const catIgual = c => S.items.find(i => catKey(i.name) === catKey(c.name));
+async function catPull(){
+  if (!sb) { catEstado = 'sinred'; return renderCat(); }
+  try { CAT = (await fetchAll('catalogo')).map(cFrom).sort((a, b) => a.orden - b.orden); catEstado = 'ok'; }
+  catch(e) { if (!CAT.length) catEstado = 'sinred'; console.warn('Catálogo:', e && e.message); }
+  const ids = new Set(CAT.map(c => c.id)); [...catSel].forEach(id => { if (!ids.has(id)) catSel.delete(id); });
+  renderSecs(); renderStat(); renderCat();
+}
+function catLista(){
+  const words = fold($('#cq').value.trim()).split(/\s+/).filter(Boolean), f = $('#cFil').value;
+  return CAT.filter(c => (!f || c.tr + '_' + c.tipo === f) && words.every(w => fold(c.name + ' ' + c.ref).includes(w)));
+}
+function catMarcas(){
+  const n = catSel.size, lista = catLista();
+  $('#cSel').textContent = `${fmt(n)} ${n === 1 ? 'marcado' : 'marcados'}`;
+  $('#cPasar').disabled = $('#cQuitar').disabled = !n;
+  $('#cAll').checked = lista.length > 0 && lista.every(c => catSel.has(c.id));
+  return lista;
+}
+function renderCat(){
+  if (SEC !== 'cat') return;
+  // Filtro y destino: los lugares del inventario (el filtro dice cuántos sugiere el catálogo para cada uno)
+  const cuenta = {}; CAT.forEach(c => { const k = c.tr + '_' + c.tipo; cuenta[k] = (cuenta[k] || 0) + 1; });
+  const lugares = Object.keys(SEC_LBL).filter(k => k.includes('_'));
+  const fil = $('#cFil').value, hf = `<option value="">Todo el catálogo (${fmt(CAT.length)})</option>` + lugares.filter(k => cuenta[k]).map(k => `<option value="${k}">Sugeridos para ${esc(SEC_LBL[k])} (${fmt(cuenta[k])})</option>`).join('');
+  if ($('#cFil').dataset.h !== hf) { $('#cFil').innerHTML = hf; $('#cFil').dataset.h = hf; $('#cFil').value = cuenta[fil] ? fil : ''; }
+  if (!$('#cDest').options.length) $('#cDest').innerHTML = `<option value="">El lugar que sugiere el catálogo</option>` + lugares.map(k => `<option value="${k}">${esc(SEC_LBL[k])}</option>`).join('');
+  const lista = catMarcas();
+  $('#cCount').textContent = CAT.length ? `${fmt(lista.length)} de ${fmt(CAT.length)} productos` : '';
+  if (!CAT.length) {
+    $('#cGrid').innerHTML = `<p class="cat-aviso">${catEstado === 'cargando' ? 'Cargando el catálogo…' : catEstado === 'sinred' ? 'No se pudo traer el catálogo de la nube. Revisa el internet y vuelve a entrar en esta pestaña.' : 'El catálogo está vacío: todos sus productos ya se pasaron al almacén o se eliminaron.'}</p>`;
+    $('#cMas').classList.add('hide'); return;
+  }
+  $('#cGrid').innerHTML = lista.slice(0, catVer).map(c => `<label class="ccard${catSel.has(c.id) ? ' sel' : ''}"><input type="checkbox" data-id="${esc(c.id)}"${catSel.has(c.id) ? ' checked' : ''}>` +
+    (c.foto ? `<img class="cc-foto" src="${esc(c.foto)}" alt="" loading="lazy" decoding="async" data-foto="${esc(c.id)}" title="Ver la foto en grande">` : `<span class="cc-foto cc-sin">Sin foto</span>`) +
+    `<span class="cc-txt"><span class="cc-name">${esc(c.name)}</span><span class="pc-chips">${c.ref ? `<span class="chip">Ref ${esc(c.ref)}</span>` : ''}<span class="chip a-${c.tr}">${esc(SEC_LBL[c.tr + '_' + c.tipo])}</span></span></span></label>`).join('')
+    || '<p class="muted">Sin resultados.</p>';
+  $('#cMas').classList.toggle('hide', lista.length <= catVer);
+  $('#cMas').textContent = `Ver más (quedan ${fmt(lista.length - catVer)})`;
+}
+$('#cq').addEventListener('input', () => { catVer = CAT_VER; renderCat(); });
+$('#cFil').addEventListener('change', () => { catVer = CAT_VER; renderCat(); });
+$('#cMas').onclick = () => { catVer += CAT_VER; renderCat(); };
+$('#cAll').addEventListener('change', e => { catLista().forEach(c => e.target.checked ? catSel.add(c.id) : catSel.delete(c.id)); renderCat(); });
+// Tocar la foto la abre en grande (no marca el producto)
+$('#cGrid').addEventListener('click', e => {
+  const im = e.target.closest('img[data-foto]'); if (!im) return;
+  e.preventDefault();
+  const c = CAT.find(x => x.id === im.dataset.foto); if (!c) return;
+  $('#fotoTit').textContent = c.name; $('#fotoImg').src = c.foto; $('#fotoRef').textContent = [c.ref ? 'Referencia ' + c.ref : '', c.sup].filter(Boolean).join(' · ');
+  $('#fotoDlg').showModal();
+});
+$('#cGrid').addEventListener('change', e => {
+  const cb = e.target.closest('input[data-id]'); if (!cb) return;
+  cb.checked ? catSel.add(cb.dataset.id) : catSel.delete(cb.dataset.id);
+  cb.closest('.ccard').classList.toggle('sel', cb.checked);
+  catMarcas();
+});
+// Primero se sacan del catálogo en la nube: si no hay internet no se hace nada a medias
+async function catBorrarNube(ids){
+  if (!sb || !navigator.onLine) throw new Error('sin internet');
+  await chunked(ids, 150, x => sb.from('catalogo').delete().in('id', x));
+}
+function catSacar(marcados){ const ids = new Set(marcados.map(c => c.id)); CAT = CAT.filter(c => !ids.has(c.id)); ids.forEach(id => catSel.delete(id)); }
+$('#cPasar').onclick = async () => {
+  const marcados = CAT.filter(c => catSel.has(c.id)); if (!marcados.length) return;
+  const dest = $('#cDest').value, lugar = c => (dest || c.tr + '_' + c.tipo).split('_');
+  const cuenta = {}; marcados.forEach(c => { const k = lugar(c).join('_'); cuenta[k] = (cuenta[k] || 0) + 1; });
+  const unir = marcados.map(catIgual).filter(Boolean);
+  const det = Object.keys(cuenta).map(k => `• ${SEC_LBL[k]}: ${fmt(cuenta[k])}`).join('\n');
+  const ej = unir.slice(0, 10).map(it => `• ${it.sc ? it.sc + ' ' : ''}${it.name} (se queda con ${fmt(it.qty)} en existencia)`).join('\n');
+  if (!confirm(`Pasar ${fmt(marcados.length)} ${marcados.length === 1 ? 'producto' : 'productos'} del catálogo al almacén "${S.name}":\n${det}\n\n` +
+    `Entran con su foto, su referencia, código corto y código de barras, y existencia 0.\n` +
+    (unir.length ? `\n${fmt(unir.length)} ya ${unir.length === 1 ? 'lo tenías' : 'los tenías'}: se queda una sola, con el nombre, la referencia y la foto del catálogo, y conserva TU código y TU existencia:\n${ej}${unir.length > 10 ? `\n… y ${fmt(unir.length - 10)} más` : ''}\n` : '') +
+    `\nSalen del catálogo. ¿Continuar?`)) return;
+  try { await catBorrarNube(marcados.map(c => c.id)); }
+  catch(e) { return alert('No se pudo pasar: hace falta internet para sacar los productos del catálogo. No se cambió nada.'); }
+  let unidos = 0;
+  marcados.forEach(c => {
+    const [tr, tipo] = lugar(c);
+    // Se busca en el momento: dos productos con el mismo nombre en el mismo pase quedan en una sola pieza
+    const it = catIgual(c);
+    if (it) {
+      const oldCode = it.code, oldName = it.name;
+      S.movements.forEach(m => { if (oldCode ? m.code === oldCode : m.name === oldName) { if (!oldCode) m.name = c.name; m.tipo = tipo; m.tr = tr; } });
+      Object.assign(it, { name: c.name, ref: c.ref, foto: c.foto, tr, tipo });
+      log('Edición', it, 0, 'Datos tomados del catálogo (se conservó el código y la existencia)');
+      unidos++; return;
+    }
+    const nu = { added: Date.now(), pack: null, sc: '', tipo, tr, code: '', name: c.name, ref: c.ref, brand: '', model: '', cat: '', sub: '', sku: '', qty: 0, unit: 'UNID', loc: '', rac: '', year: '', price: 0, v70: 0, imp: 0, total: 0, foto: c.foto };
+    S.items.push(nu); nu.code = genCode();
+  });
+  ensureSc(S); catSacar(marcados);
+  save(); renderAll(); beep('ok'); okGiro();
+  showMsg('warn', 'Pasado al almacén', `${fmt(marcados.length)} ${marcados.length === 1 ? 'producto pasó' : 'productos pasaron'} a: ${Object.keys(cuenta).map(k => SEC_LBL[k] + ' (' + fmt(cuenta[k]) + ')').join(', ')}.` + (unidos ? ` ${fmt(unidos)} se unieron con piezas que ya tenías.` : ''));
+};
+$('#cQuitar').onclick = async () => {
+  const marcados = CAT.filter(c => catSel.has(c.id)); if (!marcados.length) return;
+  const ej = marcados.slice(0, 10).map(c => '• ' + c.name).join('\n');
+  if (!confirm(`Eliminar del catálogo ${fmt(marcados.length)} ${marcados.length === 1 ? 'producto' : 'productos'}:\n${ej}${marcados.length > 10 ? `\n… y ${fmt(marcados.length - 10)} más` : ''}\n\nEl inventario no se toca. Esto no se puede deshacer. ¿Eliminar?`)) return;
+  try { await catBorrarNube(marcados.map(c => c.id)); }
+  catch(e) { return alert('No se pudo eliminar: hace falta internet. No se cambió nada.'); }
+  catSacar(marcados);
+  renderSecs(); renderStat(); renderCat(); okGiro();
+  showMsg('warn', 'Eliminado del catálogo', `${fmt(marcados.length)} ${marcados.length === 1 ? 'producto eliminado' : 'productos eliminados'} del catálogo.`);
+};
 $('#btnRestore').onclick = () => {
   document.querySelector('details.more').open = false;
   if (!confirm(`Se borrarán TODAS las piezas y movimientos de la pestaña ${SEC_LBL[SEC]} del almacén "${S.name}". Las otras pestañas y almacenes no se tocan. ¿Continuar?`)) return;
