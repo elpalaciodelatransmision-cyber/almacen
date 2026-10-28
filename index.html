@@ -61,7 +61,7 @@
   --sombra:0 1px 2px rgba(16,24,32,.06),0 6px 18px rgba(16,24,32,.08);
   --acento:#f2a900;--onacento:#1b1405;--acento-t:#8f5c00;
   --ok:#12794c;--bajo:#8f5a00;--cero:#c2302d;
-  --a-aut:#2a5ca3;--a-cvt:#0a7070;--a-mec:#b8430f;--a-ele:#7a49c4;--a-ser:#5b6572;--a-cat:#8a5a00;--onarea:#fff;
+  --a-aut:#2a5ca3;--a-cvt:#0a7070;--a-mec:#b8430f;--a-ele:#7a49c4;--a-ser:#5b6572;--a-cat:#8a5a00;--a-com:#3d6b1f;--onarea:#fff;
   --hdr-a:#454e59;--hdr-b:#1b2127;--hdr:#1b2127;--onhdr:#f2f5f8;--hdrmute:#d0d7df;--atf:#c8102e;--onatf:#fff;--atf-h:#ff4a57;
   --area:var(--a-aut);
 }
@@ -70,7 +70,7 @@
   --in:#3dbd84;--out:#ff7570;--look:#74a8f0;--onmode:#0c1117;
   --sombra:0 1px 2px rgba(0,0,0,.4),0 6px 18px rgba(0,0,0,.35);
   --acento-t:#f2a900;--ok:#3dbd84;--bajo:#ffb020;--cero:#ff7570;
-  --a-aut:#74a8f0;--a-cvt:#3cc7c7;--a-mec:#ff8a50;--a-ele:#b595f0;--a-ser:#aab4c0;--a-cat:#f2a900;--onarea:#0c1117;
+  --a-aut:#74a8f0;--a-cvt:#3cc7c7;--a-mec:#ff8a50;--a-ele:#b595f0;--a-ser:#aab4c0;--a-cat:#f2a900;--a-com:#9bd36a;--onarea:#0c1117;
   --hdr-a:#2d343c;--hdr-b:#0d1115;--hdr:#0d1115;--atf:#ff5a5f;--onatf:#0c1117;--atf-h:#ff4a57;
 }}
 :root[data-tema="oscuro"]{
@@ -78,7 +78,7 @@
   --in:#3dbd84;--out:#ff7570;--look:#74a8f0;--onmode:#0c1117;
   --sombra:0 1px 2px rgba(0,0,0,.4),0 6px 18px rgba(0,0,0,.35);
   --acento-t:#f2a900;--ok:#3dbd84;--bajo:#ffb020;--cero:#ff7570;
-  --a-aut:#74a8f0;--a-cvt:#3cc7c7;--a-mec:#ff8a50;--a-ele:#b595f0;--a-ser:#aab4c0;--a-cat:#f2a900;--onarea:#0c1117;
+  --a-aut:#74a8f0;--a-cvt:#3cc7c7;--a-mec:#ff8a50;--a-ele:#b595f0;--a-ser:#aab4c0;--a-cat:#f2a900;--a-com:#9bd36a;--onarea:#0c1117;
   --hdr-a:#2d343c;--hdr-b:#0d1115;--hdr:#0d1115;--atf:#ff5a5f;--onatf:#0c1117;--atf-h:#ff4a57;
 }
 body[data-mode=in]{--mode:var(--in)}
@@ -91,8 +91,9 @@ body[data-sec^=mec]{--area:var(--a-mec)}
 body[data-sec^=ele]{--area:var(--a-ele)}
 body[data-sec^=ser]{--area:var(--a-ser)}
 body[data-sec=cat]{--area:var(--a-cat)}
+body[data-sec=com]{--area:var(--a-com)}
 /* el mismo color en cualquier pieza suelta (ficha, chip, tarjeta): poner la clase a-xxx */
-.a-aut{--area:var(--a-aut)}.a-cvt{--area:var(--a-cvt)}.a-mec{--area:var(--a-mec)}.a-ele{--area:var(--a-ele)}.a-ser{--area:var(--a-ser)}.a-cat{--area:var(--a-cat)}
+.a-aut{--area:var(--a-aut)}.a-cvt{--area:var(--a-cvt)}.a-mec{--area:var(--a-mec)}.a-ele{--area:var(--a-ele)}.a-ser{--area:var(--a-ser)}.a-cat{--area:var(--a-cat)}.a-com{--area:var(--a-com)}
 
 /* ---------- 2. Base ---------- */
 *{box-sizing:border-box}
@@ -300,6 +301,83 @@ body[data-inv=no] .subsecs{display:none}
 #cPasar{background:var(--area);border-color:var(--area);color:var(--onarea)}
 .cat-bar button:disabled{opacity:.45;cursor:not-allowed}
 .cat-aviso{padding:14px;border:1px dashed var(--line);border-radius:12px;color:var(--mute);font-weight:600}
+/* ---------- 9c. Compras: factura de compra completa; cada producto con su costo, ITBIS, ganancia y precio de venta ---------- */
+body:not([data-sec=com]) #panelK{display:none}
+#panelK h2{font-size:18px;margin:0 0 10px}
+.kcab{border-top:6px solid var(--area);margin-bottom:14px}
+.kcab .fg{grid-template-columns:repeat(auto-fill,minmax(min(100%,190px),1fr))}
+.kpills{display:flex;flex-wrap:wrap;gap:6px}
+#panelK .kpills label{display:inline-flex;align-items:center;height:34px;padding:0 13px;border:1px solid var(--line);border-radius:99px;background:var(--bg);font-size:14px;font-weight:700;cursor:pointer;white-space:nowrap;margin:0}
+.kpills input{position:absolute;opacity:0;width:1px;height:1px;pointer-events:none}
+#panelK .kpills label:has(input:checked){background:var(--area);border-color:var(--area);color:var(--onarea)}
+.kpills label:has(input:focus-visible){outline:3px solid var(--look);outline-offset:2px}
+.kgrid{display:grid;gap:14px;grid-template-columns:minmax(0,1fr);align-items:start}
+@media (min-width:1100px){.kgrid{grid-template-columns:minmax(0,1fr) 340px}.kticket{position:sticky;top:12px}}
+.klins{display:grid;gap:10px}
+.klin{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 12px;box-shadow:var(--sombra)}
+.klin.vacia{border-style:dashed;box-shadow:none}
+.kl-top{display:flex;align-items:center;gap:8px}
+.kl-top input{flex:1 1 auto;font-weight:700}
+.kn{flex:0 0 auto;width:26px;height:26px;border-radius:50%;display:inline-grid;place-items:center;font-size:13px;font-weight:800;background:var(--area);color:var(--onarea)}
+button.kx{flex:0 0 auto;width:36px;padding:0;font-size:20px;line-height:1;color:var(--out)}
+.kl-hay{font-size:13px;font-weight:600;color:var(--mute);margin:5px 0 0 34px}
+.kl-hay.si{color:var(--area)}
+.kl-campos{display:grid;gap:8px;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));margin-top:8px}
+.kl-campos label{display:grid;gap:3px;font-size:12px;font-weight:700;color:var(--mute);margin:0}
+.kl-campos [hidden]{display:none}
+.kl-campos input,.kl-campos select{padding:7px 9px;height:36px;font-size:14.5px;color:var(--ink)}
+.kl-campos .ancho{grid-column:span 2}
+.kl-res{margin-top:9px;padding-top:7px;border-top:1px dashed var(--line);display:flex;flex-wrap:wrap;gap:2px 16px;font-size:13.5px;font-variant-numeric:tabular-nums}
+.kl-res span{white-space:nowrap;color:var(--mute)}
+.kl-res b{color:var(--ink);font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
+.kl-res .vta b{color:var(--area);font-size:15px}
+.kl-res .neg b,.kl-res .neg{color:var(--cero)}
+.kl-res .ofe{color:var(--bajo);font-weight:700}
+.kmas{justify-self:start}
+.kticket{background:var(--panel);border:1px solid var(--line);border-radius:6px 6px 18px 18px;box-shadow:var(--sombra);padding:16px 16px 18px;font-variant-numeric:tabular-nums;
+  background-image:repeating-linear-gradient(90deg,var(--area) 0 10px,transparent 10px 16px);background-size:100% 4px;background-repeat:no-repeat}
+.kticket h3{margin:4px 0 2px;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--mute)}
+.kticket .kde{font-size:14.5px;font-weight:700;margin-bottom:6px}
+.kl{display:flex;align-items:baseline;gap:6px;font-size:14.5px;padding:3px 0}
+.kl i{flex:1 1 auto;border-bottom:1px dotted var(--line);transform:translateY(-4px);min-width:12px}
+.kl b{white-space:nowrap;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-weight:700}
+.kl.tot{font-weight:800}.kl.tot b{font-size:17px}
+.kl.gan{color:var(--in);font-weight:800}.kl.gan b{font-size:17px}
+.kl.neg,.kl.neg b{color:var(--cero)}
+.kcorte{border:0;border-top:2px dashed var(--line);margin:12px 0 8px}
+.kpapel{display:grid;gap:4px;margin-top:8px;font-size:13px;font-weight:700}
+.kpapel input{height:36px;padding:6px 9px}
+.kdif{font-size:13.5px;font-weight:700;margin-top:4px}
+.kdif.ok{color:var(--in)}.kdif.mal{color:var(--cero)}
+.kticket .dlgbtns{margin-top:16px}
+#kOk{background:var(--area);border-color:var(--area);color:var(--onarea)}
+.klisto{margin:0 0 12px;padding:10px 12px;border:1px dashed var(--in);border-radius:12px;background:color-mix(in srgb,var(--in) 8%,var(--panel));font-weight:600}
+.klisto:empty{display:none}
+.klisto b{color:var(--in)}
+.klisto .kets{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+tr.anulada td{opacity:.55;text-decoration:line-through}tr.anulada td:last-child{opacity:1;text-decoration:none}
+#kDlg{width:min(980px,calc(100vw - 24px))}
+#kDlg .kdet{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,210px),1fr));gap:4px 16px;margin-bottom:12px;font-size:14.5px}
+#kDlg .kdet span{color:var(--mute)}
+.kvistas{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.kvistas button{height:34px;min-height:34px;border-radius:99px;padding:0 14px;gap:6px}
+.kvistas button small{font-weight:800;opacity:.75}
+.kvistas button[aria-selected=true]{background:var(--area);border-color:var(--area);color:var(--onarea)}
+#panelK [data-vista]{display:none}
+#panelK[data-v=fac] [data-vista=fac],#panelK[data-v=lis] [data-vista=lis],#panelK[data-v=pre] [data-vista=pre]{display:block}
+.kprec input{width:96px;height:32px;padding:4px 7px;text-align:right;font-variant-numeric:tabular-nums}
+.kprec td.num{vertical-align:middle}
+.kprepbar{font-weight:700;font-size:14px}
+.kprep{font-family:Arial,Helvetica,sans-serif;color:#000}
+.kprep h3{margin:0;text-align:center;font-size:13pt}
+.kprep h4{margin:1mm 0 0;text-align:center;font-size:9pt}
+.kprep .kpdat{display:flex;justify-content:space-between;gap:6mm;margin:3mm 0;font-size:8.5pt;font-weight:700}
+.kprep table{width:100%;border-collapse:collapse;min-width:0}
+.kprep th,.kprep td{border:1px solid #000;padding:.8mm 1.4mm;font-size:8pt;text-align:left;vertical-align:top}
+.kprep th{background:#e3e3e3}
+.kprep tr{page-break-inside:avoid}
+.kprep .n{text-align:right;white-space:nowrap}
+.kprep .kpfin{margin-top:2mm;font-size:7.5pt}
 #fotoDlg{--dw:600px}
 #fotoDlg img{display:block;max-width:100%;max-height:62vh;margin:0 auto;object-fit:contain;background:#fff;border-radius:10px}
 
@@ -564,8 +642,8 @@ body.locked .app,body.locked dialog{display:none!important}
 @media print{.noprint,.appbar,#tablero{display:none!important}}
 
 /* ---------- 19. Ajustes del módulo real ---------- */
-/* Servicios y Catálogo: el menú Más sigue a mano (colores, cerrar sesión); lo que es del inventario se oculta */
-body[data-inv=no] #btnReacomodar,body[data-inv=no] #btnImport,body[data-inv=no] #btnRestore,body[data-inv=no] #btnDel,body[data-inv=no] details.more .zona-roja,body[data-inv=no] #tablero,body[data-sec=cat] #btnExport{display:none!important}
+/* Servicios, Catálogo y Compras: el menú Más sigue a mano (colores, cerrar sesión); lo que es del inventario se oculta */
+body[data-inv=no] #btnReacomodar,body[data-inv=no] #btnImport,body[data-inv=no] #btnRestore,body[data-inv=no] #btnDel,body[data-inv=no] details.more .zona-roja,body[data-inv=no] #tablero,body[data-sec=cat] #btnExport,body[data-sec=com] #btnExport{display:none!important}
 details.more .menu button .ico{width:16px;height:16px}
 /* Franja de cifras: solo texto */
 #tablero{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 14px;margin:10px 2px 6px;font-size:14px;color:var(--mute)}
@@ -757,6 +835,69 @@ details.more .menu button .ico{width:16px;height:16px}
     <div id="cGrid" class="cgrid"></div>
     <button type="button" id="cMas" class="vermas hide">Ver más</button>
   </section>
+  <section id="panelK">
+    <div class="kvistas" role="tablist" aria-label="Compras" id="kVistas">
+      <button type="button" role="tab" data-v="fac">Registrar factura</button>
+      <button type="button" role="tab" data-v="lis">Facturas <small id="kNFac"></small></button>
+      <button type="button" role="tab" data-v="pre">Precios <small id="kNPre"></small></button>
+    </div>
+    <div class="klisto" id="kListo" aria-live="polite"></div>
+
+    <form id="kForm" data-vista="fac" autocomplete="off" novalidate>
+      <div class="card kcab">
+        <h2>Factura de compra</h2>
+        <div class="fg">
+          <div><label for="kFecha">Fecha de la factura</label><input id="kFecha" type="date"></div>
+          <div><label for="kSup">Suplidor</label><input id="kSup" list="kSups" autocomplete="off"></div>
+          <div><label for="kFac">No. de factura</label><input id="kFac" autocomplete="off" placeholder="Ej. FVR-063…"></div>
+          <div><label for="kNcf">NCF</label><input id="kNcf" class="mono" autocomplete="off" autocapitalize="characters" placeholder="Ej. E31…"></div>
+          <div><label for="kDig">Digitó la factura</label><input id="kDig" list="kPers" autocomplete="off"></div>
+          <div><label for="kRec">Recibió el pedido</label><input id="kRec" list="kPers" autocomplete="off"></div>
+          <div><label for="kGanG">Ganancia para todos (%)</label><input id="kGanG" type="number" step="0.1" inputmode="decimal"></div>
+          <div><label for="kFlete">Flete u otros gastos (RD$)</label><input id="kFlete" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0.00"></div>
+          <div class="full"><label>En la factura, los precios…</label>
+            <div class="kpills">
+              <label><input type="radio" name="kIncl" value="no" checked>no traen el ITBIS (va aparte)</label>
+              <label><input type="radio" name="kIncl" value="si">ya traen el ITBIS incluido</label>
+            </div></div>
+          <div class="full"><label for="kNota">Nota (opcional)</label><input id="kNota" autocomplete="off"></div>
+        </div>
+      </div>
+
+      <div class="kgrid">
+        <div class="klins">
+          <div id="kLineas" class="klins"></div>
+          <button type="button" id="kMas" class="kmas">+ Agregar producto</button>
+        </div>
+        <aside class="kticket" id="kTicket">
+          <div id="kSuma"></div>
+          <div class="kpapel"><label for="kPapel">Total que dice la factura (para comparar)</label><input id="kPapel" type="number" min="0" step="0.01" inputmode="decimal" placeholder="Opcional"></div>
+          <div class="kdif" id="kDif"></div>
+          <div class="err" id="kErr"></div>
+          <div class="dlgbtns"><button type="button" id="kClear">Limpiar</button><button type="submit" id="kOk">Guardar factura</button></div>
+        </aside>
+      </div>
+    </form>
+
+    <div data-vista="lis">
+      <div class="tools"><input id="kq" type="search" placeholder="Buscar por suplidor, factura, NCF o producto" aria-label="Buscar facturas"><span class="muted" id="kCount"></span></div>
+      <div class="tablew"><table>
+        <thead><tr><th>Fecha</th><th>Suplidor</th><th>Factura / NCF</th><th class="num">Productos</th><th class="num">Total</th><th class="num">Ganancia esperada</th><th>Digitó</th><th>Recibió</th><th></th></tr></thead>
+        <tbody id="kBody"></tbody>
+      </table></div>
+    </div>
+
+    <div data-vista="pre">
+      <div class="tools"><input id="kpq" type="search" placeholder="Buscar por código corto, nombre o referencia" aria-label="Buscar precios"><select id="kpArea" aria-label="Área" style="width:auto"></select><span class="muted" id="kpCount"></span></div>
+      <div class="tools kprepbar"><span>Reporte de precios:</span><select id="kpTipo" aria-label="Qué lleva el reporte" style="width:auto"><option value="todo">Completo (costo, ITBIS y ganancia)</option><option value="venta">Solo precios de venta (para el mostrador)</option></select><button type="button" id="kpPrint">Imprimir reporte</button><button type="button" id="kpXls">Excel</button><span class="muted" id="kpAviso"></span></div>
+      <div class="tablew"><table class="kprec">
+        <thead><tr><th class="nw">Cód. corto</th><th>Producto</th><th>Área</th><th class="num">Costo c/u sin ITBIS</th><th class="num">ITBIS</th><th class="num">Ganancia %</th><th class="num">Venta c/u con ITBIS</th><th class="num">Por empaque</th><th>Última compra</th></tr></thead>
+        <tbody id="kpBody"></tbody>
+      </table></div>
+      <div class="muted" style="font-size:13px;margin-top:8px">Cambia la ganancia o el precio de venta y se guarda al salir de la casilla. El costo cambia solo con una factura nueva.</div>
+    </div>
+    <datalist id="kNames"></datalist><datalist id="kSups"></datalist><datalist id="kPers"></datalist>
+  </section>
 
   <section id="panelM" class="hide">
     <div class="tablew"><table>
@@ -793,7 +934,6 @@ details.more .menu button .ico{width:16px;height:16px}
       <div><label for="nPackName">Empaque (opcional)</label><input id="nPackName" list="packNames" placeholder="Caja" autocomplete="off"></div>
       <div><label for="nPackN">Unidades por empaque</label><input id="nPackN" type="number" min="2" step="1" placeholder="12"></div>
       <div class="full"><label for="nQtyIn">¿Cómo la estás contando?</label><select id="nQtyIn"><option value="unit">Por unidad (sueltas)</option><option value="pack">Por caja / empaque</option></select><div id="nTotal" style="font-weight:800;font-size:18px;margin-top:6px;color:var(--look)"></div></div>
-      <div><label for="nPrice">Precio de compra</label><input id="nPrice" type="number" min="0" step="0.01"></div>
       <div><label for="nRac">RAC (estante)</label><input id="nRac" autocomplete="off" placeholder="Ej. RAC 3 · nivel B"></div><div><label for="nLoc">Ubicación (detalle)</label><input id="nLoc" autocomplete="off"></div>
       <div class="full"><label for="nCode">Código de barras</label>
         <div class="codebox"><input id="nCode" class="mono" inputmode="numeric" autocomplete="off"><button type="button" id="btnGen">Generar código interno</button><button type="button" id="nPhoto">Escanear con la cámara</button></div>
@@ -835,12 +975,7 @@ details.more .menu button .ico{width:16px;height:16px}
       <div><label for="ePackN">Unidades por empaque</label><input id="ePackN" type="number" min="2" step="1" placeholder="12"></div>
       <div class="full"><label style="display:flex;gap:8px;align-items:center;font-weight:600"><input type="checkbox" id="eConv" style="width:auto;min-height:0"> El stock actual está contado en empaques: pasarlo a unidades (× unidades por empaque)</label></div>
       <div><label for="eUnit">Unidad</label><select id="eUnit"></select></div>
-      <div><label for="ePrice">Precio de compra</label><input id="ePrice" type="number" min="0" step="0.01"></div>
-      <div><label for="eV70">Valor 70%</label><input id="eV70" type="number" min="0" step="0.01"></div>
-      <div><label for="eImp">Importe</label><input id="eImp" type="number" min="0" step="0.01"></div>
-      <div><label for="eTotal">Precio total</label><input id="eTotal" type="number" min="0" step="0.01"></div>
     </div>
-    <div class="muted" style="font-size:13px;margin-top:8px">Al cambiar el precio de compra se recalculan Valor 70%, Importe y Precio total; después puedes corregirlos a mano.</div>
     <div class="err" id="editErr"></div>
     <div class="dlgbtns"><button type="button" id="editCancel">Cancelar</button><button type="submit" class="primary">Guardar cambios</button></div>
   </form>
@@ -982,6 +1117,19 @@ details.more .menu button .ico{width:16px;height:16px}
      una foto y leerla después: una foto sale movida o desenfocada y fallaba
      seguido. En vivo se leen muchos cuadros por segundo hasta que engancha.
      La foto sigue estando como respaldo, por si no hay cámara o no dan permiso. -->
+<dialog id="kDlg">
+  <form method="dialog">
+    <h2 id="kDTit"></h2>
+    <div class="kdet" id="kDDet"></div>
+    <div class="tablew"><table>
+      <thead><tr><th>Producto</th><th>Presentación</th><th class="num">Precio factura</th><th class="num">Subtotal</th><th class="num">ITBIS</th><th class="num">Costo c/u</th><th class="num">Ganancia</th><th class="num">Venta c/u</th><th class="num">Gana</th></tr></thead>
+      <tbody id="kDBody"></tbody>
+    </table></div>
+    <div class="kdet" id="kDTot" style="margin-top:12px"></div>
+    <div class="dlgbtns"><button type="button" id="kAnular" class="danger">Anular factura…</button><button class="primary">Cerrar</button></div>
+  </form>
+</dialog>
+
 <dialog id="camDlg">
   <h2 style="margin-bottom:8px">Escanear con la cámara</h2>
   <div id="camWrap" style="position:relative;background:#000;border-radius:10px;overflow:hidden;aspect-ratio:4/3">
@@ -1171,10 +1319,10 @@ function trFrom(v){ const f = fold(v).trim(); return f.includes('cvt') ? 'cvt' :
 function ensureTipo(a){ let n = 0; a.items.forEach(i => { if (i.tipo === 'ele') { i.tipo = 'mec'; if (!TRS[i.tr]) i.tr = 'ele'; n++; } if (!TIPOS[i.tipo]) { i.tipo = guessTipo(i.name); n++; } if (!TRS[i.tr]) { i.tr = guessTr(i); n++; } }); return n; }
 // Pestaña activa (área + sección): todo (escanear, buscar, crear, eliminar, movimientos) trabaja solo con sus piezas
 const CAT_LBL = { mec: 'Piezas', ins: 'Insumos' };
-const SEC_LBL = { ser: 'Servicios', cat: 'Catálogo' };
+const SEC_LBL = { ser: 'Servicios', cat: 'Catálogo', com: 'Compras' };
 Object.keys(TRS).forEach(t => Object.keys(CAT_LBL).forEach(c => { SEC_LBL[t + '_' + c] = TRS[t] + ' · ' + CAT_LBL[c]; }));
 const K = x => (TRS[x.tr] ? x.tr : 'aut') + '_' + (CAT_LBL[x.tipo] ? x.tipo : 'mec');
-// Las pestañas de inventario son área_sección (aut_mec…); Servicios y Catálogo no son inventario
+// Las pestañas de inventario son área_sección (aut_mec…); Servicios, Catálogo y Compras no son inventario
 const enInv = () => SEC.includes('_');
 const secTr = () => enInv() ? SEC.split('_')[0] : 'aut';
 const secCat = () => enInv() ? SEC.split('_')[1] : 'mec';
@@ -1220,16 +1368,16 @@ const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJ
 const SNAP_KEY = 'palacio_nube_snap_v1', PRE_CLOUD_KEY = 'palacio_scan_v2_antes_nube';
 const sb = (window.supabase && window.supabase.createClient) ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: 'palacio_sesion_v1' } }) : null;
 // SNAP: lo último que se sabe que está en la nube. a: {id: nombre}, p: {id: {r: fila sin stock, q: stock}}, m: {id: fila}, serial
-const emptySnap = () => ({ a: {}, p: {}, m: {}, s: {}, j: {}, serial: 0 });
+const emptySnap = () => ({ a: {}, p: {}, m: {}, s: {}, j: {}, k: {}, serial: 0 });
 let SNAP = null;
 try { SNAP = JSON.parse(localStorage.getItem(SNAP_KEY) || 'null'); } catch(e) {}
-if (SNAP) { SNAP.s = SNAP.s || {}; SNAP.j = SNAP.j || {}; }
+if (SNAP) { SNAP.s = SNAP.s || {}; SNAP.j = SNAP.j || {}; SNAP.k = SNAP.k || {}; }
 const cloud = { chain: Promise.resolve(), timer: 0, pushQueued: false, drainQueued: false, inbox: [], loaded: !!SNAP, state: '' };
 const saveSnap = () => { try { localStorage.setItem(SNAP_KEY, JSON.stringify(SNAP)); } catch(e) {} };
 const saveLocal = () => { try { localStorage.setItem(KEY2, JSON.stringify(R)); $('#saveWarn').classList.add('hide'); } catch(e) { $('#saveWarn').classList.remove('hide'); } };
 const inChain = fn => { cloud.chain = cloud.chain.then(fn, fn); return cloud.chain; };
 
-function ensureIds(){ R.almacenes.forEach(a => { svcOf(a); a.services.forEach(x => { if (!x.id) x.id = newId(); }); a.jobs.forEach(x => { if (!x.id) x.id = newId(); }); a.items.forEach(i => { if (!i.id) i.id = newId(); }); a.movements.forEach(m => { if (!m.id) m.id = newId(); }); }); }
+function ensureIds(){ R.almacenes.forEach(a => { svcOf(a); a.services.forEach(x => { if (!x.id) x.id = newId(); }); a.jobs.forEach(x => { if (!x.id) x.id = newId(); }); comOf(a).compras.forEach(x => { if (!x.id) x.id = newId(); }); a.items.forEach(i => { if (!i.id) i.id = newId(); }); a.movements.forEach(m => { if (!m.id) m.id = newId(); }); }); }
 const pRow = (it, almId) => ({ id: it.id, almacen_id: almId, seccion: it.tipo || 'mec', area: TRS[it.tr] ? it.tr : 'aut', codigo_barras: String(it.code || ''), codigo_corto: it.sc || '', nombre: it.name || '',
   referencia: it.ref || '', marca: it.brand || '', modelo: it.model || '', categoria: it.cat || '', subcategoria: it.sub || '', sku: it.sku || '', unidad: it.unit || '',
   ubicacion: it.loc || '', rac: it.rac || '', anio: String(it.year ?? ''), precio_compra: +it.price || 0, valor_70: +it.v70 || 0, importe: +it.imp || 0, precio_total: +it.total || 0,
@@ -1246,6 +1394,14 @@ const jbRow = (x, almId) => ({ id: x.id, almacen_id: almId, fecha_ms: x.t, servi
   piezas: (x.parts || []).map(p => ({ id: p.id, sc: p.sc || '', name: p.name || '', qty: Math.round(+p.qty || 0) })), anulado: !!x.void });
 const jbFrom = r => ({ id: r.id, t: +r.fecha_ms, sid: r.servicio_id, name: r.servicio, cli: r.cliente, veh: r.vehiculo, mec: r.mecanico, note: r.nota,
   parts: (r.piezas || []).map(p => ({ id: p.id, sc: p.sc || '', name: p.name || '', qty: +p.qty || 0 })), void: !!r.anulado });
+// Compras: cada línea con sus campos en orden fijo (jsonb reordena las llaves y así la comparación no falla)
+const kLin = x => ({ pid: x.pid || '', sc: x.sc || '', name: x.name || '', ref: x.ref || '', code: String(x.code || ''), tr: x.tr || '', tipo: x.tipo || '', nuevo: !!x.nuevo, como: x.como || '',
+  pk: x.pk && +x.pk.n > 1 ? { name: x.pk.name || 'Empaque', n: +x.pk.n } : null, cant: +x.cant || 0, regalo: +x.regalo || 0, uds: +x.uds || 0, precio: +(+x.precio || 0).toFixed(4), tasa: +x.tasa || 0,
+  sub: +(+x.sub || 0).toFixed(2), itb: +(+x.itb || 0).toFixed(2), costo: +(+x.costo || 0).toFixed(4), gan: +(+x.gan || 0).toFixed(4), venta: +(+x.venta || 0).toFixed(2), oferta: !!x.oferta, ganancia: +(+x.ganancia || 0).toFixed(2) });
+const kRow = (x, almId) => ({ id: x.id, almacen_id: almId, registrado_ms: x.t, fecha: x.fecha || '', suplidor: x.sup || '', factura: x.fac || '', ncf: x.ncf || '', digito: x.dig || '', recibio: x.rec || '',
+  itbis_incluido: !!x.incl, flete: +(+x.flete || 0).toFixed(2), nota: x.nota || '', lineas: (x.lineas || []).map(kLin), subtotal: +(+x.sub || 0).toFixed(2), itbis: +(+x.itb || 0).toFixed(2), total: +(+x.total || 0).toFixed(2), anulada: !!x.anulada });
+const kFrom = r => ({ id: r.id, t: +r.registrado_ms, fecha: r.fecha || '', sup: r.suplidor || '', fac: r.factura || '', ncf: r.ncf || '', dig: r.digito || '', rec: r.recibio || '', incl: !!r.itbis_incluido,
+  flete: +r.flete || 0, nota: r.nota || '', lineas: (r.lineas || []).map(kLin), sub: +r.subtotal || 0, itb: +r.itbis || 0, total: +r.total || 0, anulada: !!r.anulada });
 const jrow = o => JSON.stringify(o);
 
 function cloudStatus(st, extra){
@@ -1266,7 +1422,7 @@ async function cloudPush(){
   cloud.pushQueued = false;
   if (!sb || !cloud.loaded) return;
   ensureIds();
-  const snap = SNAP, next = emptySnap(), upA = [], newP = [], upP = [], deltas = [], upM = [], upS = [], upJ = [];
+  const snap = SNAP, next = emptySnap(), upA = [], newP = [], upP = [], deltas = [], upM = [], upS = [], upJ = [], upK = [];
   next.serial = R.serialFloor || 0;
   for (const a of R.almacenes) {
     next.a[a.id] = a.name;
@@ -1281,10 +1437,11 @@ async function cloudPush(){
     for (const m of a.movements) { const row = mRow(m, a.id), js = jrow(row); next.m[m.id] = js; if (snap.m[m.id] !== js) upM.push(row); }
     for (const x of svcOf(a).services) { const row = sRow(x, a.id), js = jrow(row); next.s[x.id] = js; if (snap.s[x.id] !== js) upS.push(row); }
     for (const x of a.jobs) { const row = jbRow(x, a.id), js = jrow(row); next.j[x.id] = js; if (snap.j[x.id] !== js) upJ.push(row); }
+    for (const x of comOf(a).compras) { const row = kRow(x, a.id), js = jrow(row); next.k[x.id] = js; if (snap.k[x.id] !== js) upK.push(row); }
   }
   const delA = Object.keys(snap.a).filter(id => !(id in next.a)), delP = Object.keys(snap.p).filter(id => !(id in next.p)), delM = Object.keys(snap.m).filter(id => !(id in next.m));
-  const delS = Object.keys(snap.s).filter(id => !(id in next.s)), delJ = Object.keys(snap.j).filter(id => !(id in next.j));
-  if (!upA.length && !newP.length && !upP.length && !deltas.length && !upM.length && !delA.length && !delP.length && !delM.length && !upS.length && !upJ.length && !delS.length && !delJ.length && snap.serial === next.serial) {
+  const delS = Object.keys(snap.s).filter(id => !(id in next.s)), delJ = Object.keys(snap.j).filter(id => !(id in next.j)), delK = Object.keys(snap.k).filter(id => !(id in next.k));
+  if (!upA.length && !newP.length && !upP.length && !deltas.length && !upM.length && !delA.length && !delP.length && !delM.length && !upS.length && !upJ.length && !delS.length && !delJ.length && !upK.length && !delK.length && snap.serial === next.serial) {
     if (cloud.state !== 'ok') cloudStatus('ok'); return;
   }
   cloudStatus('sync', newP.length + upM.length > 200 ? `subiendo ${fmt(newP.length)} piezas y ${fmt(upM.length)} movimientos` : '');
@@ -1302,9 +1459,11 @@ async function cloudPush(){
     await chunked(upM, 500, r => sb.from('movimientos').upsert(r));
     await chunked(upS, 500, r => sb.from('servicios').upsert(r));
     await chunked(upJ, 500, r => sb.from('servicios_realizados').upsert(r));
+    await chunked(upK, 200, r => sb.from('compras').upsert(r));
     await chunked(delM, 150, ids => sb.from('movimientos').delete().in('id', ids));
     await chunked(delS, 150, ids => sb.from('servicios').delete().in('id', ids));
     await chunked(delJ, 150, ids => sb.from('servicios_realizados').delete().in('id', ids));
+    await chunked(delK, 150, ids => sb.from('compras').delete().in('id', ids));
     await chunked(delP, 150, ids => sb.from('piezas').delete().in('id', ids));
     await chunked(delA, 150, ids => sb.from('almacenes').delete().in('id', ids));
     if (snap.serial !== next.serial) { const { error } = await sb.from('config').upsert({ clave: 'serialFloor', valor: next.serial }); if (error) throw error; }
@@ -1348,6 +1507,14 @@ function applyRemote(t, ev, n, o){
     } else if (jrow(mRow(m, a.id)) === old) Object.assign(m, fresh);
     SNAP.m[n.id] = js; return;
   }
+  if (t === 'compras') {
+    if (ev === 'DELETE') { if (!(o.id in SNAP.k)) return; R.almacenes.forEach(a => { comOf(a).compras = a.compras.filter(x => x.id !== o.id); }); delete SNAP.k[o.id]; return; }
+    const a = R.almacenes.find(x => x.id === n.almacen_id); if (!a) return; comOf(a);
+    const fresh = kFrom(n), js = jrow(kRow(fresh, a.id)), old = SNAP.k[n.id], cur = a.compras.find(x => x.id === n.id);
+    if (!cur) { if (old) return; let i = a.compras.findIndex(x => x.t < fresh.t); if (i < 0) i = a.compras.length; a.compras.splice(i, 0, fresh); }
+    else if (jrow(kRow(cur, a.id)) === old) Object.assign(cur, fresh);
+    SNAP.k[n.id] = js; return;
+  }
   if (t === 'servicios' || t === 'servicios_realizados') {
     const K = t === 'servicios' ? 's' : 'j', L = t === 'servicios' ? 'services' : 'jobs', toRow = t === 'servicios' ? sRow : jbRow, fromRow = t === 'servicios' ? sFrom : jbFrom;
     if (ev === 'DELETE') { if (!(o.id in SNAP[K])) return; R.almacenes.forEach(a => { svcOf(a)[L] = a[L].filter(x => x.id !== o.id); }); delete SNAP[K][o.id]; return; }
@@ -1387,12 +1554,12 @@ async function cloudPull(){
   if (!sb) return;
   if (!cloud.loaded) cloudStatus('load');
   try {
-    const [A, P, M, C, SV, JB] = await Promise.all(['almacenes', 'piezas', 'movimientos', 'config', 'servicios', 'servicios_realizados'].map(fetchAll));
+    const [A, P, M, C, SV, JB, KC] = await Promise.all(['almacenes', 'piezas', 'movimientos', 'config', 'servicios', 'servicios_realizados', 'compras'].map(fetchAll));
     let note = '';
     if (!SNAP) {
       const hadData = R.almacenes.some(a => a.items.length || a.movements.length);
       // En la nube solo hay almacenes vacíos (p. ej. un celular abrió primero): gana el equipo que sí tiene inventario
-      if (A.length && !P.length && !M.length && !SV.length && !JB.length && hadData) {
+      if (A.length && !P.length && !M.length && !SV.length && !JB.length && !KC.length && hadData) {
         const mine = new Set(R.almacenes.map(a => a.id)), extra = A.filter(r => !mine.has(r.id)).map(r => r.id);
         if (extra.length) { const { error } = await sb.from('almacenes').delete().in('id', extra); if (error) throw error; }
         A.length = 0;
@@ -1408,9 +1575,10 @@ async function cloudPull(){
       SNAP = emptySnap(); R.almacenes = [];
       if (hadData) note = 'Se cargó el inventario de la nube. Lo que había solo en este equipo quedó guardado aparte como respaldo.';
     }
-    const ids = { a: new Set(A.map(r => r.id)), p: new Set(P.map(r => r.id)), m: new Set(M.map(r => r.id)), s: new Set(SV.map(r => r.id)), j: new Set(JB.map(r => r.id)) };
+    const ids = { a: new Set(A.map(r => r.id)), p: new Set(P.map(r => r.id)), m: new Set(M.map(r => r.id)), s: new Set(SV.map(r => r.id)), j: new Set(JB.map(r => r.id)), k: new Set(KC.map(r => r.id)) };
     Object.keys(SNAP.s).forEach(id => { if (!ids.s.has(id)) applyRemote('servicios', 'DELETE', null, { id }); });
     Object.keys(SNAP.j).forEach(id => { if (!ids.j.has(id)) applyRemote('servicios_realizados', 'DELETE', null, { id }); });
+    Object.keys(SNAP.k).forEach(id => { if (!ids.k.has(id)) applyRemote('compras', 'DELETE', null, { id }); });
     // Lo que se borró en la nube (y ya estaba sincronizado) se quita aquí
     Object.keys(SNAP.m).forEach(id => { if (!ids.m.has(id)) applyRemote('movimientos', 'DELETE', null, { id }); });
     Object.keys(SNAP.p).forEach(id => { if (!ids.p.has(id)) applyRemote('piezas', 'DELETE', null, { id }); });
@@ -1421,6 +1589,7 @@ async function cloudPull(){
     C.forEach(r => applyRemote('config', 'UPDATE', r));
     SV.forEach(r => applyRemote('servicios', 'UPDATE', r));
     JB.sort((x, y) => y.fecha_ms - x.fecha_ms).forEach(r => applyRemote('servicios_realizados', 'UPDATE', r));
+    KC.sort((x, y) => y.registrado_ms - x.registrado_ms).forEach(r => applyRemote('compras', 'UPDATE', r));
     R.almacenes.forEach(a => { ensureTipo(a); stampMovTipo(a); ensureSvcCode(a); });
     cloud.loaded = true; fixActive(); saveSnap(); saveLocal(); renderAll();
     if (note) showMsg('warn', 'Inventario de la nube', note);
@@ -1770,9 +1939,8 @@ $('#newForm').onsubmit = e => {
   const inPack = !!pack && $('#nQtyIn').value === 'pack';
   if (inPack && q0 === pack.n && !confirm(`Escribiste ${q0} y elegiste contar en ${plural(pack.name, 2).toLowerCase()}.\n\nEso es ${q0} ${plural(pack.name, q0).toLowerCase()} × ${pack.n} = ${fmt(q0 * pack.n)} unidades.\n\n¿Es correcto? (Si querías decir ${q0} unidades, pulsa Cancelar y cambia "Contar en" a Unidades.)`)) { $('#nQtyIn').value = 'unit'; nQtyInTouched = true; updNTotal(); return $('#newErr').textContent = 'Revisa la cantidad: ahora está en unidades.'; }
   const qty = inPack ? q0 * pack.n : q0;
-  const price = parseFloat($('#nPrice').value) || 0;
-  const v70 = +(price * 1.7).toFixed(4), imp = +(v70 * 0.18).toFixed(4);
-  const it = { added: Date.now(), pack, sc: sc || genSc(name, S.items), tipo: secCat(), tr: secTr(), code, name, ref: $('#nRef').value.trim(), brand: $('#nBrand').value.trim(), model: '', cat: '', sub: '', sku: '', qty, unit: $('#nUnit').value, loc: $('#nLoc').value.trim(), rac: $('#nRac').value.trim(), year: '', price, v70: price ? v70 : 0, imp: price ? imp : 0, total: price ? +(v70 + imp).toFixed(4) : 0 };
+  // Los precios los pone la pestaña Compras al registrar la factura
+  const it = { added: Date.now(), pack, sc: sc || genSc(name, S.items), tipo: secCat(), tr: secTr(), code, name, ref: $('#nRef').value.trim(), brand: $('#nBrand').value.trim(), model: '', cat: '', sub: '', sku: '', qty, unit: $('#nUnit').value, loc: $('#nLoc').value.trim(), rac: $('#nRac').value.trim(), year: '', price: 0, v70: 0, imp: 0, total: 0 };
   S.items.push(it); log('Alta', it, qty, 'Stock inicial', { pres: inPack ? `${fmt(q0)} ${plural(pack.name, q0)} × ${pack.n} = ${fmt(qty)} ${it.unit}` : `${fmt(qty)} ${unitWord(it, qty)}` }); $('#q').value = ''; lastAdded = it; tab(true); save(); renderAll();
   $('#newDlg').close(); beep('in');
   showItem('in', it, { before: 0, after: qty, qty, label: true });
@@ -1826,8 +1994,9 @@ $('#lblPrint').onclick = () => {
 const ico = n => `<svg class="ico" aria-hidden="true"><use href="#i-${n}"/></svg>`;
 // Los íconos de área van en línea (no con <use>) para que su animación corra
 const ICO_AREA = {"aut":"<circle cx=\"12\" cy=\"12\" r=\"10\"/><g class=\"an-sun\"><circle cx=\"12\" cy=\"12\" r=\"2\"/><path d=\"M12 12h1.2\"/></g><g class=\"an-car\"><g class=\"an-pl\" style=\"transform-origin:12.00px 6.60px\"><circle cx=\"12.00\" cy=\"6.60\" r=\"2.2\"/><path d=\"M12.00 6.60h1.3\"/></g><g class=\"an-pl\" style=\"transform-origin:16.68px 14.70px\"><circle cx=\"16.68\" cy=\"14.70\" r=\"2.2\"/><path d=\"M16.68 14.70h1.3\"/></g><g class=\"an-pl\" style=\"transform-origin:7.32px 14.70px\"><circle cx=\"7.32\" cy=\"14.70\" r=\"2.2\"/><path d=\"M7.32 14.70h1.3\"/></g></g>","cvt":"<circle class=\"an-p1\" cx=\"7\" cy=\"12\" r=\"4.5\"/><circle class=\"an-p2\" cx=\"17.5\" cy=\"12\" r=\"2.5\"/><path class=\"an-bt\" d=\"M7.86 7.58L17.98 9.55M7.86 16.42L17.98 14.45\"/><circle cx=\"7\" cy=\"12\" r=\".6\"/><circle cx=\"17.5\" cy=\"12\" r=\".6\"/>","mec":"<path d=\"M2 12h5M16 12h6\"/><rect x=\"16\" y=\"8\" width=\"5\" height=\"8\" rx=\".8\"/><path d=\"M14.2 9.3v1.4M14.2 13.3v1.4\"/><g class=\"an-sinc\"><rect x=\"6\" y=\"9\" width=\"5.5\" height=\"6\" rx=\"1\"/><path d=\"M8.7 9V4.5M6.7 4.5h4\"/></g>","ele":"<circle class=\"an-pulso\" cx=\"12\" cy=\"12\" r=\"3\" stroke-width=\"1.2\"/><path class=\"an-bolt\" d=\"M13 2.5 4.5 13.5H11L10 21.5l9-11.5h-6.5z\"/>","cat":"<path d=\"M5 4.5A1.5 1.5 0 0 1 6.5 3H19v15H6.5A1.5 1.5 0 0 0 5 19.5z\"/><path d=\"M5 19.5A1.5 1.5 0 0 0 6.5 21H19v-3\"/><path class=\"an-sinc\" d=\"M9 7.5h6M9 10.5h4\"/>","ser":"<rect x=\"4.5\" y=\"4.5\" width=\"15\" height=\"17\" rx=\"2\"/><path d=\"M9 4.5V3.2h6v1.3\"/><path d=\"M8.5 18 14 12.5\"/><circle cx=\"15\" cy=\"11.5\" r=\"2\"/><path d=\"M7.5 19l1.6-1.6\"/>"};
+ICO_AREA.com = '<path d="M6 2.8h12v18.4l-2-1.4-2 1.4-2-1.4-2 1.4-2-1.4-2 1.4z"/><path d="M9 7.5h6M9 11h6M9 14.5h3.5"/>';
 const icoArea = k => `<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICO_AREA[k]}</svg>`;
-const AREA_PILL = { aut: 'Automáticas', cvt: 'CVT', mec: 'Mecánicas', ele: 'Eléctricas', ser: 'Servicios', cat: 'Catálogo' };
+const AREA_PILL = { aut: 'Automáticas', cvt: 'CVT', mec: 'Mecánicas', ele: 'Eléctricas', ser: 'Servicios', cat: 'Catálogo', com: 'Compras' };
 // Giro corto del planetario del encabezado: algo se guardó o se escaneó bien
 function okGiro(){ const b = document.querySelector('.appbar'); if (!b) return; b.classList.remove('ok'); void b.offsetWidth; b.classList.add('ok'); clearTimeout(okGiro.t); okGiro.t = setTimeout(() => b.classList.remove('ok'), 700); }
 // Sacudida corta: el escaneo no salió
@@ -1882,6 +2051,7 @@ function renderMoves(){
 function renderStat(){
   if (SEC === 'ser') { const a = svcOf(S); $('#stat').textContent = `Servicios: ${fmt(a.services.length)} en el catálogo · ${fmt(a.jobs.filter(j => !j.void).length)} realizados`; return; }
   if (SEC === 'cat') { $('#stat').textContent = `Catálogo de suplidor: ${fmt(CAT.length)} productos por revisar`; return; }
+  if (SEC === 'com') { $('#stat').textContent = 'Compras: facturas de compra, costos, ITBIS y precios de venta'; return; }
   const its = SI(), u = its.reduce((a, i) => a + (i.qty || 0), 0);
   $('#stat').textContent = `${SEC_LBL[SEC]}: ${fmt(its.length)} piezas · ${fmt(u)} unidades en stock`;
 }
@@ -1891,7 +2061,8 @@ function renderSecs(){
   // Solo se vuelve a pintar si cambió algo: así la animación del área activa no se reinicia en cada escaneo
   const h1 = Object.keys(TRS).map(t => `<button type="button" role="tab" class="a-${t}" data-tr="${t}" aria-selected="${enInv() && secTr() === t}">${icoArea(t)}<span class="fn">${AREA_PILL[t]}</span><span class="fc" title="${fmt(n(t + '_'))} piezas">${fmt(n(t + '_'))}</span></button>`).join('') +
     `<button type="button" role="tab" class="a-ser" data-sec="ser" aria-selected="${SEC === 'ser'}">${icoArea('ser')}<span class="fn">Servicios</span><span class="fc" title="${fmt(svcOf(S).services.length)} servicios">${fmt(svcOf(S).services.length)}</span></button>` +
-    `<button type="button" role="tab" class="a-cat" data-sec="cat" aria-selected="${SEC === 'cat'}">${icoArea('cat')}<span class="fn">Catálogo</span><span class="fc" title="${fmt(CAT.length)} productos por revisar">${fmt(CAT.length)}</span></button>`;
+    `<button type="button" role="tab" class="a-cat" data-sec="cat" aria-selected="${SEC === 'cat'}">${icoArea('cat')}<span class="fn">Catálogo</span><span class="fc" title="${fmt(CAT.length)} productos por revisar">${fmt(CAT.length)}</span></button>` +
+    `<button type="button" role="tab" class="a-com" data-sec="com" aria-selected="${SEC === 'com'}">${icoArea('com')}<span class="fn">Compras</span><span class="fc" title="${fmt(comOf(S).compras.filter(k => !k.anulada).length)} facturas">${fmt(comOf(S).compras.filter(k => !k.anulada).length)}</span></button>`;
   if ($('#secTabs').dataset.h !== h1) { $('#secTabs').innerHTML = h1; $('#secTabs').dataset.h = h1; }
   $('#subTabs').innerHTML = !enInv() ? '' : Object.keys(CAT_LBL).map(c => { const k = secTr() + '_' + c; return `<button type="button" role="tab" data-sec="${k}" aria-selected="${k === SEC}">${ico(c === 'ins' ? 'gota' : 'tuerca')}${CAT_LBL[c]}<small>${fmt(n(k))} piezas</small></button>`; }).join('');
 }
@@ -1904,7 +2075,7 @@ function setSec(t){
 }
 $('#secTabs').addEventListener('click', e => { const b = e.target.closest('button[data-sec],button[data-tr]'); if (!b) return; const k = b.dataset.sec || (b.dataset.tr + '_' + lastCat[b.dataset.tr]); if (k !== SEC) setSec(k); });
 $('#subTabs').addEventListener('click', e => { const b = e.target.closest('button[data-sec]'); if (b && b.dataset.sec !== SEC) setSec(b.dataset.sec); });
-function renderAll(){ R.almacenes.forEach(svcOf); renderSecs(); renderParts(); renderMoves(); renderSvc(); renderCat(); renderStat(); renderAlmBar(); scanList(); renderTablero(); }
+function renderAll(){ R.almacenes.forEach(a => comOf(svcOf(a))); renderSecs(); renderParts(); renderMoves(); renderSvc(); renderCat(); renderCom(); renderStat(); renderAlmBar(); scanList(); renderTablero(); }
 // Franja de cifras (solo texto) e insignia del botón Pedido
 function renderTablero(){
   const fal = faltantes(false), ins = $('#btnPedido .insignia');
@@ -1956,7 +2127,7 @@ const EDIT_FIELDS = [
   ['name','#eName','nombre','s'],['tr','#eTr','área','s'],['tipo','#eTipo','tipo','s'],['code','#eCode','código','c'],['ref','#eRef','referencia','s'],['brand','#eBrand','marca','s'],
   ['model','#eModel','modelo','s'],['sku','#eSku','SKU','s'],['cat','#eCat','categoría','s'],['sub','#eSub','subcategoría','s'],
   ['year','#eYear','año','s'],['loc','#eLoc','ubicación','s'],['rac','#eRac','RAC','s'],['unit','#eUnit','unidad','s'],
-  ['min','#eMin','mínimo','n'],['price','#ePrice','precio de compra','n'],['v70','#eV70','valor 70%','n'],['imp','#eImp','importe','n'],['total','#eTotal','precio total','n']
+  ['min','#eMin','mínimo','n']
 ];
 let editItem = null;
 function openEdit(it){
@@ -1978,12 +2149,6 @@ function openEdit(it){
   eNameBefore = $('#eName').value;
   $('#editDlg').showModal(); $('#eName').focus();
 }
-$('#ePrice').addEventListener('input', () => {
-  const p = parseFloat($('#ePrice').value);
-  if (isNaN(p)) { $('#eV70').value = ''; $('#eImp').value = ''; $('#eTotal').value = ''; return; }
-  const v = +(p * 1.7).toFixed(4), i = +(v * 0.18).toFixed(4);
-  $('#eV70').value = v; $('#eImp').value = i; $('#eTotal').value = +(v + i).toFixed(4);
-});
 $('#eGen').onclick = () => { $('#eCode').value = genCode(); };
 $('#eScGen').onclick = () => { $('#eSc').value = genSc($('#eName').value.trim() || editItem.name, S.items, editItem); };
 $('#editCancel').onclick = () => $('#editDlg').close();
@@ -2047,7 +2212,7 @@ function delSelect(it){
   delItem = it; $('#dOk').disabled = false;
   const bits = [it.ref, it.brand].filter(Boolean).map(esc).join(' · ');
   $('#dInfo').innerHTML = `<div class="name">${scBadge(it)}${esc(it.name)}</div><div class="muted">${bits}</div>` +
-    `<div style="margin-top:8px">Stock: <b>${fmt(it.qty)}</b> ${esc(it.unit || 'UNID')}${it.total ? ' · Precio total: <b>' + money(it.total) + '</b>' : ''}</div>` +
+    `<div style="margin-top:8px">Stock: <b>${fmt(it.qty)}</b> ${esc(it.unit || 'UNID')}</div>` +
     (it.qty > 0 ? `<div style="margin-top:8px;font-weight:700;color:var(--out)">Ojo: tiene ${fmt(it.qty)} unidades en stock y se eliminarán junto con la pieza.</div>` : '') +
     `<div style="margin-top:8px;font-weight:700">¿Eliminar esta pieza? Presiona "Aceptar y eliminar" para confirmar.</div>`;
 }
@@ -2098,8 +2263,7 @@ function seaDetailHTML(it){
   return `<div class="name">${scBadge(it)}${esc(it.name)}</div>` +
     `<dl>${row('Referencia', it.ref)}${row('Marca', it.brand)}${row('Modelo', it.model)}${row('SKU', it.sku)}${row('Categoría', it.cat)}${row('Subcategoría', it.sub)}${row('Año', it.year)}</dl>` +
     `<div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:10px"><span>Stock actual</span><b style="font-size:44px;line-height:1;color:${it.qty <= 0 ? 'var(--out)' : 'var(--look)'}">${fmt(it.qty)}</b><span>${esc(it.unit || 'UNID')}</span></div>` +
-    (stockText(it) ? `<div class="muted">En empaques: ${esc(stockText(it))}</div>` : '') + (it.pack && it.pack.n > 1 ? `<div class="muted">Empaque: ${esc(it.pack.name)} de ${it.pack.n} unidades</div>` : '') +
-    (it.total ? `<div style="margin-top:10px">Precio total: <b>${money(it.total)}</b></div><div class="muted">Compra ${money(it.price)} · Valor 70% ${money(it.v70)} · Importe ${money(it.imp)}</div><div style="margin-top:4px">Monto del stock (precio total × ${fmt(it.qty)}): <b>${money(it.total * it.qty)}</b></div>` : '<div class="muted" style="margin-top:10px">Sin precio registrado.</div>');
+    (stockText(it) ? `<div class="muted">En empaques: ${esc(stockText(it))}</div>` : '') + (it.pack && it.pack.n > 1 ? `<div class="muted">Empaque: ${esc(it.pack.name)} de ${it.pack.n} unidades</div>` : '');
 }
 function seaToggle(w, it){
   const det = w.querySelector('.sdet'), btn = w.querySelector('button');
@@ -2406,6 +2570,7 @@ $('#btnGo').onclick = () => handleScan($('#scan').value);
 
 /* ---------- Servicios: catálogo, registro de servicios hechos (descuenta piezas) e historial ---------- */
 const svcOf = a => { if (!a.services) a.services = []; if (!a.jobs) a.jobs = []; return a; };
+const comOf = a => { if (!a.compras) a.compras = []; return a; };
 const itemById = id => S.items.find(i => i.id === id);
 const partLbl = it => `${it.sc ? it.sc + ' · ' : ''}${it.name}`;
 // Encuentra una pieza por código corto, código de barras, referencia o nombre (también "BOM-001 · Bomba" de la lista)
@@ -3222,6 +3387,422 @@ $('#reaSi').onclick = () => {
   b.onclick = deshacerReacomodo; $('#result').appendChild(b);
 };
 $('#reaDlg').addEventListener('close', focusScan);
+
+/* ---------- Compras (pestaña Compras): facturas de compra completas y lista de precios ----------
+   Los precios viven solo aquí; el inventario (Entrada, Despacho, Consulta) no los muestra ni los pide.
+   Al guardar una factura cada producto entra al inventario: si ya existe (por código de barras, nombre, código corto
+   o referencia) se le suma; si no, se crea en el área y la sección que sugiere el programa, con código corto y código
+   de barras como los que crea el programa. En la pieza queda: precio de compra = costo por unidad sin ITBIS (con su parte
+   del flete), Valor 70% = venta antes de ITBIS, Importe = ITBIS de la venta, Precio total = venta por unidad con ITBIS.
+   Las líneas de oferta (costo menor de RD$ 1) y las unidades de regalo suman al stock sin cambiar el precio. */
+const COM_KEY = 'palacio_com_v1', BORR_KEY = 'palacio_com_borrador_v1';
+const COM = { gan: 70, incl: 'no', dig: '', v: 'fac' };
+try { Object.assign(COM, JSON.parse(localStorage.getItem(COM_KEY) || '{}')); } catch(e) {}
+const comPref = () => { try { localStorage.setItem(COM_KEY, JSON.stringify(COM)); } catch(e) {} };
+const KCOMO = { caja: 'Caja', doc: 'Docena', uni: 'Unidad', otro: 'Otro empaque' };
+const KTASAS = { 18: '18 %', 16: '16 %', 0: 'Exento' };
+// Insumos que el nombre delata (aceites y líquidos de transmisión, grasas…)
+const KTIPO_INS = /\b(atf|aceites?|liquidos?|lubricantes?|sintetic[oa]s?|dexron|mercon|valvulina|grasas?|coolant|refrigerantes?|aditivos?|qt|galon(es)?)\b/;
+const kHoy = () => { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
+const kFecha = f => /^\d{4}-\d{2}-\d{2}$/.test(f || '') ? f.slice(8) + '/' + f.slice(5, 7) + '/' + f.slice(0, 4) : (f || '');
+const rd = v => 'RD$ ' + money(v);
+const kPct = v => fmt(+(v * 100).toFixed(1)) + ' %';
+const kNum = v => Math.max(0, parseFloat(v) || 0);
+const kInt = v => Math.max(0, parseInt(v, 10) || 0);
+const kRadio = n => (document.querySelector(`#kForm input[name=${n}]:checked`) || {}).value;
+const kSetRadio = (n, v) => { const r = document.querySelector(`#kForm input[name=${n}][value="${v}"]`); if (r) r.checked = true; };
+const kOpts = (obj, v) => Object.entries(obj).map(([k, t]) => `<option value="${k}"${String(k) === String(v) ? ' selected' : ''}>${t}</option>`).join('');
+const kCab = ['kFecha', 'kSup', 'kFac', 'kNcf', 'kDig', 'kRec', 'kFlete', 'kNota', 'kPapel'];
+
+let KL = [];   // productos de la factura que se está digitando
+const kNueva = () => ({ name: '', ref: '', code: '', como: 'caja', pkName: '', pkN: '', cant: '', regalo: '', precio: '', tasa: '18', gan: String(COM.gan), ganTocada: false, venta: '', fijo: 'gan', tr: 'aut', tipo: 'mec', lugarTocado: false });
+
+// A dónde va un producto nuevo: las mismas reglas de "Reacomodar" para el área; Piezas o Insumos por el nombre
+function kLugar(l){
+  const t = { name: l.name, ref: l.ref }, r = clasificarArea(t);
+  const tr = r && TRS[r.tr] ? r.tr : r && r.cand && TRS[r.cand[0]] ? r.cand[0] : guessTr(t);
+  const f = fold(l.name + ' ' + l.ref).replace(/[^a-z0-9 ]/g, ' ');
+  const tipo = (r && r.tipo === 'ins') || guessTipo(l.name) === 'ins' || KTIPO_INS.test(f) ? 'ins' : 'mec';
+  return { tr, tipo, motivo: r && TRS[r.tr] ? r.motivo : '' };
+}
+// ¿Ya está en el inventario? Código de barras, nombre, código corto, o la referencia si solo una pieza la tiene
+function kBusca(l){
+  const code = norm(l.code), nm = l.name.trim(), f = fold(nm), u = nm.toUpperCase(), rf = fold(l.ref.trim());
+  if (code) { const x = find(code)[0]; if (x) return x; }
+  if (f) { const x = S.items.find(i => fold(i.name) === f) || S.items.find(i => i.sc && i.sc.toUpperCase() === u); if (x) return x; }
+  if (rf) { const xs = S.items.filter(i => fold(i.ref || '') === rf); if (xs.length === 1) return xs[0]; }
+  return null;
+}
+
+function kCalc(){
+  const incl = kRadio('kIncl') === 'si', fleteT = kNum($('#kFlete').value);
+  const ls = KL.map(l => {
+    const porPk = l.como === 'uni' ? 1 : l.como === 'doc' ? 12 : kInt(l.pkN);
+    const pkName = l.como === 'caja' ? 'Caja' : l.como === 'doc' ? 'Docena' : l.como === 'otro' ? (l.pkName.trim() || 'Empaque') : '';
+    const cant = kInt(l.cant), regalo = kInt(l.regalo), r = (+l.tasa || 0) / 100, precio = kNum(l.precio);
+    const pagadas = porPk * cant, uds = porPk * (cant + regalo);
+    const bruto = porPk ? precio / porPk : 0;   // por unidad, tal como viene en la factura
+    const base = incl ? bruto / (1 + r) : bruto, itbU = incl ? bruto - base : bruto * r;
+    return { l, porPk, pkName, cant, regalo, r, precio, pagadas, uds, base, itbU, sub: base * pagadas, itb: itbU * pagadas,
+      vacia: !l.name.trim() && !cant && !regalo && !precio };
+  });
+  const sumBase = ls.reduce((s, c) => s + c.sub, 0);
+  ls.forEach(c => {
+    const l = c.l;
+    c.flete = sumBase ? fleteT * c.sub / sumBase : 0;   // el flete se reparte según lo que vale cada línea
+    c.costo = c.base + (c.pagadas ? c.flete / c.pagadas : 0);
+    c.oferta = c.uds > 0 && c.costo < 1;
+    if (l.fijo === 'venta') { c.venta = kNum(l.venta); c.gan = c.costo ? c.venta / (1 + c.r) / c.costo - 1 : 0; }
+    else { c.gan = (parseFloat(l.gan) || 0) / 100; c.venta = c.costo * (1 + c.gan) * (1 + c.r); }
+    c.antes = c.venta / (1 + c.r); c.itbV = c.venta - c.antes;
+    c.ganancia = c.oferta ? 0 : c.antes * c.uds - c.costo * c.pagadas;
+  });
+  const T = { ls, incl, flete: fleteT, sub: 0, itb: 0, porTasa: {}, uds: 0, gan: 0, venta: 0, n: 0 };
+  ls.filter(c => !c.vacia).forEach(c => {
+    T.n++; T.sub += c.sub; T.itb += c.itb; T.uds += c.uds; T.gan += c.ganancia; T.venta += c.oferta ? 0 : c.venta * c.uds;
+    if (c.r) T.porTasa[c.l.tasa] = (T.porTasa[c.l.tasa] || 0) + c.itb;
+  });
+  T.total = T.sub + T.itb + fleteT;
+  return T;
+}
+
+function kLineaHTML(l, i){
+  return `<div class="klin" data-i="${i}">
+    <div class="kl-top"><span class="kn">${i + 1}</span><input data-f="name" list="kNames" value="${esc(l.name)}" placeholder="Descripción del producto" aria-label="Producto ${i + 1}"><button type="button" class="kx" data-x title="Quitar este producto" aria-label="Quitar este producto">×</button></div>
+    <div class="kl-hay"></div>
+    <div class="kl-campos">
+      <label>Referencia<input data-f="ref" value="${esc(l.ref)}" placeholder="Código del suplidor"></label>
+      <label>Código de barras<input data-f="code" class="mono" inputmode="numeric" value="${esc(l.code)}" placeholder="Opcional"></label>
+      <label>Viene por<select data-f="como">${kOpts(KCOMO, l.como)}</select></label>
+      <label data-ver="pkName">Empaque<input data-f="pkName" list="packNames" value="${esc(l.pkName)}" placeholder="Paquete"></label>
+      <label data-ver="pkN">Unidades que trae<input data-f="pkN" type="number" min="2" step="1" inputmode="numeric" value="${esc(l.pkN)}" placeholder="12"></label>
+      <label><span data-t="cant">Cantidad</span><input data-f="cant" type="number" min="0" step="1" inputmode="numeric" value="${esc(l.cant)}"></label>
+      <label>Regalo (oferta)<input data-f="regalo" type="number" min="0" step="1" inputmode="numeric" value="${esc(l.regalo)}" placeholder="0"></label>
+      <label><span data-t="precio">Precio</span><input data-f="precio" type="number" min="0" step="0.01" inputmode="decimal" value="${esc(l.precio)}"></label>
+      <label>ITBIS<select data-f="tasa">${kOpts(KTASAS, l.tasa)}</select></label>
+      <label>Ganancia %<input data-f="gan" type="number" step="0.1" inputmode="decimal" value="${esc(l.gan)}"></label>
+      <label>Venta c/u con ITBIS<input data-f="venta" type="number" min="0" step="0.01" inputmode="decimal" value="${esc(l.venta)}"></label>
+      <label data-ver="lugar">Área<select data-f="tr">${kOpts(TRS, l.tr)}</select></label>
+      <label data-ver="lugar">Sección<select data-f="tipo">${kOpts(CAT_LBL, l.tipo)}</select></label>
+    </div>
+    <div class="kl-res"></div>
+  </div>`;
+}
+function kRenderLineas(){
+  if (!KL.length) KL.push(kNueva());
+  $('#kLineas').innerHTML = KL.map(kLineaHTML).join('');
+  kRefrescar();
+}
+// Vuelve a calcular todo y pinta cada línea y el resumen; no toca la casilla que se está escribiendo
+function kRefrescar(fi, foco){
+  const T = kCalc(), boxes = $('#kLineas').children, previa = [];
+  T.ls.forEach((c, i) => kPintaLinea(boxes[i], c, i === fi ? foco : '', previa));
+  kSuma(T); kBorrador();
+  return T;
+}
+function kPintaLinea(box, c, foco, previa){
+  if (!box) return;
+  const l = c.l, it = c.vacia ? null : kBusca(l), q = s => box.querySelector(s);
+  // Producto nuevo que ya salió en una línea de arriba (p. ej. su oferta): al guardar se suma a esa misma pieza
+  const igual = it || c.vacia ? null : previa.find(p => p.name && fold(p.name) === fold(l.name.trim()));
+  box.classList.toggle('vacia', c.vacia);
+  q('[data-ver=pkName]').hidden = l.como !== 'otro';
+  q('[data-ver=pkN]').hidden = l.como !== 'caja' && l.como !== 'otro';
+  box.querySelectorAll('[data-ver=lugar]').forEach(x => { x.hidden = !!it || !!igual || c.vacia; });
+  const pw = c.pkName ? c.pkName.toLowerCase() : 'unidad';
+  q('[data-t=cant]').textContent = c.pkName ? `${plural(c.pkName, 2)} compradas` : 'Unidades compradas';
+  q('[data-t=precio]').textContent = 'Precio por ' + pw;
+  if (foco !== 'venta' && l.fijo === 'gan') { l.venta = c.costo ? c.venta.toFixed(2) : ''; q('[data-f=venta]').value = l.venta; }
+  if (foco !== 'gan' && l.fijo === 'venta') { l.gan = c.costo ? String(+(c.gan * 100).toFixed(1)) : ''; q('[data-f=gan]').value = l.gan; }
+  const hay = q('.kl-hay');
+  hay.classList.toggle('si', !!it || !!igual);
+  if (c.vacia) hay.textContent = '';
+  else if (it) hay.textContent = `Ya existe: ${it.sc ? it.sc + ' · ' : ''}${SEC_LBL[K(it)]} · hay ${fmt(it.qty || 0)}. Se le suma${it.code ? ' · código de barras ' + it.code : ''}.`;
+  else if (igual) hay.textContent = `Es el mismo producto de la línea ${igual.n} (${igual.sc}): se suma ahí.`;
+  else {
+    const sc = genSc(l.name.trim() || 'X', S.items.concat(previa)); previa.push({ sc, name: l.name.trim(), n: +box.dataset.i + 1 });
+    const por = l.lugarTocado ? 'lo elegiste tú' : kLugar(l).motivo || 'no se reconoce el área: revísala';
+    hay.textContent = `Nuevo: va a ${SEC_LBL[l.tr + '_' + l.tipo]} (${por}) · código corto ${sc} · ${norm(l.code) ? 'con su código de barras' : 'código de barras nuevo y etiqueta'}.`;
+  }
+  const s = (t, v, cls) => `<span class="${cls || ''}">${t} <b>${v}</b></span>`;
+  q('.kl-res').innerHTML = c.vacia || !c.uds ? '' :
+    s('Entran', fmt(c.uds) + ' unid.') + s('Subtotal', rd(c.sub)) + s('ITBIS', rd(c.itb)) + s('Costo c/u', rd(c.costo)) +
+    (c.oferta ? '<span class="ofe">Oferta: suma al stock y no cambia el precio</span>' :
+      s('Venta c/u', rd(c.venta), 'vta') + (c.pkName ? s(`Por ${pw}`, rd(c.venta * c.porPk)) : '') + s('Gana', rd(c.ganancia), c.ganancia < 0 ? 'neg' : ''));
+}
+function kSuma(T){
+  const L = (t, v, cls) => `<div class="kl ${cls || ''}"><span>${t}</span><i></i><b>${v}</b></div>`;
+  const de = [$('#kSup').value.trim(), [$('#kFac').value.trim(), $('#kNcf').value.trim()].filter(Boolean).join(' · ')].filter(Boolean).join(' — ');
+  $('#kSuma').innerHTML = `<h3>Resumen de la factura</h3>${de ? `<div class="kde">${esc(de)}</div>` : ''}` +
+    L('Productos', fmt(T.n)) + L('Unidades que entran', fmt(T.uds)) + '<hr class="kcorte">' +
+    L('Subtotal sin ITBIS', rd(T.sub)) + Object.keys(T.porTasa).sort((a, b) => b - a).map(t => L(`ITBIS ${t} %`, rd(T.porTasa[t]))).join('') +
+    (T.flete ? L('Flete y otros gastos', rd(T.flete)) : '') + L('Total de la factura', rd(T.total), 'tot') + '<hr class="kcorte">' +
+    L('Venta esperada, con ITBIS', rd(T.venta)) + L('Ganancia esperada', rd(T.gan), T.gan < 0 ? 'neg' : 'gan');
+  const papel = parseFloat($('#kPapel').value), d = $('#kDif');
+  if (isNaN(papel) || !T.n) { d.textContent = ''; d.className = 'kdif'; return; }
+  const dif = papel - T.total;
+  d.className = 'kdif ' + (Math.abs(dif) < 5 ? 'ok' : 'mal');
+  d.textContent = Math.abs(dif) < 0.01 ? 'Cuadra con la factura.' : Math.abs(dif) < 5 ? `Diferencia de ${rd(Math.abs(dif))} (redondeo de la factura).` :
+    `No cuadra: la factura dice ${rd(dif > 0 ? dif : -dif)} ${dif > 0 ? 'más' : 'menos'}. Revisa cantidades y precios.`;
+}
+
+// Lo que se está digitando se guarda en este equipo: si se cierra la página no se pierde
+function kBorrador(){
+  try { localStorage.setItem(BORR_KEY, JSON.stringify({ cab: Object.fromEntries(kCab.map(id => [id, $('#' + id).value])), incl: kRadio('kIncl'), gan: $('#kGanG').value, KL })); } catch(e) {}
+}
+function kCargaBorrador(){
+  let b = null; try { b = JSON.parse(localStorage.getItem(BORR_KEY) || 'null'); } catch(e) {}
+  kCab.forEach(id => { $('#' + id).value = b && b.cab ? b.cab[id] || '' : ''; });
+  if (!$('#kFecha').value) $('#kFecha').value = kHoy();
+  if (!$('#kDig').value) $('#kDig').value = COM.dig || '';
+  kSetRadio('kIncl', b && b.incl || COM.incl);
+  $('#kGanG').value = b && b.gan !== undefined ? b.gan : COM.gan;
+  KL = b && Array.isArray(b.KL) ? b.KL.map(x => ({ ...kNueva(), ...x })) : [];
+  kRenderLineas();
+}
+function kLimpiar(todo){
+  const dig = $('#kDig').value;
+  try { localStorage.removeItem(BORR_KEY); } catch(e) {}
+  kCargaBorrador();
+  if (!todo) $('#kDig').value = dig;
+  $('#kErr').textContent = '';
+}
+
+$('#kLineas').addEventListener('input', e => {
+  const box = e.target.closest('.klin'), f = e.target.dataset.f; if (!box || !f) return;
+  const i = +box.dataset.i, l = KL[i]; l[f] = e.target.value;
+  if (f === 'gan') { l.fijo = 'gan'; l.ganTocada = true; }
+  if (f === 'venta') l.fijo = 'venta';
+  if (f === 'tr' || f === 'tipo') l.lugarTocado = true;
+  if ((f === 'name' || f === 'ref') && !l.lugarTocado) { const g = kLugar(l); l.tr = g.tr; l.tipo = g.tipo; box.querySelector('[data-f=tr]').value = g.tr; box.querySelector('[data-f=tipo]').value = g.tipo; }
+  kRefrescar(i, f);
+});
+$('#kLineas').addEventListener('click', e => {
+  const b = e.target.closest('[data-x]'); if (!b) return;
+  KL.splice(+b.closest('.klin').dataset.i, 1); kRenderLineas();
+});
+$('#kMas').onclick = () => { KL.push(kNueva()); kRenderLineas(); $('#kLineas').lastElementChild.querySelector('[data-f=name]').focus(); };
+$('#kGanG').addEventListener('input', () => {
+  const v = $('#kGanG').value;
+  KL.forEach(l => { if (!l.ganTocada) { l.gan = v; l.fijo = 'gan'; } });
+  $('#kLineas').querySelectorAll('.klin').forEach((box, i) => { if (!KL[i].ganTocada) box.querySelector('[data-f=gan]').value = v; });
+  kRefrescar();
+});
+kCab.forEach(id => $('#' + id).addEventListener('input', () => kRefrescar()));
+$('#kForm').addEventListener('change', e => { if (e.target.name === 'kIncl') kRefrescar(); });
+// Enter no guarda la factura: el lector de códigos manda Enter al final del código
+$('#kForm').addEventListener('keydown', e => {
+  if (e.key !== 'Enter' || e.target.tagName !== 'INPUT') return;
+  e.preventDefault();
+  if (e.target.dataset.f === 'code') e.target.closest('.klin').querySelector('[data-f=cant]').focus();
+});
+$('#kClear').onclick = () => { if (KL.some(l => l.name || l.precio) && !confirm('¿Borrar todo lo que has digitado de esta factura?')) return; kLimpiar(true); };
+
+$('#kForm').onsubmit = e => {
+  e.preventDefault();
+  const er = (m, el) => { $('#kErr').textContent = m; sacude($('#kErr')); beep('err'); if (el) el.focus(); };
+  const T = kRefrescar(), ls = T.ls.filter(c => !c.vacia), boxes = [...$('#kLineas').children];
+  const v = id => $('#' + id).value.trim(), fecha = v('kFecha'), sup = v('kSup'), fac = v('kFac'), ncf = v('kNcf').toUpperCase(), dig = v('kDig'), rec = v('kRec');
+  if (!fecha) return er('Escribe la fecha de la factura.', $('#kFecha'));
+  if (!sup) return er('Escribe el suplidor.', $('#kSup'));
+  if (!fac && !ncf) return er('Escribe el número de factura o el NCF.', $('#kFac'));
+  if (!dig) return er('Escribe quién digitó la factura.', $('#kDig'));
+  if (!rec) return er('Escribe quién recibió el pedido.', $('#kRec'));
+  if (!ls.length) return er('Agrega por lo menos un producto.');
+  for (const c of ls) {
+    const n = T.ls.indexOf(c), box = boxes[n], fe = f => box.querySelector(`[data-f=${f}]`), lin = `Producto ${n + 1}: `;
+    if (!c.l.name.trim()) return er(lin + 'escribe la descripción.', fe('name'));
+    if (!kBusca(c.l) && looksCode(c.l.name)) return er(lin + 'el nombre no puede ser un código de barras; ponlo en Código de barras.', fe('name'));
+    if ((c.l.como === 'caja' || c.l.como === 'otro') && c.porPk < 2) return er(lin + 'escribe cuántas unidades trae cada ' + c.pkName.toLowerCase() + ' (2 o más).', fe('pkN'));
+    if (!c.uds) return er(lin + 'escribe la cantidad.', fe('cant'));
+    if (c.cant && !c.oferta && !(c.venta > 0)) return er(lin + 'falta el precio de venta: escribe la ganancia o el precio.', fe('gan'));
+    if (!c.oferta && c.antes < c.costo && !confirm(`${lin}${c.l.name}\nEl precio de venta (${rd(c.venta)}) queda por debajo del costo: pierdes ${rd(c.costo - c.antes)} en cada unidad.\n\n¿Guardar así?`)) return fe('venta').focus();
+  }
+  const dup = comOf(S).compras.find(k => !k.anulada && fold(k.sup) === fold(sup) && ((fac && fold(k.fac) === fold(fac)) || (ncf && fold(k.ncf) === fold(ncf))));
+  if (dup && !confirm(`Ya registraste una factura de ${dup.sup} con ese número (${[dup.fac, dup.ncf].filter(Boolean).join(' · ')}) el ${kFecha(dup.fecha)}.\n\nSi la guardas otra vez, los productos se suman dos veces. ¿Guardarla de todos modos?`)) return;
+  const nuevosN = ls.filter(c => !kBusca(c.l)).length;
+  if (!confirm(`Guardar la factura ${[fac, ncf].filter(Boolean).join(' · ')} de ${sup}:\n\n` +
+    `${fmt(ls.length)} ${ls.length === 1 ? 'producto' : 'productos'}, ${fmt(T.uds)} unidades entran al inventario` + (nuevosN ? ` (${fmt(nuevosN)} ${nuevosN === 1 ? 'producto nuevo' : 'productos nuevos'})` : '') + `.\n` +
+    `Total de la factura: ${rd(T.total)}\nGanancia esperada: ${rd(T.gan)}\n\n¿Guardar?`)) return;
+
+  const ref = [fac && 'Factura ' + fac, ncf && 'NCF ' + ncf].filter(Boolean).join(' · ');
+  const nota = ['Compra', ref, 'Suplidor: ' + sup].join(' · ');
+  const etiquetas = [], lineas = [];
+  ls.forEach(c => {
+    const l = c.l, pk = c.pkName && c.porPk >= 2 ? { name: c.pkName, n: c.porPk } : null;
+    const precios = c.oferta ? null : { price: +c.costo.toFixed(4), v70: +c.antes.toFixed(4), imp: +c.itbV.toFixed(4), total: +c.venta.toFixed(2) };
+    const cuenta = n => pk ? `${fmt(n)} ${plural(pk.name, n)} × ${fmt(pk.n)}` : fmt(n);
+    const pres = `${cuenta(c.cant)}${c.regalo ? ' + ' + cuenta(c.regalo) + ' de regalo' : ''} = ${fmt(c.uds)} UNID`;
+    let it = kBusca(l); const nuevo = !it;   // se busca en el momento: dos líneas del mismo producto nuevo quedan en una sola pieza
+    if (it) {
+      it.qty = (it.qty || 0) + c.uds;
+      if (precios) Object.assign(it, precios);
+      if (!it.code && norm(l.code)) it.code = l.code.replace(/\D/g, '');
+      if (pk && !it.pack) it.pack = pk;
+      if (l.ref.trim() && !it.ref) it.ref = l.ref.trim();
+      log('Entrada', it, c.uds, nota, { pres });
+    } else {
+      const own = l.code.replace(/\D/g, '');
+      it = { id: newId(), added: Date.now(), pack: pk, sc: genSc(l.name.trim(), S.items), tipo: l.tipo, tr: l.tr, code: own || genCode(), name: l.name.trim(), ref: l.ref.trim(), brand: '',
+        model: '', cat: '', sub: '', sku: '', qty: c.uds, unit: 'UNID', loc: '', rac: '', year: '', price: 0, v70: 0, imp: 0, total: 0, ...(precios || {}) };
+      S.items.push(it); log('Alta', it, c.uds, nota, { pres });
+      if (!own) etiquetas.push(it);
+    }
+    if (!it.id) it.id = newId();
+    lineas.push({ pid: it.id, sc: it.sc || '', name: it.name, ref: l.ref.trim(), code: String(it.code || ''), tr: it.tr, tipo: it.tipo, nuevo, como: l.como, pk, cant: c.cant, regalo: c.regalo, uds: c.uds,
+      precio: c.precio, tasa: +l.tasa || 0, sub: +c.sub.toFixed(2), itb: +c.itb.toFixed(2), costo: +c.costo.toFixed(4), gan: +c.gan.toFixed(4), venta: +c.venta.toFixed(2), oferta: c.oferta, ganancia: +c.ganancia.toFixed(2) });
+  });
+  const k = { id: newId(), t: Date.now(), fecha, sup, fac, ncf, dig, rec, incl: T.incl, flete: T.flete, nota: v('kNota'), lineas, sub: +T.sub.toFixed(2), itb: +T.itb.toFixed(2), total: +T.total.toFixed(2), anulada: false };
+  comOf(S).compras.unshift(k);
+  Object.assign(COM, { dig, incl: kRadio('kIncl'), gan: parseFloat($('#kGanG').value) || 0 }); comPref();
+  save(); kLimpiar(); renderAll(); beep('in'); okGiro();
+  $('#kListo').innerHTML = `<b>Factura guardada.</b> ${esc(sup)} · ${esc(ref)}: ${fmt(lineas.length)} ${lineas.length === 1 ? 'producto' : 'productos'}, ${fmt(T.uds)} unidades entraron al inventario. Total ${rd(k.total)}.` +
+    (etiquetas.length ? `<div class="kets"><span>Imprime la etiqueta de los nuevos:</span>${etiquetas.map(it => `<button type="button" data-et="${esc(it.id)}">${esc(it.sc)}</button>`).join('')}</div>` : '');
+  if (etiquetas.length === 1) openLabel(etiquetas[0]);
+};
+$('#kListo').addEventListener('click', e => { const b = e.target.closest('[data-et]'); if (!b) return; const it = itemById(b.dataset.et); if (it) openLabel(it); });
+
+/* Facturas registradas: ver el detalle y anular */
+const kGanancia = k => (k.lineas || []).reduce((s, x) => s + (+x.ganancia || 0), 0);
+let kVer = null;
+function kAbrir(k){
+  kVer = k;
+  $('#kDTit').textContent = `Factura ${[k.fac, k.ncf].filter(Boolean).join(' · ')}${k.anulada ? ' (ANULADA)' : ''}`;
+  const d = (t, x) => x ? `<div><span>${t}:</span> <b>${esc(x)}</b></div>` : '';
+  $('#kDDet').innerHTML = d('Fecha', kFecha(k.fecha)) + d('Suplidor', k.sup) + d('Factura', k.fac) + d('NCF', k.ncf) + d('Digitó', k.dig) + d('Recibió', k.rec) +
+    d('Registrada', new Date(k.t).toLocaleString('es-DO', { dateStyle: 'short', timeStyle: 'short' })) + d('Precios de la factura', k.incl ? 'con ITBIS incluido' : 'sin ITBIS') + d('Nota', k.nota);
+  $('#kDBody').innerHTML = (k.lineas || []).map(x => {
+    const pk = x.pk ? `${fmt(x.cant)} ${plural(x.pk.name, x.cant)} × ${fmt(x.pk.n)}` : fmt(x.cant);
+    return `<tr><td>${x.sc ? `<span class="scb">${esc(x.sc)}</span> ` : ''}${esc(x.name)}${x.nuevo ? ' <span class="muted">(nuevo)</span>' : ''}</td><td>${esc(pk)}${x.regalo ? ' + ' + fmt(x.regalo) + ' de regalo' : ''} = ${fmt(x.uds)}</td>` +
+      `<td class="num">${rd(x.precio)}</td><td class="num">${rd(x.sub)}</td><td class="num">${x.tasa ? x.tasa + ' % · ' + rd(x.itb) : 'Exento'}</td><td class="num">${rd(x.costo)}</td>` +
+      (x.oferta ? '<td class="num" colspan="3">Oferta: no cambió el precio</td>' : `<td class="num">${kPct(x.gan)}</td><td class="num">${rd(x.venta)}</td><td class="num">${rd(x.ganancia)}</td>`) + '</tr>';
+  }).join('');
+  $('#kDTot').innerHTML = d('Subtotal', rd(k.sub)) + d('ITBIS', rd(k.itb)) + (k.flete ? d('Flete', rd(k.flete)) : '') + d('Total', rd(k.total)) + d('Ganancia esperada', rd(kGanancia(k)));
+  $('#kAnular').hidden = !!k.anulada;
+  $('#kDlg').showModal();
+}
+$('#kBody').addEventListener('click', e => { const b = e.target.closest('[data-k]'); if (!b) return; const k = comOf(S).compras.find(x => x.id === b.dataset.k); if (k) kAbrir(k); });
+$('#kAnular').onclick = () => {
+  const k = kVer; if (!k || k.anulada) return;
+  const ref = [k.fac && 'Factura ' + k.fac, k.ncf && 'NCF ' + k.ncf].filter(Boolean).join(' · ');
+  const falta = (k.lineas || []).filter(x => { const it = itemById(x.pid); return it && (it.qty || 0) < x.uds; });
+  if (!confirm(`Anular ${ref} de ${k.sup}.\n\nSe descuenta del inventario lo que entró con ella (${fmt((k.lineas || []).reduce((s, x) => s + x.uds, 0))} unidades). Los precios no se tocan y la factura queda en la lista marcada como anulada.` +
+    (falta.length ? `\n\nOjo: de ${falta.map(x => x.name).slice(0, 5).join(', ')} ya no queda todo; se descuenta solo lo que hay.` : '') + '\n\n¿Anular?')) return;
+  (k.lineas || []).forEach(x => {
+    const it = itemById(x.pid); if (!it) return;
+    const d = Math.min(x.uds, Math.max(0, it.qty || 0)); if (!d) return;
+    it.qty -= d; log('Ajuste', it, -d, `Anulación de compra: ${ref} · Suplidor: ${k.sup}`);
+  });
+  k.anulada = true;
+  save(); renderAll(); okGiro(); $('#kDlg').close();
+  $('#kListo').innerHTML = `<b>Factura anulada.</b> ${esc(k.sup)} · ${esc(ref)}: se descontó del inventario lo que había entrado.`;
+};
+
+/* Precios: la lista de precios de venta; aquí se cambia la ganancia o el precio */
+const kTasaDe = it => +it.v70 > 0 ? Math.round((+it.total / +it.v70 - 1) * 100) / 100 : 0.18;
+function kUltimas(){ const m = new Map(); comOf(S).compras.forEach(k => { if (!k.anulada) (k.lineas || []).forEach(x => { if (!m.has(x.pid)) m.set(x.pid, k); }); }); return m; }
+$('#kpArea').innerHTML = '<option value="">Todas las áreas</option>' + Object.keys(TRS).map(t => `<option value="${t}">${TRS[t]}</option>`).join('') +
+  Object.keys(SEC_LBL).filter(k => k.includes('_')).map(k => `<option value="${k}">${SEC_LBL[k]}</option>`).join('');
+// Lo que muestra la vista y lo que lleva el reporte: con precio, según la búsqueda y el área elegida
+function kPrecLista(){
+  const q = fold($('#kpq').value.trim()), ar = $('#kpArea').value;
+  return S.items.filter(i => (+i.total > 0 || +i.price > 0) && (!ar || K(i) === ar || K(i).startsWith(ar + '_')) && (!q || fold([i.sc, i.name, i.ref, i.code].join(' ')).includes(q)));
+}
+function renderPrecios(){
+  const ult = kUltimas(), con = S.items.filter(i => +i.total > 0 || +i.price > 0);
+  const rows = kPrecLista().sort((a, b) => COLL.compare(a.name, b.name));
+  $('#kpCount').textContent = `${fmt(rows.length)} con precio · ${fmt(S.items.length - con.length)} sin precio todavía (lo toman con su primera factura)`;
+  $('#kpPrint').disabled = $('#kpXls').disabled = !rows.length;
+  $('#kpBody').innerHTML = rows.slice(0, 400).map(i => {
+    const r = kTasaDe(i), g = +i.price ? +i.v70 / +i.price - 1 : 0, k = ult.get(i.id);
+    return `<tr data-id="${esc(i.id)}"><td class="mono nw">${esc(i.sc || '')}</td><td>${esc(i.name)}</td><td class="nw">${esc(SEC_LBL[K(i)])}</td><td class="num">${rd(i.price)}</td><td class="num">${r ? fmt(+(r * 100).toFixed(1)) + ' %' : 'Exento'}</td>` +
+      `<td class="num"><input data-p="gan" type="number" step="0.1" inputmode="decimal" value="${+i.price ? +(g * 100).toFixed(1) : ''}" ${+i.price ? '' : 'disabled'} aria-label="Ganancia de ${esc(i.name)}"></td>` +
+      `<td class="num"><input data-p="venta" type="number" min="0" step="0.01" inputmode="decimal" value="${(+i.total).toFixed(2)}" aria-label="Precio de venta de ${esc(i.name)}"></td>` +
+      `<td class="num">${i.pack && i.pack.n > 1 ? esc(i.pack.name) + ' de ' + fmt(i.pack.n) + ': ' + rd(i.total * i.pack.n) : ''}</td><td>${k ? esc(kFecha(k.fecha) + ' · ' + k.sup) : ''}</td></tr>`;
+  }).join('') || '<tr><td colspan="9" class="muted">Todavía no hay productos con precio. Los precios salen de las facturas que registres.</td></tr>';
+}
+$('#kpBody').addEventListener('change', e => {
+  const inp = e.target.closest('input[data-p]'); if (!inp) return;
+  const it = itemById(inp.closest('tr').dataset.id); if (!it) return;
+  const r = kTasaDe(it), v = parseFloat(inp.value);
+  if (isNaN(v) || v < (inp.dataset.p === 'gan' ? -100 : 0)) return renderPrecios();
+  if (inp.dataset.p === 'gan') { it.v70 = +(+it.price * (1 + v / 100)).toFixed(4); it.total = +(it.v70 * (1 + r)).toFixed(2); }
+  else { it.total = +v.toFixed(2); it.v70 = +(it.total / (1 + r)).toFixed(4); }
+  it.imp = +(it.total - it.v70).toFixed(4);
+  save(); renderPrecios(); okGiro();
+});
+$('#kpq').addEventListener('input', renderPrecios);
+$('#kpArea').addEventListener('change', renderPrecios);
+
+/* Reporte de precios: impreso (o PDF) y en Excel; "solo venta" sirve para el mostrador porque no lleva costo ni ganancia */
+function kReporte(){
+  const solo = $('#kpTipo').value === 'venta', ult = kUltimas();
+  const its = kPrecLista().sort((a, b) => COLL.compare(SEC_LBL[K(a)], SEC_LBL[K(b)]) || COLL.compare(a.name, b.name));
+  const head = solo ? ['Cód. corto', 'Producto', 'Referencia', 'Área', 'Venta c/u con ITBIS', 'Por empaque', 'Existencia']
+    : ['Cód. corto', 'Producto', 'Referencia', 'Área', 'Costo c/u sin ITBIS', 'ITBIS', 'Ganancia %', 'Venta c/u con ITBIS', 'Por empaque', 'Existencia', 'Última compra'];
+  const filas = its.map(i => {
+    const r = kTasaDe(i), g = +i.price ? +i.v70 / +i.price - 1 : 0, k = ult.get(i.id), pk = i.pack && i.pack.n > 1 ? { t: `${i.pack.name} de ${fmt(i.pack.n)}`, v: +(i.total * i.pack.n).toFixed(2) } : null;
+    const base = [i.sc || '', i.name, i.ref || '', SEC_LBL[K(i)]];
+    return { it: i, r, g, pk, k, celdas: solo ? [...base, +(+i.total).toFixed(2), pk ? pk.t + ': ' + money(pk.v) : '', +i.qty || 0]
+      : [...base, +(+i.price).toFixed(2), r ? +(r * 100).toFixed(1) + ' %' : 'Exento', +(g * 100).toFixed(1), +(+i.total).toFixed(2), pk ? pk.t + ': ' + money(pk.v) : '', +i.qty || 0, k ? kFecha(k.fecha) + ' · ' + k.sup : ''] };
+  });
+  const filtro = [$('#kpArea').value && $('#kpArea').selectedOptions[0].textContent, $('#kpq').value.trim() && 'búsqueda "' + $('#kpq').value.trim() + '"'].filter(Boolean).join(' · ');
+  return { solo, head, filas, filtro };
+}
+$('#kpXls').onclick = () => {
+  const R0 = kReporte(); if (!R0.filas.length) return;
+  const fname = `precios_${slug(S.name)}${R0.solo ? '_venta' : ''}_${new Date().toISOString().slice(0, 10)}.xlsx`;
+  download(makeXlsx([{ name: 'PRECIOS', rows: [R0.head, ...R0.filas.map(f => f.celdas)], widths: R0.solo ? [12, 46, 18, 22, 16, 26, 11] : [12, 46, 18, 22, 16, 9, 11, 16, 26, 11, 30], styles: {} }]), fname);
+  $('#kpAviso').textContent = `Excel descargado: ${fname}. Búscalo en tu carpeta de Descargas.`;
+};
+$('#kpPrint').onclick = () => {
+  const R0 = kReporte(); if (!R0.filas.length) return;
+  const num = new Set(R0.solo ? [4, 6] : [4, 6, 7, 9]);
+  $('#printSheet').innerHTML = `<div class="kprep"><h3>EL PALACIO DE LA TRANSMISIÓN</h3><h4>${R0.solo ? 'LISTA DE PRECIOS DE VENTA' : 'REPORTE DE PRECIOS (costo, ITBIS y ganancia)'}</h4>` +
+    `<div class="kpdat"><span>${esc(S.name)}${R0.filtro ? ' · ' + esc(R0.filtro) : ''}</span><span>${fmt(R0.filas.length)} productos · ${new Date().toLocaleString('es-DO', { dateStyle: 'short', timeStyle: 'short' })}</span></div>` +
+    `<table><thead><tr>${R0.head.map((h, j) => `<th${num.has(j) ? ' class="n"' : ''}>${esc(h)}</th>`).join('')}</tr></thead><tbody>` +
+    R0.filas.map(f => `<tr>${f.celdas.map((v, j) => `<td${num.has(j) ? ' class="n"' : ''}>${typeof v === 'number' ? ((R0.solo ? j === 6 : j === 9) ? fmt(v) : (!R0.solo && j === 6) ? fmt(v) + ' %' : money(v)) : esc(v)}</td>`).join('')}</tr>`).join('') +
+    `</tbody></table><div class="kpfin">Precios en RD$. La venta ya incluye el ITBIS.</div></div>`;
+  // Hoja carta solo para este reporte (las etiquetas usan su propio tamaño)
+  const pg = document.createElement('style'); pg.textContent = '@page{size:letter;margin:10mm}'; document.body.appendChild(pg);
+  window.print();
+  setTimeout(() => { $('#printSheet').innerHTML = ''; pg.remove(); }, 800);
+};
+$('#kq').addEventListener('input', renderCom);
+
+function kVista(v){
+  COM.v = v; comPref();
+  $('#panelK').dataset.v = v;
+  $('#kVistas').querySelectorAll('button').forEach(b => b.setAttribute('aria-selected', b.dataset.v === v));
+  if (v !== 'fac') $('#kListo').innerHTML = '';
+  renderCom();
+}
+$('#kVistas').addEventListener('click', e => { const b = e.target.closest('button[data-v]'); if (b) kVista(b.dataset.v); });
+
+function renderCom(){
+  if (SEC !== 'com') return;
+  const ks = comOf(S).compras, vivas = ks.filter(k => !k.anulada);
+  $('#kNFac').textContent = fmt(vivas.length);
+  $('#kNPre').textContent = fmt(S.items.filter(i => +i.total > 0).length);
+  const personas = new Set(); ks.forEach(k => { if (k.dig) personas.add(k.dig); if (k.rec) personas.add(k.rec); });
+  $('#kPers').innerHTML = [...personas].sort(COLL.compare).map(p => `<option value="${esc(p)}">`).join('');
+  $('#kSups').innerHTML = [...new Set(ks.map(k => k.sup).filter(Boolean))].sort(COLL.compare).map(s => `<option value="${esc(s)}">`).join('');
+  const v = $('#panelK').dataset.v;
+  if (v === 'fac') {
+    $('#kNames').innerHTML = [...S.items].sort((a, b) => COLL.compare(a.name, b.name)).map(i => `<option value="${esc(i.name)}">${esc([i.sc, SEC_LBL[K(i)], 'hay ' + fmt(i.qty || 0)].filter(Boolean).join(' · '))}</option>`).join('');
+    kRefrescar();
+  } else if (v === 'lis') {
+    const q = fold($('#kq').value.trim());
+    const rows = ks.filter(k => !q || fold([k.sup, k.fac, k.ncf, k.dig, k.rec, ...(k.lineas || []).map(x => x.name + ' ' + x.sc + ' ' + x.ref)].join(' ')).includes(q));
+    $('#kCount').textContent = `${fmt(rows.length)} ${rows.length === 1 ? 'factura' : 'facturas'}`;
+    $('#kBody').innerHTML = rows.slice(0, 300).map(k => `<tr class="${k.anulada ? 'anulada' : ''}"><td class="nw">${esc(kFecha(k.fecha))}</td><td>${esc(k.sup)}</td><td>${esc([k.fac, k.ncf].filter(Boolean).join(' · '))}${k.anulada ? ' · ANULADA' : ''}</td>` +
+      `<td class="num">${fmt((k.lineas || []).length)}</td><td class="num">${rd(k.total)}</td><td class="num">${rd(kGanancia(k))}</td><td>${esc(k.dig)}</td><td>${esc(k.rec)}</td><td><button type="button" data-k="${esc(k.id)}">Ver</button></td></tr>`).join('') ||
+      '<tr><td colspan="9" class="muted">Todavía no hay facturas registradas.</td></tr>';
+  } else renderPrecios();
+}
+kCargaBorrador();
+$('#panelK').dataset.v = ['fac', 'lis', 'pre'].includes(COM.v) ? COM.v : 'fac';
+$('#kVistas').querySelectorAll('button').forEach(b => b.setAttribute('aria-selected', b.dataset.v === $('#panelK').dataset.v));
 
 /* ---------- Inicio ---------- */
 memLists();
