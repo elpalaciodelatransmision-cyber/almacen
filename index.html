@@ -402,6 +402,12 @@ body:not([data-sec=tab]) #panelT{display:none}
 .t-pan h3{margin:0 0 2px;font-size:15px;font-weight:700}
 .t-pan .t-sub{margin:0 0 12px;font-size:12.5px;color:var(--mute)}
 .t-pan .t-vacio{padding:18px 0 6px;color:var(--mute);font-size:13.5px}
+.t-mini{display:grid;grid-template-columns:repeat(auto-fit,minmax(78px,1fr));gap:10px 14px;margin:0 0 4px;padding:0 0 12px;border-bottom:1px solid var(--line)}
+.t-mini div{display:grid;gap:2px;min-width:0}
+.t-mini span{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--mute)}
+.t-mini b{font-size:16px;font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
+.t-mini b.cero{color:var(--cero)}.t-mini b.bajo{color:var(--bajo)}
+.t-pan h4.t-h{margin:14px 0 8px;font-size:12.5px;font-weight:700;color:var(--ink2)}
 .t-pie{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
 .t-pie button{height:32px;min-height:32px;font-size:13px}
 /* barras horizontales: etiqueta, barra y valor en texto (nunca el color solo) */
@@ -3853,6 +3859,7 @@ function tColumnas(cats, series, fmtV){
 }
 const tTabla = (cab, filas) => `<details class="t-tabla"><summary>Ver como tabla</summary><table><thead><tr>${cab.map((c, i) => `<th${i ? ' class="num"' : ''}>${c}</th>`).join('')}</tr></thead><tbody>${filas.map(f => `<tr>${f.map((v, i) => `<td${i ? ' class="num"' : ''}>${v}</td>`).join('')}</tr>`).join('')}</tbody></table></details>`;
 
+const tipoDe = x => CAT_LBL[x.tipo] ? x.tipo : 'mec';   // Piezas (mec) o Insumos (ins)
 function renderInicio(){
   if (SEC !== 'tab') return;
   const its = S.items, movs = S.movements, ks = comOf(S).compras.filter(k => !k.anulada), jobs = svcOf(S).jobs.filter(j => !j.void);
@@ -3871,7 +3878,7 @@ function renderInicio(){
   const accH = acc.map(([k, t, i, p]) => `<button type="button" data-ir="${k}"${p ? ' class="prin"' : ''}>${k === 'svc' ? icoArea('ser') : k === 'fac' ? icoArea('com') : ico(i)}${t}</button>`).join('');
 
   const kpi = (dt, dd, sub) => `<div class="t-kpi"><dt>${dt}</dt><dd>${dd}${sub ? `<small>${sub}</small>` : ''}</dd></div>`;
-  const band = kpi('Inventario a costo', rd(valC), `${fmt(its.length)} productos · ${fmt(uds)} unidades`) + kpi('A precio de venta', rd(valV), valC ? `margen ${kPct(valV / 1.18 / valC - 1)} aprox.` : 'según la lista de precios') +
+  const band = kpi('Inventario a costo', rd(valC), `${fmt(its.filter(i => tipoDe(i) === 'mec').length)} piezas · ${fmt(its.filter(i => tipoDe(i) === 'ins').length)} insumos · ${fmt(uds)} unidades`) + kpi('A precio de venta', rd(valV), valC ? `margen ${kPct(valV / 1.18 / valC - 1)} aprox.` : 'según la lista de precios') +
     kpi('Compras del mes', rd(compMes), `${fmt(kMes.length)} ${kMes.length === 1 ? 'factura' : 'facturas'} · ITBIS ${rd(itbMes)}`) + kpi('Movimiento de hoy', `${fmt(dHoy)} <span class="muted" style="font-size:14px;font-weight:600">despachadas</span>`, `${fmt(eHoy)} unidades entraron`) +
     kpi('Por atender', `${fmt(agot.length + bajo.length)}`, `${fmt(agot.length)} ${agot.length === 1 ? 'agotado' : 'agotados'} · ${fmt(bajo.length)} bajo el mínimo`);
 
@@ -3894,10 +3901,22 @@ function renderInicio(){
       tColumnas(dias.map((d, i) => ({ n: i % 2 ? '' : dTxt(d), tip: dTxt(d) })), [{ nombre: 'Entradas', vals: eV }, { nombre: 'Despachos', vals: dV }], v => fmt(v) + ' unid.') +
       tTabla(['Día', 'Entradas', 'Despachos'], dias.map((d, i) => [dTxt(d), fmt(eV[i]), fmt(dV[i])])) : tVacio('No hubo entradas ni despachos en estos 14 días.'));
 
-  // Lo que más sale (30 días)
-  const sale = new Map(); movs.filter(m => esOut(m) && ahora - m.t < 30 * DIA).forEach(m => { const k = m.code || 'n:' + m.name; const x = sale.get(k) || { n: m.name, v: 0 }; x.v += Math.abs(m.qty || 0); sale.set(k, x); });
-  const top = [...sale.values()].sort((a, b) => b.v - a.v).slice(0, 8).map(x => ({ ...x, tip: `${x.n}: ${fmt(x.v)} unidades despachadas en 30 días` }));
-  const pTop = tPan('Lo que más sale', 'Unidades despachadas en los últimos 30 días', top.length ? tBarras(top, v => fmt(v)) : tVacio('Todavía no hay despachos en los últimos 30 días.'));
+  // Piezas e Insumos: cada uno con su resumen, cuántos hay en cada área y lo que más sale
+  const pTipo = tipo => {
+    const nom = CAT_LBL[tipo], a = its.filter(i => tipoDe(i) === tipo);
+    const u = a.reduce((s, i) => s + Math.max(0, +i.qty || 0), 0), v = a.reduce((s, i) => s + Math.max(0, +i.qty || 0) * (+i.price || 0), 0);
+    const ag = a.filter(i => (+i.qty || 0) <= 0).length, bj = a.filter(i => { const m = minDe(i), q = +i.qty || 0; return q > 0 && m > 0 && q <= m; }).length;
+    const g = new Map(); movs.filter(m => esOut(m) && ahora - m.t < 30 * DIA && tipoDe(m) === tipo).forEach(m => { const k = m.code || 'n:' + m.name; const x = g.get(k) || { n: m.name, v: 0 }; x.v += Math.abs(m.qty || 0); g.set(k, x); });
+    const tg = [...g.values()].sort((x, y) => y.v - x.v).slice(0, 5).map(x => ({ ...x, tip: `${x.n}: ${fmt(x.v)} unidades despachadas en 30 días` }));
+    const pa = Object.keys(TRS).map(t => { const b = a.filter(i => (TRS[i.tr] ? i.tr : 'aut') === t); return { n: TRS[t], v: b.length, cls: 'a-' + t, dot: 1, extra: `${fmt(b.reduce((s, i) => s + Math.max(0, +i.qty || 0), 0))} unid.`, tip: `${nom} de ${TRS[t]}: ${fmt(b.length)} productos` }; });
+    const c = (t, x, cls) => `<div><span>${t}</span><b${cls ? ` class="${cls}"` : ''}>${x}</b></div>`;
+    const cuerpo = !a.length ? tVacio(`Todavía no hay ${nom.toLowerCase()} en el inventario.`) :
+      `<div class="t-mini">${c('Productos', fmt(a.length))}${c('Unidades', fmt(u))}${c('Valor a costo', rd(v))}${c('Agotados', fmt(ag), ag ? 'cero' : '')}${c('Bajo el mínimo', fmt(bj), bj ? 'bajo' : '')}</div>` +
+      `<h4 class="t-h">Por área</h4>${tBarras(pa, x => fmt(x) + ' prod.')}` +
+      `<h4 class="t-h">Lo que más sale (30 días)</h4>${tg.length ? tBarras(tg, x => fmt(x)) : '<p class="t-sub" style="margin:0">Sin despachos en los últimos 30 días.</p>'}`;
+    return tPan(nom, tipo === 'ins' ? 'Aceites, líquidos y materiales que se gastan en el taller' : 'Repuestos y componentes de transmisión', cuerpo, `<button type="button" data-ir="ver-${tipo}">Ver ${nom.toLowerCase()}</button>`);
+  };
+  const pPie = pTipo('mec'), pIns = pTipo('ins');
 
   // Alertas
   const lst = (arr, q, cls) => `<ul class="t-lista">${arr.slice(0, 5).map(i => `<li><span>${i.sc ? `<span class="scb">${esc(i.sc)}</span> ` : ''}${esc(i.name)}</span><span class="q ${cls}">${q(i)}</span><span class="s">${esc(SEC_LBL[K(i)])} · <button type="button" data-ver="${esc(i.id)}">Ver</button></span></li>`).join('')}</ul>` + (arr.length > 5 ? `<p class="t-sub" style="margin:6px 0 0">… y ${fmt(arr.length - 5)} más</p>` : '');
@@ -3924,7 +3943,7 @@ function renderInicio(){
   $('#panelT').innerHTML = `<div class="t-hola"><h2>${saludo}</h2><p>${esc(S.name)} · ${esc(fechaHoy)}</p></div>` +
     `<div class="t-acc" role="group" aria-label="¿Qué vas a hacer?">${accH}</div>` +
     `<dl class="t-band">${band}</dl>` +
-    `<div class="t-grid">${pAl}${pMov}${pArea}${pComp}${pTop}${pSup}${pSvc}${pRec}</div>`;
+    `<div class="t-grid">${pAl}${pMov}${pPie}${pIns}${pArea}${pComp}${pSup}${pSvc}${pRec}</div>`;
 }
 // Accesos del tablero: cada uno abre la pantalla de su tarea
 $('#panelT').addEventListener('click', e => {
@@ -3934,6 +3953,7 @@ $('#panelT').addEventListener('click', e => {
   const k = b.dataset.ir;
   if (k === 'in' || k === 'out' || k === 'look') { setSec(lastTr + '_' + lastCat[lastTr]); setMode(k); return; }
   if (k === 'fac' || k === 'lis' || k === 'pre') { setSec('com'); kVista(k); return; }
+  if (k === 'ver-mec' || k === 'ver-ins') { setSec(lastTr + '_' + k.slice(4)); return; }
   if (k === 'svc') { setSec('ser'); $('#rSvc').focus(); return; }
   if (k === 'ped') $('#btnPedido').click();
 });
