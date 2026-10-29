@@ -356,7 +356,7 @@ button.kx{flex:0 0 auto;width:36px;padding:0;font-size:20px;line-height:1;color:
 .klisto b{color:var(--in)}
 .klisto .kets{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
 tr.anulada td{opacity:.55;text-decoration:line-through}tr.anulada td:last-child{opacity:1;text-decoration:none}
-#kDlg{width:min(980px,calc(100vw - 24px))}
+#kDlg{width:min(1240px,calc(100vw - 24px))}
 #kDlg .kdet{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,210px),1fr));gap:4px 16px;margin-bottom:12px;font-size:14.5px}
 #kDlg .kdet span{color:var(--mute)}
 .kvistas{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
@@ -378,6 +378,12 @@ tr.anulada td{opacity:.55;text-decoration:line-through}tr.anulada td:last-child{
 .kprep tr{page-break-inside:avoid}
 .kprep .n{text-align:right;white-space:nowrap}
 .kprep .kpfin{margin-top:2mm;font-size:7.5pt}
+#kDlg table{min-width:900px}
+#kDlg th,#kDlg td{overflow-wrap:normal;word-break:normal;vertical-align:top}
+#kDlg td.kd-pro{min-width:210px}
+#kDlg td.kd-pre{min-width:190px}
+#kDlg td.num,#kDlg th.num{white-space:nowrap}
+#kDlg td small{display:block;color:var(--mute);font-weight:600}
 #fotoDlg{--dw:600px}
 #fotoDlg img{display:block;max-width:100%;max-height:62vh;margin:0 auto;object-fit:contain;background:#fff;border-radius:10px}
 
@@ -3673,8 +3679,10 @@ function kAbrir(k){
     d('Registrada', new Date(k.t).toLocaleString('es-DO', { dateStyle: 'short', timeStyle: 'short' })) + d('Precios de la factura', k.incl ? 'con ITBIS incluido' : 'sin ITBIS') + d('Nota', k.nota);
   $('#kDBody').innerHTML = (k.lineas || []).map(x => {
     const pk = x.pk ? `${fmt(x.cant)} ${plural(x.pk.name, x.cant)} × ${fmt(x.pk.n)}` : fmt(x.cant);
-    return `<tr><td>${x.sc ? `<span class="scb">${esc(x.sc)}</span> ` : ''}${esc(x.name)}${x.nuevo ? ' <span class="muted">(nuevo)</span>' : ''}</td><td>${esc(pk)}${x.regalo ? ' + ' + fmt(x.regalo) + ' de regalo' : ''} = ${fmt(x.uds)}</td>` +
-      `<td class="num">${rd(x.precio)}</td><td class="num">${rd(x.sub)}</td><td class="num">${x.tasa ? x.tasa + ' % · ' + rd(x.itb) : 'Exento'}</td><td class="num">${rd(x.costo)}</td>` +
+    const reg = x.regalo ? (x.pk ? `${fmt(x.regalo)} ${plural(x.pk.name, x.regalo).toLowerCase()} de regalo` : `${fmt(x.regalo)} de regalo`) : '';
+    return `<tr><td class="kd-pro">${x.sc ? `<span class="scb">${esc(x.sc)}</span> ` : ''}${esc(x.name)}${x.nuevo ? ' <span class="muted">(nuevo)</span>' : ''}</td>` +
+      `<td class="kd-pre">${esc(pk)}${reg ? '<small>+ ' + esc(reg) + '</small>' : ''}<small>= ${fmt(x.uds)} unidades</small></td>` +
+      `<td class="num">${rd(x.precio)}</td><td class="num">${rd(x.sub)}</td><td class="num">${x.tasa ? rd(x.itb) + '<small>' + x.tasa + ' %</small>' : 'Exento'}</td><td class="num">${rd(x.costo)}</td>` +
       (x.oferta ? '<td class="num" colspan="3">Oferta: no cambió el precio</td>' : `<td class="num">${kPct(x.gan)}</td><td class="num">${rd(x.venta)}</td><td class="num">${rd(x.ganancia)}</td>`) + '</tr>';
   }).join('');
   $('#kDTot').innerHTML = d('Subtotal', rd(k.sub)) + d('ITBIS', rd(k.itb)) + (k.flete ? d('Flete', rd(k.flete)) : '') + d('Total', rd(k.total)) + d('Ganancia esperada', rd(kGanancia(k)));
