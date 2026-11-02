@@ -51,7 +51,7 @@
    Menú lateral grafito con el rojo del Palacio; contenido sobre fondo claro, superficies blancas y bordes finos.
    Una sola entrada para cada cosa: el menú lleva a cada parte; dentro de Inventario se elige el área, la sección y el modo.
    Tema: claro por defecto; oscuro con @media (prefers-color-scheme:dark){:root:not([data-tema="claro"])} y :root[data-tema="oscuro"].
-   La impresión de requisiciones y etiquetas Zebra (.req .lbl #printSheet @page) se queda tal cual, al final. */
+   La impresión de etiquetas Zebra (.lbl #printSheet @page) se queda tal cual, al final. */
 
 /* ---------- 1. Variables ---------- */
 :root{
@@ -381,6 +381,47 @@ tr.anulada td{opacity:.55;text-decoration:line-through}tr.anulada td:last-child{
 #fotoDlg{--dw:600px}
 #fotoDlg img{display:block;max-width:100%;max-height:62vh;margin:0 auto;object-fit:contain;background:#fff;border-radius:8px}
 
+/* ---------- 8b. Requisiciones: lista de compra para reponer el almacén ---------- */
+body:not([data-sec=req]) #panelR{display:none}
+#panelR [data-vista]{display:none}
+#panelR[data-v=rev] [data-vista=rev],#panelR[data-v=doc] [data-vista=doc],#panelR[data-v=his] [data-vista=his]{display:block}
+#panelR button.primary{background:var(--ink);border-color:var(--ink);color:var(--panel)}
+#panelR .tools select{width:auto}
+.rq-tab{min-width:760px}
+.rq-tab td{vertical-align:middle}
+.rq-tab th.rck,.rq-tab td.rck{width:44px;text-align:center}
+.rq-tab input[type=checkbox]{width:18px;height:18px}
+.rq-tab input[type=number]{width:78px;height:32px;padding:4px 7px;text-align:right;font-variant-numeric:tabular-nums}
+.rq-tab input[data-f=qty]{font-weight:700}
+.rq-tab td small{color:var(--mute)}
+.rq-tab .area{display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.rq-tab .area .dot{width:8px;height:8px;border-radius:50%;background:var(--area)}
+.rq-tab td.cero{color:var(--cero);font-weight:700}
+.rq-tab td.bajo{color:var(--bajo);font-weight:700}
+.rq-tab tr.off td:not(.rck){opacity:.6}
+.rq-res{margin:10px 0 0;font-weight:600}
+.rq-res b{color:var(--ink)}
+.rq-gen{display:grid;grid-template-columns:minmax(0,220px) minmax(0,1fr) auto;gap:10px;align-items:end;margin-top:14px;padding:14px;background:var(--panel);border:1px solid var(--line);border-radius:var(--r)}
+.rq-gen label{display:block;font-size:13px;font-weight:600;margin-bottom:4px}
+.rq-doc h2{margin:0;font-size:20px}
+.rq-doc .rq-sub{margin:2px 0 12px;color:var(--mute)}
+.rq-acc{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.rq-acc .danger{margin-left:auto}
+.rq-cols{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:16px;align-items:start}
+.rq-pv canvas{display:block;width:100%;height:auto;border:1px solid var(--line);border-radius:6px;background:#fff;margin-bottom:12px}
+.rq-msg textarea{min-height:300px;resize:vertical;font-size:14px}
+.rq-msg p{font-size:13px;color:var(--mute);margin:6px 0 0}
+.rq-vacio{padding:18px;border:1px dashed var(--line2);border-radius:var(--r);color:var(--mute);font-weight:600}
+.rqimg{display:block;width:215.9mm;height:279.4mm;break-after:page;page-break-after:always}
+@media (max-width:820px){.rq-gen{grid-template-columns:1fr}.rq-cols{grid-template-columns:1fr}}
+/* en el celular caben las casillas que se usan (Mínimo y Pedir); el área se elige con el filtro */
+@media (max-width:620px){
+  .rq-tab{min-width:0}
+  .rq-tab th:nth-child(3),.rq-tab td:nth-child(3),.rq-tab th:nth-child(7),.rq-tab td:nth-child(7){display:none}
+  .rq-tab th,.rq-tab td{padding-left:6px;padding-right:6px}
+  .rq-tab input[type=number]{width:60px}
+}
+
 /* ---------- 9. Tablero ---------- */
 body:not([data-sec=tab]) #panelT{display:none}
 .t-hola{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:4px 16px;margin:0 0 14px}
@@ -628,22 +669,7 @@ body.locked .app,body.locked dialog{display:none!important}
 }
 @media (prefers-reduced-motion:reduce){.side{transition:none}}
 
-/* ---------- 16. Impresión: requisición y etiquetas Zebra (no se tocan) ---------- */
-.req{width:100%;padding:3mm 0 4.5mm;font-family:Arial,Helvetica,sans-serif;color:#000;page-break-inside:avoid}
-.req+.req{border-top:1px dashed #777;margin-top:2mm;padding-top:4mm}
-.req h3{margin:0;text-align:center;font-size:12.5pt;letter-spacing:.02em}
-.req h4{margin:.5mm 0 0;text-align:center;font-size:8.5pt;font-weight:700}
-.req .rdat{display:flex;justify-content:space-between;gap:6mm;margin:2.5mm 0;font-size:9.5pt;font-weight:700}
-.req .rdat u{font-weight:400}
-.req table.rtab{width:100%;border-collapse:collapse;table-layout:fixed}
-.req .rtab th,.req .rtab td{border:1.2px solid #000;font-size:8.5pt;padding:.8mm 1.5mm}
-.req .rtab th{background:#e3e3e3;font-size:8pt;height:7mm;text-align:center}
-.req .rtab td{height:8.2mm;vertical-align:middle}
-.req .rtab td.rc{text-align:center;font-weight:700;font-size:11pt}
-.req .rtab td.rcod{font-family:monospace;font-size:8pt}
-.req .rtab td.rdes{font-size:8.5pt;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
-.req .rfir{display:flex;justify-content:space-between;gap:8mm;margin-top:7mm;font-size:7.5pt;text-align:center}
-.req .rfir span{flex:1;border-top:1px solid #000;padding-top:1mm}
+/* ---------- 16. Impresión: etiquetas Zebra (no se tocan) ---------- */
 @page{size:letter;margin:8mm 12mm}
 .lbl{width:76.2mm;height:50.8mm;padding:2.5mm 3mm;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;overflow:hidden;break-inside:avoid;font-family:Arial,sans-serif;color:#000}
 .lbl+.lbl{break-before:page;page-break-before:always}
@@ -657,7 +683,7 @@ body.locked .app,body.locked dialog{display:none!important}
 
 /* ---------- 17. Ajustes por sección ---------- */
 /* fuera del inventario el menú Más sigue a mano (colores, cerrar sesión); lo que es del inventario se oculta */
-body[data-inv=no] #btnReacomodar,body[data-inv=no] #btnImport,body[data-inv=no] #btnRestore,body[data-inv=no] #btnDel,body[data-inv=no] details.more .zona-roja,body[data-inv=no] #tablero,body[data-sec=cat] #btnExport,body[data-sec=com] #btnExport,body[data-sec=tab] #btnExport{display:none!important}
+body[data-inv=no] #btnReacomodar,body[data-inv=no] #btnImport,body[data-inv=no] #btnRestore,body[data-inv=no] #btnDel,body[data-inv=no] details.more .zona-roja,body[data-inv=no] #tablero,body[data-sec=cat] #btnExport,body[data-sec=com] #btnExport,body[data-sec=tab] #btnExport,body[data-sec=req] #btnExport{display:none!important}
 /* franja de cifras del inventario: solo texto */
 #tablero{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 16px;margin:12px 2px 4px;font-size:13.5px;color:var(--mute)}
 #tablero:empty{display:none}
@@ -719,7 +745,6 @@ body[data-inv=no] #btnReacomodar,body[data-inv=no] #btnImport,body[data-inv=no] 
     </div>
     <nav class="side-nav" role="tablist" aria-label="Secciones" id="secTabs"></nav>
     <div class="side-tools">
-      <button id="btnPedido" class="ibtn"><svg class="ico" aria-hidden="true"><use href="#i-pedido"/></svg><span class="tx">Pedido</span><span class="insignia" data-n="0"></span></button>
       <button id="btnIA" class="iabtn"><svg class="ico" aria-hidden="true"><use href="#i-ia"/></svg><span class="tx">IA mecánico</span></button>
     </div>
     <div class="side-foot">
@@ -913,6 +938,50 @@ body[data-inv=no] #btnReacomodar,body[data-inv=no] #btnImport,body[data-inv=no] 
     <datalist id="kNames"></datalist><datalist id="kSups"></datalist><datalist id="kPers"></datalist>
   </section>
 
+  <!-- Requisiciones: lo que hace falta comprar para reponer el almacén (lo pinta renderReq) -->
+  <section id="panelR" data-v="rev">
+    <div class="kvistas" role="tablist" aria-label="Requisiciones" id="rVistas">
+      <button type="button" role="tab" data-v="rev">Revisar faltantes <small id="rNFal"></small></button>
+      <button type="button" role="tab" data-v="doc">Requisición</button>
+      <button type="button" role="tab" data-v="his">Historial <small id="rNHis"></small></button>
+    </div>
+
+    <div data-vista="rev">
+      <div class="tools">
+        <input id="rq" type="search" placeholder="Buscar por código corto, nombre, referencia o marca" aria-label="Buscar productos">
+        <select id="rFil" aria-label="Qué productos ver">
+          <option value="need">Necesitan reposición</option>
+          <option value="near">También los que están cerca del mínimo</option>
+          <option value="sin">Sin mínimo puesto</option>
+          <option value="all">Todo el inventario</option>
+        </select>
+        <select id="rArea" aria-label="Área"></select>
+      </div>
+      <div class="tablew"><table class="rq-tab">
+        <thead><tr><th class="rck"><input type="checkbox" id="rAll" aria-label="Marcar o desmarcar todos los de la lista"></th><th>Producto</th><th>Área</th><th class="num">Hay</th><th class="num">Mínimo</th><th class="num">Pedir</th><th>Ubicación</th></tr></thead>
+        <tbody id="rBody"></tbody>
+      </table></div>
+      <p class="rq-res" id="rRes" aria-live="polite"></p>
+      <p class="muted" style="font-size:13px;margin:4px 0 0">Entra sola cada pieza agotada o que llegó a su mínimo. Lo sugerido es lo justo para volver al doble del mínimo; cámbialo si hace falta. El mínimo se guarda en la pieza.</p>
+      <div class="rq-gen">
+        <div><label for="rPor">Solicitado por</label><input id="rPor" list="rPers" autocomplete="off"></div>
+        <div><label for="rNota">Observaciones (opcional)</label><input id="rNota" autocomplete="off"></div>
+        <button type="button" id="rGen" class="primary">Generar requisición</button>
+      </div>
+      <div class="err" id="rErr"></div>
+      <datalist id="rPers"></datalist>
+    </div>
+
+    <div data-vista="doc" class="rq-doc" id="rDoc"></div>
+
+    <div data-vista="his">
+      <div class="tablew"><table>
+        <thead><tr><th>N.º</th><th>Fecha</th><th class="num">Productos</th><th class="num">Unidades</th><th>Solicitó</th><th>Observaciones</th><th></th></tr></thead>
+        <tbody id="rHis"></tbody>
+      </table></div>
+    </div>
+  </section>
+
   <section id="panelM" class="hide">
     <div class="tablew"><table>
       <thead><tr><th>Fecha</th><th>Tipo</th><th class="nw">Cód. corto</th><th>Pieza</th><th>Presentación</th><th class="num">Unidades</th><th class="num">Stock después</th><th>Nota</th></tr></thead>
@@ -1096,23 +1165,6 @@ body[data-inv=no] #btnReacomodar,body[data-inv=no] #btnImport,body[data-inv=no] 
   <div class="fg" style="margin-top:10px"><div><label for="lblDown" style="font-size:13px;font-weight:600">Bajar (mm)</label><input id="lblDown" type="number" step="0.5" min="-25" max="25" value="0"></div><div><label for="lblRight" style="font-size:13px;font-weight:600">Mover a la derecha (mm)</label><input id="lblRight" type="number" step="0.5" min="-25" max="25" value="0"></div></div>
   <div class="muted" style="font-size:13px;margin-top:4px">Si la impresión sale arriba o a un lado, ajusta aquí (números negativos la mueven al revés). Se guarda para las próximas etiquetas.</div>
   <div class="dlgbtns"><button type="button" id="lblClose">Cerrar</button><button type="button" id="lblPrint" class="primary">Imprimir</button></div>
-</dialog>
-
-<dialog id="pedDlg">
-  <h2 style="margin-bottom:2px">Pedido de lo que hace falta</h2>
-  <p class="muted" id="pedSub" style="margin:0 0 10px"></p>
-  <div class="tools" style="margin-bottom:8px">
-    <label style="display:flex;gap:8px;align-items:center;font-weight:700"><input type="checkbox" id="pedTodo" style="width:auto;min-height:0"> Ver también las que están por debajo del doble del mínimo</label>
-  </div>
-  <div class="tablew" style="max-height:52vh;overflow:auto"><table>
-    <thead><tr><th>Pieza</th><th class="num">Hay</th><th class="num">Mínimo</th><th class="num">Pedir</th></tr></thead>
-    <tbody id="pedBody"></tbody>
-  </table></div>
-  <div class="err" id="pedErr"></div>
-  <div class="dlgbtns">
-    <button type="button" id="pedClose">Cerrar</button>
-    <button type="button" id="pedPrint" class="primary">Imprimir requisición</button>
-  </div>
 </dialog>
 
 <dialog id="reaDlg">
@@ -1334,10 +1386,10 @@ function trFrom(v){ const f = fold(v).trim(); return f.includes('cvt') ? 'cvt' :
 function ensureTipo(a){ let n = 0; a.items.forEach(i => { if (i.tipo === 'ele') { i.tipo = 'mec'; if (!TRS[i.tr]) i.tr = 'ele'; n++; } if (!TIPOS[i.tipo]) { i.tipo = guessTipo(i.name); n++; } if (!TRS[i.tr]) { i.tr = guessTr(i); n++; } }); return n; }
 // Pestaña activa (área + sección): todo (escanear, buscar, crear, eliminar, movimientos) trabaja solo con sus piezas
 const CAT_LBL = { mec: 'Piezas', ins: 'Insumos' };
-const SEC_LBL = { tab: 'Tablero', ser: 'Servicios', cat: 'Catálogo', com: 'Compras' };
+const SEC_LBL = { tab: 'Tablero', ser: 'Servicios', cat: 'Catálogo', com: 'Compras', req: 'Requisiciones' };
 Object.keys(TRS).forEach(t => Object.keys(CAT_LBL).forEach(c => { SEC_LBL[t + '_' + c] = TRS[t] + ' · ' + CAT_LBL[c]; }));
 const K = x => (TRS[x.tr] ? x.tr : 'aut') + '_' + (CAT_LBL[x.tipo] ? x.tipo : 'mec');
-// Las pestañas de inventario son área_sección (aut_mec…); Tablero, Servicios, Catálogo y Compras no son inventario
+// Las pestañas de inventario son área_sección (aut_mec…); Tablero, Servicios, Catálogo, Compras y Requisiciones no son inventario
 const enInv = () => SEC.includes('_');
 const secTr = () => enInv() ? SEC.split('_')[0] : 'aut';
 const secCat = () => enInv() ? SEC.split('_')[1] : 'mec';
@@ -1384,23 +1436,25 @@ const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJ
 const SNAP_KEY = 'palacio_nube_snap_v1', PRE_CLOUD_KEY = 'palacio_scan_v2_antes_nube';
 const sb = (window.supabase && window.supabase.createClient) ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: 'palacio_sesion_v1' } }) : null;
 // SNAP: lo último que se sabe que está en la nube. a: {id: nombre}, p: {id: {r: fila sin stock, q: stock}}, m: {id: fila}, serial
-const emptySnap = () => ({ a: {}, p: {}, m: {}, s: {}, j: {}, k: {}, serial: 0 });
+const emptySnap = () => ({ a: {}, p: {}, m: {}, s: {}, j: {}, k: {}, r: {}, serial: 0 });
 let SNAP = null;
 try { SNAP = JSON.parse(localStorage.getItem(SNAP_KEY) || 'null'); } catch(e) {}
-if (SNAP) { SNAP.s = SNAP.s || {}; SNAP.j = SNAP.j || {}; SNAP.k = SNAP.k || {}; }
+if (SNAP) { SNAP.s = SNAP.s || {}; SNAP.j = SNAP.j || {}; SNAP.k = SNAP.k || {}; SNAP.r = SNAP.r || {}; }
 const cloud = { chain: Promise.resolve(), timer: 0, pushQueued: false, drainQueued: false, inbox: [], loaded: !!SNAP, state: '' };
 const saveSnap = () => { try { localStorage.setItem(SNAP_KEY, JSON.stringify(SNAP)); } catch(e) {} };
 const saveLocal = () => { try { localStorage.setItem(KEY2, JSON.stringify(R)); $('#saveWarn').classList.add('hide'); } catch(e) { $('#saveWarn').classList.remove('hide'); } };
 const inChain = fn => { cloud.chain = cloud.chain.then(fn, fn); return cloud.chain; };
 
-function ensureIds(){ R.almacenes.forEach(a => { svcOf(a); a.services.forEach(x => { if (!x.id) x.id = newId(); }); a.jobs.forEach(x => { if (!x.id) x.id = newId(); }); comOf(a).compras.forEach(x => { if (!x.id) x.id = newId(); }); a.items.forEach(i => { if (!i.id) i.id = newId(); }); a.movements.forEach(m => { if (!m.id) m.id = newId(); }); }); }
+function ensureIds(){ R.almacenes.forEach(a => { svcOf(a); a.services.forEach(x => { if (!x.id) x.id = newId(); }); a.jobs.forEach(x => { if (!x.id) x.id = newId(); }); comOf(a).compras.forEach(x => { if (!x.id) x.id = newId(); }); reqOf(a).reqs.forEach(x => { if (!x.id) x.id = newId(); }); a.items.forEach(i => { if (!i.id) i.id = newId(); }); a.movements.forEach(m => { if (!m.id) m.id = newId(); }); }); }
+// Mínimo antes de pedir de una pieza (0 = sin mínimo); lo usan la nube, el Tablero y Requisiciones
+const minDe = (it) => Math.max(0, Math.round(Number(it.min) || 0));
 const pRow = (it, almId) => ({ id: it.id, almacen_id: almId, seccion: it.tipo || 'mec', area: TRS[it.tr] ? it.tr : 'aut', codigo_barras: String(it.code || ''), codigo_corto: it.sc || '', nombre: it.name || '',
   referencia: it.ref || '', marca: it.brand || '', modelo: it.model || '', categoria: it.cat || '', subcategoria: it.sub || '', sku: it.sku || '', unidad: it.unit || '',
   ubicacion: it.loc || '', rac: it.rac || '', anio: String(it.year ?? ''), precio_compra: +it.price || 0, valor_70: +it.v70 || 0, importe: +it.imp || 0, precio_total: +it.total || 0,
-  empaque_nombre: it.pack && it.pack.n > 1 ? it.pack.name : null, empaque_unidades: it.pack && it.pack.n > 1 ? it.pack.n : null, creado_ms: it.added || null, foto: it.foto || '' });
+  empaque_nombre: it.pack && it.pack.n > 1 ? it.pack.name : null, empaque_unidades: it.pack && it.pack.n > 1 ? it.pack.n : null, creado_ms: it.added || null, foto: it.foto || '', minimo: minDe(it) });
 const pFrom = r => ({ id: r.id, tipo: r.seccion, tr: r.area || '', code: r.codigo_barras, sc: r.codigo_corto, name: r.nombre, ref: r.referencia, brand: r.marca, model: r.modelo, cat: r.categoria,
   sub: r.subcategoria, sku: r.sku, unit: r.unidad, loc: r.ubicacion, rac: r.rac || '', year: r.anio, price: +r.precio_compra, v70: +r.valor_70, imp: +r.importe, total: +r.precio_total,
-  pack: r.empaque_unidades > 1 ? { name: r.empaque_nombre || 'Empaque', n: r.empaque_unidades } : null, added: r.creado_ms ? +r.creado_ms : undefined, foto: r.foto || '' });
+  pack: r.empaque_unidades > 1 ? { name: r.empaque_nombre || 'Empaque', n: r.empaque_unidades } : null, added: r.creado_ms ? +r.creado_ms : undefined, foto: r.foto || '', min: Math.max(0, Math.round(+r.minimo || 0)) });
 const mRow = (m, almId) => ({ id: m.id, almacen_id: almId, seccion: m.tipo || 'mec', area: TRS[m.tr] ? m.tr : 'aut', fecha_ms: m.t, tipo: m.type, codigo_barras: String(m.code || ''), pieza: m.name || '',
   cantidad: Math.round(+m.qty || 0), stock_despues: Math.round(+m.after || 0), presentacion: m.pres || '', nota: m.note || '' });
 const mFrom = r => ({ id: r.id, t: +r.fecha_ms, type: r.tipo, tipo: r.seccion, tr: r.area || '', code: r.codigo_barras, name: r.pieza, qty: r.cantidad, after: r.stock_despues, note: r.nota, pres: r.presentacion || undefined });
@@ -1418,6 +1472,11 @@ const kRow = (x, almId) => ({ id: x.id, almacen_id: almId, registrado_ms: x.t, f
   itbis_incluido: !!x.incl, flete: +(+x.flete || 0).toFixed(2), nota: x.nota || '', lineas: (x.lineas || []).map(kLin), subtotal: +(+x.sub || 0).toFixed(2), itbis: +(+x.itb || 0).toFixed(2), total: +(+x.total || 0).toFixed(2), anulada: !!x.anulada });
 const kFrom = r => ({ id: r.id, t: +r.registrado_ms, fecha: r.fecha || '', sup: r.suplidor || '', fac: r.factura || '', ncf: r.ncf || '', dig: r.digito || '', rec: r.recibio || '', incl: !!r.itbis_incluido,
   flete: +r.flete || 0, nota: r.nota || '', lineas: (r.lineas || []).map(kLin), sub: +r.subtotal || 0, itb: +r.itbis || 0, total: +r.total || 0, anulada: !!r.anulada });
+// Requisiciones: cada línea con sus campos en orden fijo (igual que las compras)
+const rqLin = x => ({ pid: x.pid || '', sc: x.sc || '', name: x.name || '', ref: x.ref || '', brand: x.brand || '', tr: x.tr || '', tipo: x.tipo || '', unit: x.unit || '',
+  hay: Math.round(+x.hay || 0), min: Math.round(+x.min || 0), pedir: Math.round(+x.pedir || 0) });
+const rqRow = (x, almId) => ({ id: x.id, almacen_id: almId, numero: Math.round(+x.n || 0), creado_ms: x.t, solicita: x.por || '', nota: x.nota || '', lineas: (x.lineas || []).map(rqLin) });
+const rqFrom = r => ({ id: r.id, n: +r.numero || 0, t: +r.creado_ms, por: r.solicita || '', nota: r.nota || '', lineas: (r.lineas || []).map(rqLin) });
 const jrow = o => JSON.stringify(o);
 
 function cloudStatus(st, extra){
@@ -1438,7 +1497,7 @@ async function cloudPush(){
   cloud.pushQueued = false;
   if (!sb || !cloud.loaded) return;
   ensureIds();
-  const snap = SNAP, next = emptySnap(), upA = [], newP = [], upP = [], deltas = [], upM = [], upS = [], upJ = [], upK = [];
+  const snap = SNAP, next = emptySnap(), upA = [], newP = [], upP = [], deltas = [], upM = [], upS = [], upJ = [], upK = [], upR = [];
   next.serial = R.serialFloor || 0;
   for (const a of R.almacenes) {
     next.a[a.id] = a.name;
@@ -1454,10 +1513,11 @@ async function cloudPush(){
     for (const x of svcOf(a).services) { const row = sRow(x, a.id), js = jrow(row); next.s[x.id] = js; if (snap.s[x.id] !== js) upS.push(row); }
     for (const x of a.jobs) { const row = jbRow(x, a.id), js = jrow(row); next.j[x.id] = js; if (snap.j[x.id] !== js) upJ.push(row); }
     for (const x of comOf(a).compras) { const row = kRow(x, a.id), js = jrow(row); next.k[x.id] = js; if (snap.k[x.id] !== js) upK.push(row); }
+    for (const x of reqOf(a).reqs) { const row = rqRow(x, a.id), js = jrow(row); next.r[x.id] = js; if (snap.r[x.id] !== js) upR.push(row); }
   }
   const delA = Object.keys(snap.a).filter(id => !(id in next.a)), delP = Object.keys(snap.p).filter(id => !(id in next.p)), delM = Object.keys(snap.m).filter(id => !(id in next.m));
-  const delS = Object.keys(snap.s).filter(id => !(id in next.s)), delJ = Object.keys(snap.j).filter(id => !(id in next.j)), delK = Object.keys(snap.k).filter(id => !(id in next.k));
-  if (!upA.length && !newP.length && !upP.length && !deltas.length && !upM.length && !delA.length && !delP.length && !delM.length && !upS.length && !upJ.length && !delS.length && !delJ.length && !upK.length && !delK.length && snap.serial === next.serial) {
+  const delS = Object.keys(snap.s).filter(id => !(id in next.s)), delJ = Object.keys(snap.j).filter(id => !(id in next.j)), delK = Object.keys(snap.k).filter(id => !(id in next.k)), delR = Object.keys(snap.r).filter(id => !(id in next.r));
+  if (!upA.length && !newP.length && !upP.length && !deltas.length && !upM.length && !delA.length && !delP.length && !delM.length && !upS.length && !upJ.length && !delS.length && !delJ.length && !upK.length && !delK.length && !upR.length && !delR.length && snap.serial === next.serial) {
     if (cloud.state !== 'ok') cloudStatus('ok'); return;
   }
   cloudStatus('sync', newP.length + upM.length > 200 ? `subiendo ${fmt(newP.length)} piezas y ${fmt(upM.length)} movimientos` : '');
@@ -1476,10 +1536,12 @@ async function cloudPush(){
     await chunked(upS, 500, r => sb.from('servicios').upsert(r));
     await chunked(upJ, 500, r => sb.from('servicios_realizados').upsert(r));
     await chunked(upK, 200, r => sb.from('compras').upsert(r));
+    await chunked(upR, 200, r => sb.from('requisiciones').upsert(r));
     await chunked(delM, 150, ids => sb.from('movimientos').delete().in('id', ids));
     await chunked(delS, 150, ids => sb.from('servicios').delete().in('id', ids));
     await chunked(delJ, 150, ids => sb.from('servicios_realizados').delete().in('id', ids));
     await chunked(delK, 150, ids => sb.from('compras').delete().in('id', ids));
+    await chunked(delR, 150, ids => sb.from('requisiciones').delete().in('id', ids));
     await chunked(delP, 150, ids => sb.from('piezas').delete().in('id', ids));
     await chunked(delA, 150, ids => sb.from('almacenes').delete().in('id', ids));
     if (snap.serial !== next.serial) { const { error } = await sb.from('config').upsert({ clave: 'serialFloor', valor: next.serial }); if (error) throw error; }
@@ -1531,6 +1593,14 @@ function applyRemote(t, ev, n, o){
     else if (jrow(kRow(cur, a.id)) === old) Object.assign(cur, fresh);
     SNAP.k[n.id] = js; return;
   }
+  if (t === 'requisiciones') {
+    if (ev === 'DELETE') { if (!(o.id in SNAP.r)) return; R.almacenes.forEach(a => { reqOf(a).reqs = a.reqs.filter(x => x.id !== o.id); }); delete SNAP.r[o.id]; return; }
+    const a = R.almacenes.find(x => x.id === n.almacen_id); if (!a) return; reqOf(a);
+    const fresh = rqFrom(n), js = jrow(rqRow(fresh, a.id)), old = SNAP.r[n.id], cur = a.reqs.find(x => x.id === n.id);
+    if (!cur) { if (old) return; let i = a.reqs.findIndex(x => x.t < fresh.t); if (i < 0) i = a.reqs.length; a.reqs.splice(i, 0, fresh); }
+    else if (jrow(rqRow(cur, a.id)) === old) Object.assign(cur, fresh);
+    SNAP.r[n.id] = js; return;
+  }
   if (t === 'servicios' || t === 'servicios_realizados') {
     const K = t === 'servicios' ? 's' : 'j', L = t === 'servicios' ? 'services' : 'jobs', toRow = t === 'servicios' ? sRow : jbRow, fromRow = t === 'servicios' ? sFrom : jbFrom;
     if (ev === 'DELETE') { if (!(o.id in SNAP[K])) return; R.almacenes.forEach(a => { svcOf(a)[L] = a[L].filter(x => x.id !== o.id); }); delete SNAP[K][o.id]; return; }
@@ -1570,12 +1640,12 @@ async function cloudPull(){
   if (!sb) return;
   if (!cloud.loaded) cloudStatus('load');
   try {
-    const [A, P, M, C, SV, JB, KC] = await Promise.all(['almacenes', 'piezas', 'movimientos', 'config', 'servicios', 'servicios_realizados', 'compras'].map(fetchAll));
+    const [A, P, M, C, SV, JB, KC, RQ0] = await Promise.all(['almacenes', 'piezas', 'movimientos', 'config', 'servicios', 'servicios_realizados', 'compras', 'requisiciones'].map(fetchAll));
     let note = '';
     if (!SNAP) {
       const hadData = R.almacenes.some(a => a.items.length || a.movements.length);
       // En la nube solo hay almacenes vacíos (p. ej. un celular abrió primero): gana el equipo que sí tiene inventario
-      if (A.length && !P.length && !M.length && !SV.length && !JB.length && !KC.length && hadData) {
+      if (A.length && !P.length && !M.length && !SV.length && !JB.length && !KC.length && !RQ0.length && hadData) {
         const mine = new Set(R.almacenes.map(a => a.id)), extra = A.filter(r => !mine.has(r.id)).map(r => r.id);
         if (extra.length) { const { error } = await sb.from('almacenes').delete().in('id', extra); if (error) throw error; }
         A.length = 0;
@@ -1591,10 +1661,11 @@ async function cloudPull(){
       SNAP = emptySnap(); R.almacenes = [];
       if (hadData) note = 'Se cargó el inventario de la nube. Lo que había solo en este equipo quedó guardado aparte como respaldo.';
     }
-    const ids = { a: new Set(A.map(r => r.id)), p: new Set(P.map(r => r.id)), m: new Set(M.map(r => r.id)), s: new Set(SV.map(r => r.id)), j: new Set(JB.map(r => r.id)), k: new Set(KC.map(r => r.id)) };
+    const ids = { a: new Set(A.map(r => r.id)), p: new Set(P.map(r => r.id)), m: new Set(M.map(r => r.id)), s: new Set(SV.map(r => r.id)), j: new Set(JB.map(r => r.id)), k: new Set(KC.map(r => r.id)), r: new Set(RQ0.map(r => r.id)) };
     Object.keys(SNAP.s).forEach(id => { if (!ids.s.has(id)) applyRemote('servicios', 'DELETE', null, { id }); });
     Object.keys(SNAP.j).forEach(id => { if (!ids.j.has(id)) applyRemote('servicios_realizados', 'DELETE', null, { id }); });
     Object.keys(SNAP.k).forEach(id => { if (!ids.k.has(id)) applyRemote('compras', 'DELETE', null, { id }); });
+    Object.keys(SNAP.r).forEach(id => { if (!ids.r.has(id)) applyRemote('requisiciones', 'DELETE', null, { id }); });
     // Lo que se borró en la nube (y ya estaba sincronizado) se quita aquí
     Object.keys(SNAP.m).forEach(id => { if (!ids.m.has(id)) applyRemote('movimientos', 'DELETE', null, { id }); });
     Object.keys(SNAP.p).forEach(id => { if (!ids.p.has(id)) applyRemote('piezas', 'DELETE', null, { id }); });
@@ -1606,6 +1677,7 @@ async function cloudPull(){
     SV.forEach(r => applyRemote('servicios', 'UPDATE', r));
     JB.sort((x, y) => y.fecha_ms - x.fecha_ms).forEach(r => applyRemote('servicios_realizados', 'UPDATE', r));
     KC.sort((x, y) => y.registrado_ms - x.registrado_ms).forEach(r => applyRemote('compras', 'UPDATE', r));
+    RQ0.sort((x, y) => y.creado_ms - x.creado_ms).forEach(r => applyRemote('requisiciones', 'UPDATE', r));
     R.almacenes.forEach(a => { ensureTipo(a); stampMovTipo(a); ensureSvcCode(a); });
     cloud.loaded = true; fixActive(); saveSnap(); saveLocal(); renderAll();
     if (note) showMsg('warn', 'Inventario de la nube', note);
@@ -2069,16 +2141,20 @@ function renderStat(){
   if (SEC === 'cat') { $('#stat').textContent = `Catálogo de suplidor: ${fmt(CAT.length)} productos por revisar`; return; }
   if (SEC === 'tab') { $('#stat').textContent = 'Resumen del negocio y accesos a lo que vas a hacer'; return; }
   if (SEC === 'com') { $('#stat').textContent = 'Compras: facturas de compra, costos, ITBIS y precios de venta'; return; }
+  if (SEC === 'req') { $('#stat').textContent = 'Lo que hace falta comprar para reponer el almacén'; return; }
   const its = SI(), u = its.reduce((a, i) => a + (i.qty || 0), 0);
   $('#stat').textContent = `${fmt(its.length)} ${its.length === 1 ? 'pieza' : 'piezas'} · ${fmt(u)} unidades en existencia · ${S.name}`;
 }
 function renderSecs(){
   document.body.dataset.sec = SEC; document.body.dataset.inv = enInv() ? 'si' : 'no';
-  const n = k => S.items.filter(i => K(i).startsWith(k)).length, cur = enInv() ? 'inv' : SEC;
+  const n = k => S.items.filter(i => K(i).startsWith(k)).length, cur = enInv() ? 'inv' : SEC, nFal = faltantes(false).length;
   // Menú principal: una entrada por parte del programa (las áreas se eligen dentro de Inventario)
   const it = (k, txt, icono, c) => `<button type="button" role="tab" data-nav="${k}" aria-selected="${cur === k}">${icono}<span class="fn">${txt}</span>${c === undefined ? '' : `<span class="fc">${fmt(c)}</span>`}</button>`;
   const h1 = it('tab', 'Tablero', ico('inicio')) + it('inv', 'Inventario', ico('tuerca'), S.items.length) + it('ser', 'Servicios', icoArea('ser'), svcOf(S).services.length) +
-    it('com', 'Compras', icoArea('com'), comOf(S).compras.filter(k => !k.anulada).length) + it('cat', 'Catálogo', icoArea('cat'), CAT.length);
+    it('com', 'Compras', icoArea('com'), comOf(S).compras.filter(k => !k.anulada).length) +
+    // Requisiciones lleva en rojo cuántos productos hacen falta reponer
+    `<button type="button" role="tab" data-nav="req" aria-selected="${cur === 'req'}">${ico('pedido')}<span class="fn">Requisiciones</span><span class="insignia" data-n="${nFal}">${nFal ? fmt(nFal) : ''}</span></button>` +
+    it('cat', 'Catálogo', icoArea('cat'), CAT.length);
   if ($('#secTabs').dataset.h !== h1) { $('#secTabs').innerHTML = h1; $('#secTabs').dataset.h = h1; }
   $('#trTabs').innerHTML = !enInv() ? '' : Object.keys(TRS).map(t => `<button type="button" role="tab" class="a-${t}" data-tr="${t}" aria-selected="${secTr() === t}"><i class="dot"></i>${TRS[t]}<small>${fmt(n(t + '_'))}</small></button>`).join('');
   $('#subTabs').innerHTML = !enInv() ? '' : Object.keys(CAT_LBL).map(c => { const k = secTr() + '_' + c; return `<button type="button" role="tab" data-sec="${k}" aria-selected="${k === SEC}">${ico(c === 'ins' ? 'gota' : 'tuerca')}${CAT_LBL[c]}<small>${fmt(n(k))} piezas</small></button>`; }).join('');
@@ -2095,12 +2171,10 @@ function setSec(t){
 $('#secTabs').addEventListener('click', e => { const b = e.target.closest('button[data-nav]'); if (!b) return; const k = b.dataset.nav === 'inv' ? lastTr + '_' + lastCat[lastTr] : b.dataset.nav; if (k !== SEC) setSec(k); });
 $('#trTabs').addEventListener('click', e => { const b = e.target.closest('button[data-tr]'); if (!b) return; const k = b.dataset.tr + '_' + lastCat[b.dataset.tr]; if (k !== SEC) setSec(k); });
 $('#subTabs').addEventListener('click', e => { const b = e.target.closest('button[data-sec]'); if (b && b.dataset.sec !== SEC) setSec(b.dataset.sec); });
-function renderAll(){ R.almacenes.forEach(a => comOf(svcOf(a))); renderSecs(); renderParts(); renderMoves(); renderSvc(); renderCat(); renderCom(); renderInicio(); renderStat(); renderAlmBar(); scanList(); renderTablero(); }
-// Franja de cifras (solo texto) e insignia del botón Pedido
+function renderAll(){ R.almacenes.forEach(a => comOf(svcOf(a))); renderSecs(); renderParts(); renderMoves(); renderSvc(); renderCat(); renderCom(); renderReq(); renderInicio(); renderStat(); renderAlmBar(); scanList(); renderTablero(); }
+// Franja de cifras (solo texto)
 function renderTablero(){
-  const fal = faltantes(false), ins = $('#btnPedido .insignia');
-  if (ins) { ins.dataset.n = fal.length; ins.textContent = fal.length ? fmt(fal.length) : ''; }
-  const el = $('#tablero'); if (!el) return;
+  const fal = faltantes(false), el = $('#tablero'); if (!el) return;
   if (!enInv()) { el.innerHTML = ''; return; }
   const its = SI(), fs = new Set(fal);
   const ped = its.filter(i => fs.has(i)).length, ago = its.filter(i => (Number(i.qty) || 0) <= 0).length;
@@ -2368,12 +2442,13 @@ function aplicarTema(t){
   }); } catch(e) {}
 })();
 
-/* ---------- Pedido: qué hay que comprar antes de que se acabe ----------
-   Cada pieza tiene un "mínimo antes de pedir". Cuando el stock baja hasta
-   ahí, la pieza entra sola en esta lista. Las que estén en cero o en
-   negativo entran siempre, tengan mínimo o no: ya se acabaron.
-   El mínimo se escribe aquí mismo, sin tener que abrir cada pieza. */
-const minDe = (it) => Math.max(0, Math.round(Number(it.min) || 0));
+/* ---------- Requisiciones: la lista de compra de lo que hace falta para reponer el almacén ----------
+   Cada pieza tiene un "mínimo antes de pedir" (se guarda con la pieza, también en la nube). Cuando la
+   existencia baja hasta ahí, la pieza aparece sola en "Revisar faltantes"; las que están en cero o en
+   negativo entran siempre, tengan mínimo o no: ya se acabaron. Lo sugerido es lo justo para volver al
+   doble del mínimo (una vuelta de reposición), y nunca menos de 1.
+   De lo marcado sale la requisición numerada (REQ-0001…): imagen y PDF tamaño carta, mensaje para
+   WhatsApp e historial compartido entre equipos (tabla requisiciones). */
 function faltantes(ancho){
   return S.items.filter(it => {
     const m = minDe(it);
@@ -2386,64 +2461,281 @@ function faltantes(ancho){
     return fa - fb || COLL.compare(a.name, b.name);
   });
 }
-// Cuánto pedir: lo justo para volver al doble del mínimo (una vuelta de
-// reposición), y nunca menos de 1.
 const sugerido = (it) => { const m = minDe(it); return Math.max(1, (m ? m * 2 : 1) - it.qty); };
-let pedLista = [];
-function renderPedido(){
-  const ancho = $('#pedTodo').checked;
-  pedLista = faltantes(ancho);
-  $('#pedSub').textContent = pedLista.length
-    ? `${fmt(pedLista.length)} ${pedLista.length === 1 ? 'pieza' : 'piezas'} para pedir. Ajusta el mínimo o la cantidad si hace falta.`
-    : 'No hay nada por acabarse. Ponles un mínimo a las piezas para que avisen a tiempo.';
-  $('#pedBody').innerHTML = pedLista.map((it, i) => {
-    const m = minDe(it), agotada = it.qty <= 0;
-    return `<tr><td><b>${esc(it.name)}</b><br><small class="muted mono">${esc(it.code || it.sc || 'sin código')}</small>${it.ref ? ' <small class="muted">· ' + esc(it.ref) + '</small>' : ''}</td>` +
-      `<td class="num ${agotada ? 'zero' : ''}">${fmt(it.qty)} <small class="muted">${esc(it.unit || 'UNID')}</small></td>` +
-      `<td class="num"><input type="number" min="0" step="1" value="${m}" data-min="${i}" style="width:72px;text-align:center"></td>` +
-      `<td class="num"><input type="number" min="0" step="1" value="${sugerido(it)}" data-ped="${i}" style="width:82px;text-align:center;font-weight:700"></td></tr>`;
-  }).join('') || '<tr><td colspan="4" class="muted">Nada por pedir.</td></tr>';
+const rqNecesita = it => it.qty <= 0 || (minDe(it) > 0 && it.qty <= minDe(it));
+
+const REQ_KEY = 'palacio_req_v1';
+const RQ = { v: 'rev', por: '', cur: '' };
+try { const o = JSON.parse(localStorage.getItem(REQ_KEY) || '{}'); if (typeof o.por === 'string') RQ.por = o.por; } catch(e) {}
+const rqPref = () => { try { localStorage.setItem(REQ_KEY, JSON.stringify({ por: RQ.por })); } catch(e) {} };
+// Lo que se cambió a mano en esta revisión: id de pieza → { inc: marcada, qty: cuánto pedir }
+const rqSel = new Map();
+const rqInc = it => { const s = rqSel.get(it.id); return s && s.inc !== undefined ? s.inc : rqNecesita(it); };
+const rqQty = it => { const s = rqSel.get(it.id); return s && s.qty !== undefined ? s.qty : sugerido(it); };
+const rqMarcadas = () => S.items.filter(it => rqInc(it) && rqQty(it) > 0);
+const reqNum = n => 'REQ-' + String(Math.max(0, Math.round(+n || 0))).padStart(4, '0');
+const rqFecha = (t, hora) => { const d = new Date(t), p = x => String(x).padStart(2, '0'); return `${p(d.getDate())}/${p(d.getMonth() + 1)}/${d.getFullYear()}` + (hora ? ` ${p(d.getHours())}:${p(d.getMinutes())}` : ''); };
+const rqUds = r => (r.lineas || []).reduce((s, x) => s + (+x.pedir || 0), 0);
+
+function renderReq(){
+  if (SEC !== 'req') return;
+  const reqs = reqOf(S).reqs;
+  $('#panelR').dataset.v = RQ.v;
+  $('#rVistas').querySelectorAll('button').forEach(b => b.setAttribute('aria-selected', b.dataset.v === RQ.v));
+  $('#rNFal').textContent = fmt(faltantes(false).length);
+  $('#rNHis').textContent = fmt(reqs.length);
+  $('#rPers').innerHTML = [...new Set(reqs.map(r => r.por).filter(Boolean))].sort(COLL.compare).map(p => `<option value="${esc(p)}">`).join('');
+  if (RQ.v === 'rev') rqRev(); else if (RQ.v === 'doc') rqDoc(); else rqHis();
 }
-$('#pedBody').addEventListener('change', e => {
-  const t = e.target;
-  if (t.dataset.min !== undefined) {
-    const it = pedLista[+t.dataset.min], v = Math.max(0, parseInt(t.value, 10) || 0);
-    if (it.min !== v) { it.min = v; log('Edición', it, 0, 'Mínimo antes de pedir: ' + v); save(); renderAll(); }
-    renderPedido();
+function rqVista(v){ RQ.v = v; $('#rErr').textContent = ''; renderReq(); window.scrollTo(0, 0); }
+$('#rVistas').addEventListener('click', e => { const b = e.target.closest('button[data-v]'); if (b) rqVista(b.dataset.v); });
+
+/* Revisar faltantes */
+function rqLista(){
+  const q = fold($('#rq').value.trim()), f = $('#rFil').value, ar = $('#rArea').value;
+  let l = f === 'need' ? S.items.filter(it => rqNecesita(it) || rqInc(it)) : f === 'near' ? faltantes(true) : f === 'sin' ? S.items.filter(it => !minDe(it)) : S.items.slice();
+  if (ar) l = l.filter(it => (TRS[it.tr] ? it.tr : 'aut') === ar);
+  if (q) l = l.filter(it => fold([it.sc, it.name, it.ref, it.brand, it.model, it.code].join(' ')).includes(q));
+  return l.sort((a, b) => {
+    const na = rqNecesita(a), nb = rqNecesita(b);
+    if (na !== nb) return nb - na;
+    return (na ? (a.qty - minDe(a)) - (b.qty - minDe(b)) : 0) || COLL.compare(a.name, b.name);
+  });
+}
+function rqFila(it){
+  const m = minDe(it), q = Math.round(+it.qty || 0), inc = rqInc(it), t = TRS[it.tr] ? it.tr : 'aut', nom = esc(it.name);
+  const sub = [it.sc, it.ref, it.brand].filter(Boolean).map(esc).join(' · ');
+  return `<tr data-id="${esc(it.id)}"${inc ? '' : ' class="off"'}><td class="rck"><input type="checkbox" data-f="inc" aria-label="Pedir ${nom}"${inc ? ' checked' : ''}></td>` +
+    `<td><b>${nom}</b>${sub ? `<br><small>${sub}</small>` : ''}</td>` +
+    `<td><span class="area a-${t}"><i class="dot"></i>${TRS[t]}</span><br><small>${CAT_LBL[tipoDe(it)]}</small></td>` +
+    `<td class="num ${q <= 0 ? 'cero' : rqNecesita(it) ? 'bajo' : ''}">${fmt(q)} <small>${esc(it.unit || 'UNID')}</small></td>` +
+    `<td class="num"><input type="number" min="0" step="1" inputmode="numeric" data-f="min" value="${m || ''}" placeholder="—" aria-label="Mínimo de ${nom}"></td>` +
+    `<td class="num"><input type="number" min="0" step="1" inputmode="numeric" data-f="qty" value="${rqQty(it)}" aria-label="Cuánto pedir de ${nom}"></td>` +
+    `<td>${esc([it.rac, it.loc].filter(Boolean).join(' · '))}</td></tr>`;
+}
+// forzar: pintar aunque se esté escribiendo en la tabla (si no, un cambio que llega de la nube no
+// le quita la casilla de las manos a quien está digitando)
+function rqRev(forzar){
+  const body = $('#rBody'), act = document.activeElement, enTabla = act && act !== document.body && body.contains(act);
+  if (enTabla && !forzar) { rqResumen(); return; }
+  const foco = enTabla ? [act.closest('tr[data-id]')?.dataset.id, act.dataset.f] : null;
+  const lista = rqLista(), ver = lista.slice(0, 400), f = $('#rFil').value;
+  const vacio = f === 'need' ? 'No hay nada agotado ni bajo el mínimo. Ponles un mínimo a las piezas (elige "Sin mínimo puesto") para que avisen a tiempo.' : 'No hay productos con este filtro.';
+  body.innerHTML = ver.map(rqFila).join('') + (lista.length > ver.length ? `<tr><td colspan="7" class="muted">Se muestran ${fmt(ver.length)} de ${fmt(lista.length)}. Usa el buscador para encontrar los demás.</td></tr>` : '') ||
+    `<tr><td colspan="7" class="muted">${vacio}</td></tr>`;
+  $('#rAll').checked = ver.length > 0 && ver.every(rqInc);
+  if (foco && foco[0]) { const el = body.querySelector(`tr[data-id="${foco[0]}"] [data-f="${foco[1]}"]`); if (el) el.focus(); }
+  rqResumen();
+}
+function rqResumen(){
+  const sel = rqMarcadas(), u = sel.reduce((s, it) => s + rqQty(it), 0), nf = faltantes(false).length;
+  $('#rRes').innerHTML = `<b>${fmt(sel.length)}</b> ${sel.length === 1 ? 'producto marcado' : 'productos marcados'} para pedir · <b>${fmt(u)}</b> ${u === 1 ? 'unidad' : 'unidades'} · ${fmt(nf)} ${nf === 1 ? 'necesita' : 'necesitan'} reposición`;
+}
+$('#rArea').innerHTML = '<option value="">Todas las áreas</option>' + Object.keys(TRS).map(t => `<option value="${t}">${TRS[t]}</option>`).join('');
+$('#rPor').value = RQ.por;
+$('#rq').addEventListener('input', () => rqRev(true));
+$('#rFil').addEventListener('change', () => rqRev(true));
+$('#rArea').addEventListener('change', () => rqRev(true));
+$('#rAll').addEventListener('change', e => {
+  $('#rBody').querySelectorAll('tr[data-id]').forEach(tr => { const s = rqSel.get(tr.dataset.id) || {}; s.inc = e.target.checked; rqSel.set(tr.dataset.id, s); });
+  rqRev(true);
+});
+$('#rBody').addEventListener('change', e => {
+  const t = e.target, tr = t.closest('tr[data-id]'); if (!tr) return;
+  const it = itemById(tr.dataset.id); if (!it) return;
+  const s = rqSel.get(it.id) || {}; rqSel.set(it.id, s);
+  if (t.dataset.f === 'min') {
+    const v = Math.max(0, parseInt(t.value, 10) || 0);
+    if (minDe(it) !== v) { it.min = v; log('Edición', it, 0, 'Mínimo antes de pedir: ' + v); save(); }
+    // Con el mínimo nuevo cambian lo sugerido y si la pieza hace falta
+    delete s.qty; delete s.inc;
+    setTimeout(() => { renderAll(); rqRev(true); }, 0);
+    return;
+  }
+  if (t.dataset.f === 'inc') s.inc = t.checked;
+  if (t.dataset.f === 'qty') {
+    const v = parseInt(t.value, 10);
+    if (isNaN(v) || v < 0) { delete s.qty; t.value = rqQty(it); } else { s.qty = v; s.inc = v > 0; }
+  }
+  tr.querySelector('[data-f=inc]').checked = rqInc(it); tr.classList.toggle('off', !rqInc(it));
+  rqResumen();
+});
+$('#rGen').onclick = () => {
+  const sel = rqMarcadas();
+  if (!sel.length) { $('#rErr').textContent = 'Marca al menos un producto y escribe cuánto pedir.'; return; }
+  const n = Math.max(0, ...R.almacenes.flatMap(a => reqOf(a).reqs.map(r => +r.n || 0))) + 1, orden = Object.keys(TRS);
+  const area = it => TRS[it.tr] ? it.tr : 'aut';
+  const lineas = sel.slice().sort((a, b) => orden.indexOf(area(a)) - orden.indexOf(area(b)) || COLL.compare(a.name, b.name))
+    .map(it => rqLin({ pid: it.id, sc: it.sc, name: it.name, ref: it.ref, brand: it.brand, tr: area(it), tipo: tipoDe(it), unit: it.unit, hay: it.qty, min: minDe(it), pedir: rqQty(it) }));
+  const r = { id: newId(), n, t: Date.now(), por: $('#rPor').value.trim(), nota: $('#rNota').value.trim(), lineas };
+  reqOf(S).reqs.unshift(r);
+  RQ.por = r.por; rqPref(); rqSel.clear(); $('#rNota').value = ''; $('#rErr').textContent = '';
+  save(); RQ.cur = r.id; renderAll(); rqVista('doc');
+};
+
+/* La requisición: hoja carta dibujada (para imagen, PDF e impresión) y mensaje para WhatsApp */
+const RQ_W = 1275, RQ_H = 1650;   // hoja carta a 150 puntos por pulgada
+let rqLogoP = null;
+const rqLogo = () => rqLogoP || (rqLogoP = new Promise(res => {
+  const m = /url\(["']?(data:[^"')]+)/.exec(getComputedStyle(document.documentElement).getPropertyValue('--logo-mask') || '');
+  if (!m) return res(null);
+  const im = new Image(); im.onload = () => res(im); im.onerror = () => res(null); im.src = m[1];
+  setTimeout(() => res(null), 3000);
+}));
+async function rqDibujar(r){
+  const logo = await rqLogo(), W = RQ_W, H = RQ_H, M = 64, F = '"Segoe UI",Arial,sans-serif', RH = 40, TOP = 292, POR_HOJA = 31, ULTIMA = 22;
+  const L = r.lineas || [], hojas = [];
+  for (let i = 0; i < L.length; i += POR_HOJA) hojas.push(L.slice(i, i + POR_HOJA));
+  if (!hojas.length || hojas[hojas.length - 1].length > ULTIMA) hojas.push([]);
+  const C = [['Código', M, 150, 'l'], ['Producto', 214, 520, 'l'], ['Área', 734, 150, 'l'], ['Hay', 884, 105, 'r'], ['Mínimo', 989, 105, 'r'], ['Pedir', 1094, W - M - 1094, 'r']];
+  const out = [];
+  for (let p = 0; p < hojas.length; p++) {
+    const c = document.createElement('canvas'); c.width = W; c.height = H;
+    const g = c.getContext && c.getContext('2d'); if (!g) return [];
+    const T = (s, x, y, w, al) => { s = String(s ?? ''); if (w) { if (g.measureText(s).width > w - 20) { while (s.length > 1 && g.measureText(s + '…').width > w - 20) s = s.slice(0, -1); s += '…'; } }
+      g.textAlign = al === 'r' ? 'right' : 'left'; g.fillText(s, al === 'r' ? x + w - 10 : x + 10, y); };
+    g.fillStyle = '#fff'; g.fillRect(0, 0, W, H);
+    // Encabezado grafito con el rojo del Palacio
+    g.fillStyle = '#17202a'; g.fillRect(0, 0, W, 170); g.fillStyle = '#c8102e'; g.fillRect(0, 170, W, 8);
+    let x0 = M;
+    if (logo) {
+      const lh = 104, lw = Math.round(lh * logo.naturalWidth / logo.naturalHeight), o = document.createElement('canvas'); o.width = lw; o.height = lh;
+      const og = o.getContext('2d'); og.drawImage(logo, 0, 0, lw, lh); og.globalCompositeOperation = 'source-in'; og.fillStyle = '#ffffff'; og.fillRect(0, 0, lw, lh);
+      g.drawImage(o, M, 33); x0 = M + lw + 24;
+    }
+    g.textAlign = 'left'; g.fillStyle = '#fff'; g.font = '700 36px ' + F; g.fillText('EL PALACIO DE LA TRANSMISIÓN', x0, 80);
+    g.fillStyle = '#f2a900'; g.fillRect(x0, 96, 56, 4);
+    g.fillStyle = '#c9d0d8'; g.font = '400 21px ' + F; g.fillText('REQUISICIÓN DE COMPRA · REPOSICIÓN DEL ALMACÉN', x0, 134);
+    g.textAlign = 'right'; g.fillStyle = '#fff'; g.font = '700 30px ' + F; g.fillText(reqNum(r.n), W - M, 76);
+    g.fillStyle = '#c9d0d8'; g.font = '400 20px ' + F; g.fillText('Fecha: ' + rqFecha(r.t), W - M, 108); g.fillText(`Hoja ${p + 1} de ${hojas.length}`, W - M, 138);
+    g.fillStyle = '#3b4652'; g.font = '600 20px ' + F; g.textAlign = 'left'; g.fillText('Almacén: ' + S.name, M, 226);
+    if (r.por) { g.textAlign = 'right'; g.fillText('Solicitado por: ' + r.por, W - M, 226); }
+    // Tabla
+    g.fillStyle = '#eef0f3'; g.fillRect(M, TOP - 40, W - 2 * M, 40); g.fillStyle = '#17202a'; g.font = '700 19px ' + F;
+    C.forEach(k => T(k[0], k[1], TOP - 13, k[2], k[3]));
+    hojas[p].forEach((x, i) => {
+      const y = TOP + i * RH;
+      if (i % 2) { g.fillStyle = '#f7f8fa'; g.fillRect(M, y, W - 2 * M, RH); }
+      g.fillStyle = '#dfe3e8'; g.fillRect(M, y + RH - 1, W - 2 * M, 1);
+      g.fillStyle = '#17202a'; g.font = '600 18px ' + F; T(x.sc || '—', C[0][1], y + 27, C[0][2], 'l');
+      g.font = '400 19px ' + F; T(x.name + (x.ref ? ' · ' + x.ref : ''), C[1][1], y + 27, C[1][2], 'l'); T(TRS[x.tr] || '', C[2][1], y + 27, C[2][2], 'l');
+      g.fillStyle = x.hay <= 0 ? '#c2302d' : '#17202a'; T(fmt(x.hay), C[3][1], y + 27, C[3][2], 'r');
+      g.fillStyle = '#17202a'; T(x.min ? fmt(x.min) : '—', C[4][1], y + 27, C[4][2], 'r');
+      g.font = '700 21px ' + F; T(fmt(x.pedir), C[5][1], y + 27, C[5][2], 'r');
+    });
+    if (p === hojas.length - 1) {
+      const y0 = TOP + hojas[p].length * RH + 44;
+      g.textAlign = 'left'; g.fillStyle = '#17202a'; g.font = '700 22px ' + F;
+      g.fillText(`Total: ${fmt(L.length)} ${L.length === 1 ? 'producto' : 'productos'} · ${fmt(rqUds(r))} unidades por comprar`, M, y0);
+      g.fillStyle = '#5f6b78'; g.font = '600 19px ' + F; g.fillText('Observaciones', M, y0 + 46);
+      g.strokeStyle = '#c9d0d8'; g.lineWidth = 2; g.strokeRect(M, y0 + 58, W - 2 * M, 112);
+      if (r.nota) {
+        g.fillStyle = '#17202a'; g.font = '400 19px ' + F; const pal = r.nota.split(/\s+/), lin = []; let cur = '';
+        pal.forEach(w => { const t = cur ? cur + ' ' + w : w; if (g.measureText(t).width > W - 2 * M - 32 && cur) { lin.push(cur); cur = w; } else cur = t; }); if (cur) lin.push(cur);
+        lin.slice(0, 3).forEach((s, i) => g.fillText(s, M + 16, y0 + 92 + i * 28));
+      }
+      const ly = y0 + 280; g.fillStyle = '#17202a'; g.fillRect(M, ly, 460, 2); g.fillRect(W - M - 460, ly, 460, 2);
+      g.fillStyle = '#5f6b78'; g.font = '400 19px ' + F; g.fillText('Solicitado por', M, ly + 28); g.fillText('Aprobado por', W - M - 460, ly + 28);
+      if (r.por) { g.fillStyle = '#17202a'; g.font = '600 20px ' + F; g.fillText(r.por, M, ly - 12); }
+    }
+    g.fillStyle = '#8a94a3'; g.font = '400 16px ' + F; g.textAlign = 'center';
+    g.fillText(`El Palacio de la Transmisión · ${reqNum(r.n)} · generada el ${rqFecha(r.t, true)}`, W / 2, H - 36);
+    out.push(c);
+  }
+  return out;
+}
+// PDF tamaño carta con una hoja por imagen (sin librerías)
+function rqPdf(pages){
+  const enc = new TextEncoder(), parts = [], offs = []; let len = 0;
+  const push = b => { if (typeof b === 'string') b = enc.encode(b); parts.push(b); len += b.length; }, N = pages.length, tot = 2 + N * 3;
+  push('%PDF-1.4\n'); offs[1] = len; push('1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n');
+  offs[2] = len; push(`2 0 obj\n<< /Type /Pages /Count ${N} /Kids [${pages.map((_, i) => (3 + i * 3) + ' 0 R').join(' ')}] >>\nendobj\n`);
+  pages.forEach((c, i) => {
+    const pg = 3 + i * 3, ct = pg + 1, im = pg + 2, bin = atob(c.toDataURL('image/jpeg', 0.93).split(',')[1]), by = new Uint8Array(bin.length);
+    for (let j = 0; j < bin.length; j++) by[j] = bin.charCodeAt(j);
+    offs[pg] = len; push(`${pg} 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /XObject << /Im0 ${im} 0 R >> >> /Contents ${ct} 0 R >>\nendobj\n`);
+    const cs = 'q 612 0 0 792 0 0 cm /Im0 Do Q'; offs[ct] = len; push(`${ct} 0 obj\n<< /Length ${cs.length} >>\nstream\n${cs}\nendstream\nendobj\n`);
+    offs[im] = len; push(`${im} 0 obj\n<< /Type /XObject /Subtype /Image /Width ${c.width} /Height ${c.height} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${by.length} >>\nstream\n`); push(by); push('\nendstream\nendobj\n');
+  });
+  const xr = len; push(`xref\n0 ${tot + 1}\n0000000000 65535 f \n`); for (let i = 1; i <= tot; i++) push(String(offs[i]).padStart(10, '0') + ' 00000 n \n');
+  push(`trailer\n<< /Size ${tot + 1} /Root 1 0 R >>\nstartxref\n${xr}\n%%EOF`);
+  return new Blob(parts, { type: 'application/pdf' });
+}
+function rqMensaje(r){
+  const h = new Date().getHours(), saludo = h < 12 ? 'Buenos días' : h < 19 ? 'Buenas tardes' : 'Buenas noches';
+  return `${saludo}, jefa. Espero que se encuentre bien.\n\n` +
+    `Le comparto la requisición ${reqNum(r.n)} con lo que necesitamos comprar para reponer el almacén de El Palacio de la Transmisión, tomando en cuenta la existencia actual y el mínimo de cada producto:\n\n` +
+    (r.lineas || []).map(x => `• ${fmt(x.pedir)} ${(x.unit || 'UNID').toLowerCase()} — ${x.name}${x.sc ? ' (' + x.sc + ')' : ''}`).join('\n') +
+    `\n\nTotal: ${fmt(r.lineas.length)} ${r.lineas.length === 1 ? 'producto' : 'productos'}, ${fmt(rqUds(r))} unidades.` + (r.nota ? `\nObservaciones: ${r.nota}` : '') +
+    `\n\nQuedo atento a su revisión y aprobación para proceder con la compra.\n\nMuchas gracias.`;
+}
+const rqArchivo = (r, ext, i, n) => `Requisicion_${reqNum(r.n)}_${new Date(r.t).toISOString().slice(0, 10)}${n > 1 ? '_hoja' + (i + 1) : ''}.${ext}`;
+let rqPv = { key: '', pages: [] };
+async function rqDoc(){
+  const box = $('#rDoc'), reqs = reqOf(S).reqs, r = reqs.find(x => x.id === RQ.cur) || reqs[0];
+  if (!r) { box.innerHTML = '<p class="rq-vacio">Todavía no hay requisiciones. Marca lo que hace falta en Revisar faltantes y toca Generar requisición.</p>'; rqPv = { key: '', pages: [] }; return; }
+  RQ.cur = r.id;
+  const key = S.id + '|' + jrow(rqRow(r, ''));
+  if (rqPv.key === key) return;   // ya está pintada; así no se borra lo que se escribió en el mensaje
+  rqPv = { key, pages: [] };
+  const comp = !!(navigator.canShare && navigator.share);
+  box.innerHTML = `<h2>${reqNum(r.n)}</h2><p class="rq-sub">${esc(rqFecha(r.t, true))} · ${fmt(r.lineas.length)} ${r.lineas.length === 1 ? 'producto' : 'productos'} · ${fmt(rqUds(r))} unidades${r.por ? ' · solicitó ' + esc(r.por) : ''}</p>` +
+    `<div class="rq-acc"><button type="button" data-a="wa">${ico('flecha')}Abrir WhatsApp</button><button type="button" data-a="copy">Copiar mensaje</button><button type="button" data-a="png">Descargar imagen</button>` +
+    `<button type="button" data-a="pdf">Descargar PDF</button>${comp ? '<button type="button" data-a="share">Compartir con imagen</button>' : ''}<button type="button" data-a="print">Imprimir</button><button type="button" data-a="del" class="danger">Eliminar</button></div>` +
+    `<p class="rq-res" id="rAviso" aria-live="polite"></p>` +
+    `<div class="rq-cols"><div class="rq-pv" id="rPv"><p class="muted">Preparando la hoja…</p></div>` +
+    `<div class="rq-msg"><label for="rMsg" style="display:block;font-size:13px;font-weight:600;margin-bottom:4px">Mensaje para WhatsApp</label><textarea id="rMsg">${esc(rqMensaje(r))}</textarea>` +
+    `<p>WhatsApp no deja adjuntar la imagen desde una página: descárgala y adjúntala con el clip, o usa "Compartir con imagen" si tu teléfono lo permite.</p></div></div>`;
+  const pages = await rqDibujar(r);
+  if (rqPv.key !== key) return;
+  rqPv.pages = pages;
+  const pv = $('#rPv'); pv.innerHTML = pages.length ? '' : '<p class="muted">Este aparato no pudo dibujar la hoja.</p>'; pages.forEach(c => pv.appendChild(c));
+}
+const rqAviso = t => { const el = $('#rAviso'); if (el) el.textContent = t; };
+const rqBlobs = () => Promise.all(rqPv.pages.map(c => new Promise(res => c.toBlob(b => res(b), 'image/png'))));
+$('#rDoc').addEventListener('click', async e => {
+  const b = e.target.closest('button[data-a]'); if (!b) return;
+  const r = reqOf(S).reqs.find(x => x.id === RQ.cur); if (!r) return;
+  const a = b.dataset.a, msg = $('#rMsg') ? $('#rMsg').value : rqMensaje(r), n = rqPv.pages.length;
+  if (a === 'wa') { window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank'); rqAviso('Se abrió WhatsApp con el mensaje. Si quieres mandar también la hoja, descarga la imagen y adjúntala.'); return; }
+  if (a === 'copy') {
+    try { await navigator.clipboard.writeText(msg); rqAviso('Mensaje copiado.'); }
+    catch(err) { const t = $('#rMsg'); t.select(); rqAviso(document.execCommand('copy') ? 'Mensaje copiado.' : 'No se pudo copiar. Selecciona el texto y cópialo.'); }
+    return;
+  }
+  if (a === 'del') {
+    if (!confirm(`¿Eliminar la requisición ${reqNum(r.n)}? Se borra del historial en todos los equipos.`)) return;
+    reqOf(S).reqs = S.reqs.filter(x => x.id !== r.id); RQ.cur = ''; save(); renderAll(); return;
+  }
+  if (!n) { rqAviso('La hoja todavía no está lista o este aparato no pudo dibujarla.'); return; }
+  if (a === 'png') {
+    const L = await rqBlobs();
+    for (let i = 0; i < L.length; i++) { download(L[i], rqArchivo(r, 'png', i, n)); if (i < L.length - 1) await new Promise(res => setTimeout(res, 600)); }
+    rqAviso(`${n === 1 ? 'Imagen descargada' : n + ' imágenes descargadas'}. Búscala en tu carpeta de Descargas.`); return;
+  }
+  if (a === 'pdf') { try { download(rqPdf(rqPv.pages), rqArchivo(r, 'pdf', 0, 1)); rqAviso('PDF descargado. Búscalo en tu carpeta de Descargas.'); } catch(err) { rqAviso('No se pudo crear el PDF: ' + err.message); } return; }
+  if (a === 'share') {
+    const L = await rqBlobs(), files = L.map((bl, i) => new File([bl], rqArchivo(r, 'png', i, n), { type: 'image/png' }));
+    if (!(navigator.canShare && navigator.canShare({ files }))) { rqAviso('Este aparato no deja compartir imágenes desde aquí. Descarga la imagen y adjúntala en WhatsApp.'); return; }
+    try { await navigator.share({ files, text: msg }); rqAviso('Revisa que la imagen quedó adjunta antes de enviar.'); } catch(err) { if (err.name !== 'AbortError') rqAviso('No se pudo compartir: ' + err.message); }
+    return;
+  }
+  if (a === 'print') {
+    $('#printSheet').innerHTML = rqPv.pages.map(c => `<img class="rqimg" alt="" src="${c.toDataURL('image/png')}">`).join('');
+    // Hoja carta solo para la requisición (las etiquetas usan su propio tamaño)
+    const pg = document.createElement('style'); pg.textContent = '@page{size:letter;margin:0}'; document.body.appendChild(pg);
+    window.print();
+    setTimeout(() => { $('#printSheet').innerHTML = ''; pg.remove(); }, 800);
   }
 });
-$('#pedTodo').addEventListener('change', renderPedido);
-$('#btnPedido').onclick = () => { $('#pedErr').textContent = ''; $('#pedTodo').checked = false; renderPedido(); $('#pedDlg').showModal(); };
-$('#pedClose').onclick = () => $('#pedDlg').close();
-/* La requisición impresa sale igual que el formulario de mano: tres por hoja
-   Carta, cinco renglones cada una. Si hay más de cinco piezas, se imprimen
-   las hojas que hagan falta. */
-$('#pedPrint').onclick = () => {
-  const filas = [];
-  $('#pedBody').querySelectorAll('input[data-ped]').forEach(inp => {
-    const it = pedLista[+inp.dataset.ped], c = Math.max(0, parseInt(inp.value, 10) || 0);
-    if (c > 0) filas.push({ c, it });
-  });
-  if (!filas.length) { $('#pedErr').textContent = 'Escribe cuántas piezas pedir en al menos una.'; return; }
-  const hoy = new Date(), dd = String(hoy.getDate()).padStart(2, '0'), mm = String(hoy.getMonth() + 1).padStart(2, '0'), aa = String(hoy.getFullYear());
-  const bloques = [];
-  for (let i = 0; i < filas.length; i += 5) bloques.push(filas.slice(i, i + 5));
-  $('#printSheet').innerHTML = bloques.map(b => {
-    const tr = [];
-    for (let k = 0; k < 5; k++) {
-      const f = b[k];
-      tr.push(`<tr><td class="rc">${f ? fmt(f.c) : ''}</td><td class="rcod">${f ? esc(f.it.sc || f.it.code || '') : ''}</td><td class="rdes">${f ? esc(f.it.name) + (f.it.ref ? ' · ' + esc(f.it.ref) : '') : ''}</td><td></td><td></td></tr>`);
-    }
-    return `<div class="req">
-      <h3>EL PALACIO DE LA TRANSMISIÓN</h3><h4>REQUISICIÓN DE PIEZAS</h4>
-      <div class="rdat"><span>Solicita: <u>${esc(S.name)}</u></span><span>Fecha: <u>&nbsp;${dd}&nbsp;/&nbsp;${mm}&nbsp;/&nbsp;${aa}&nbsp;</u></span></div>
-      <table class="rtab"><thead><tr><th style="width:15mm">CANT.</th><th style="width:30mm">CÓDIGO</th><th>DESCRIPCIÓN</th><th style="width:44mm">VEHÍCULO</th><th style="width:26mm">PLACA</th></tr></thead><tbody>${tr.join('')}</tbody></table>
-      <div class="rfir"><span>Solicitado por</span><span>Autorizado por</span><span>Recibido por</span></div>
-    </div>`;
-  }).join('');
-  window.print();
-  setTimeout(() => { $('#printSheet').innerHTML = ''; }, 800);
-};
+
+/* Historial */
+function rqHis(){
+  $('#rHis').innerHTML = reqOf(S).reqs.map(r => `<tr><td class="nw"><b>${reqNum(r.n)}</b></td><td class="nw">${esc(rqFecha(r.t, true))}</td><td class="num">${fmt(r.lineas.length)}</td><td class="num">${fmt(rqUds(r))}</td>` +
+    `<td>${esc(r.por)}</td><td>${esc(r.nota)}</td><td><button type="button" data-r="${esc(r.id)}">Ver</button></td></tr>`).join('') ||
+    '<tr><td colspan="7" class="muted">Todavía no se ha generado ninguna requisición.</td></tr>';
+}
+$('#rHis').addEventListener('click', e => { const b = e.target.closest('button[data-r]'); if (!b) return; RQ.cur = b.dataset.r; rqVista('doc'); });
 
 /* Lee el código de un lienzo ya dibujado. Lo usan la foto Y la cámara en
    vivo, para que las dos lean exactamente igual. Primero el lector del
@@ -2590,6 +2882,7 @@ $('#btnGo').onclick = () => handleScan($('#scan').value);
 /* ---------- Servicios: catálogo, registro de servicios hechos (descuenta piezas) e historial ---------- */
 const svcOf = a => { if (!a.services) a.services = []; if (!a.jobs) a.jobs = []; return a; };
 const comOf = a => { if (!a.compras) a.compras = []; return a; };
+const reqOf = a => { if (!a.reqs) a.reqs = []; return a; };
 const itemById = id => S.items.find(i => i.id === id);
 const partLbl = it => `${it.sc ? it.sc + ' · ' : ''}${it.name}`;
 // Encuentra una pieza por código corto, código de barras, referencia o nombre (también "BOM-001 · Bomba" de la lista)
@@ -3874,7 +4167,7 @@ function renderInicio(){
   const fechaHoy = new Date().toLocaleDateString('es-DO', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
 
   // ¿Qué vas a hacer? Cada botón lleva directo a la pantalla de esa tarea
-  const acc = [['in', 'Dar entrada', 'entrada', 1], ['out', 'Despachar', 'despacho', 1], ['look', 'Consultar existencia', 'consulta'], ['fac', 'Registrar factura', 'pedido'], ['svc', 'Registrar servicio', 'ser'], ['ped', 'Hacer pedido', 'pedido']];
+  const acc = [['in', 'Dar entrada', 'entrada', 1], ['out', 'Despachar', 'despacho', 1], ['look', 'Consultar existencia', 'consulta'], ['fac', 'Registrar factura', 'pedido'], ['svc', 'Registrar servicio', 'ser'], ['req', 'Revisar faltantes', 'pedido']];
   const accH = acc.map(([k, t, i, p]) => `<button type="button" data-ir="${k}"${p ? ' class="prin"' : ''}>${k === 'svc' ? icoArea('ser') : k === 'fac' ? icoArea('com') : ico(i)}${t}</button>`).join('');
 
   const kpi = (dt, dd, sub) => `<div class="t-kpi"><dt>${dt}</dt><dd>${dd}${sub ? `<small>${sub}</small>` : ''}</dd></div>`;
@@ -3924,7 +4217,7 @@ function renderInicio(){
     `<div><h4 class="cero">${ico('alerta')}Agotados <b>${fmt(agot.length)}</b></h4>${agot.length ? lst(agot, () => '0', 'cero') : '<p class="t-sub">Ninguno.</p>'}</div>` +
     `<div><h4 class="bajo">${ico('alerta')}Bajo el mínimo <b>${fmt(bajo.length)}</b></h4>${bajo.length ? lst(bajo, i => `${fmt(i.qty)} de ${fmt(minDe(i))}`, 'bajo') : '<p class="t-sub">Ninguno.</p>'}</div>` +
     `<div><h4 class="sinp">${ico('alerta')}Sin precio <b>${fmt(sinP.length)}</b></h4><p class="t-sub" style="margin:0">${sinP.length ? 'Toman su precio con la primera factura que los traiga, o se les pone en Compras › Precios.' : 'Todos tienen precio.'}</p></div></div>`,
-    `<button type="button" data-ir="ped">Hacer pedido</button>${sinP.length ? '<button type="button" data-ir="pre">Ver precios</button>' : ''}`);
+    `<button type="button" data-ir="req">Revisar faltantes</button>${sinP.length ? '<button type="button" data-ir="pre">Ver precios</button>' : ''}`);
 
   // Suplidores
   const sup = new Map(); ks.forEach(k => { const x = sup.get(k.sup) || { n: k.sup || '(sin nombre)', v: 0, c: 0 }; x.v += +k.total || 0; x.c++; sup.set(k.sup, x); });
@@ -3955,7 +4248,7 @@ $('#panelT').addEventListener('click', e => {
   if (k === 'fac' || k === 'lis' || k === 'pre') { setSec('com'); kVista(k); return; }
   if (k === 'ver-mec' || k === 'ver-ins') { setSec(lastTr + '_' + k.slice(4)); return; }
   if (k === 'svc') { setSec('ser'); $('#rSvc').focus(); return; }
-  if (k === 'ped') $('#btnPedido').click();
+  if (k === 'req') { setSec('req'); rqVista('rev'); }
 });
 // Globo con el detalle al pasar el dedo o el ratón por una barra
 const tTip = document.createElement('div'); tTip.id = 'tTip'; tTip.hidden = true; document.body.appendChild(tTip);
