@@ -1048,7 +1048,7 @@ body[data-inv=no] #btnReacomodar,body[data-inv=no] #btnImport,body[data-inv=no] 
       <div class="full"><label for="eSc">Código corto</label>
         <div class="codebox" style="grid-template-columns:1fr auto"><input id="eSc" class="mono" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="12" style="font-weight:800;text-transform:uppercase"><button type="button" id="eScGen">Asignar automático</button></div>
       </div>
-      <div class="full"><label for="eLugar">Va en (pieza de un área, o insumo)</label><select id="eLugar"></select></div>
+      <div class="full"><label for="eLugar">Va en (pieza de un área, o uso general)</label><select id="eLugar"></select></div>
       <div class="full" id="eUsosW"><span class="lbl">Sirve para <small>(marca una, varias o ninguna)</small></span><div class="usos" id="eUsos"></div></div>
       <div class="full"><label for="eCode">Código de barras</label>
         <div class="codebox"><input id="eCode" class="mono" inputmode="numeric" autocomplete="off"><button type="button" id="eGen">Generar código interno</button><button type="button" id="ePhoto">Escanear con la cámara</button></div>
@@ -1298,7 +1298,7 @@ function ensureSc(a){
   return n;
 }
 /* ---------- Tipo: pieza o insumo ---------- */
-const TIPOS = { mec: 'Pieza', ins: 'Insumo / gastable' };
+const TIPOS = { mec: 'Pieza', ins: 'Uso general' };
 const TIPO_INS0 = /^(aceite|liquido|aditivo|cooland|coolant|grasa|refrigerante|valvulina|atf)\b/;
 const TIPO_INS = /\b(guantes?|tie ?w?rap|tirr?ap|tira ?rap|cintas?|tape|bombill[oa]s?|limpiador|desengrasante|trapos?|lijas?|pega|silicon[ae]?|tornillos?|tuercas?|arandelas?|abrazaderas?|teflon|spray|jabon|papel|fundas?|mascarillas?|escobas?|brochas?|thinner)\b/;
 const TIPO_ELE = /\b(alternador|arranque|marcha|baterias?|bujias?|cables?|computadora|sensor(es)?|selenoides?|solenoides?|ramal|fusibles?|reles?|relay|switch|interruptor|modulo|ecu|bobinas?|faros?|electric[oa]s?|electronic[oa]s?)\b/;
@@ -1307,7 +1307,7 @@ function guessTipo(name){
   if (TIPO_INS0.test(n) || TIPO_INS.test(n)) return 'ins';
   return 'mec';
 }
-function tipoFrom(v){ const f = fold(v).trim(); return (f.startsWith('ins') || f.startsWith('gast')) ? 'ins' : (f.startsWith('pie') || f.startsWith('rep') || f.startsWith('mec') || f.startsWith('ele')) ? 'mec' : ''; }
+function tipoFrom(v){ const f = fold(v).trim(); return (f.startsWith('ins') || f.startsWith('gast') || f.startsWith('uso')) ? 'ins' : (f.startsWith('pie') || f.startsWith('rep') || f.startsWith('mec') || f.startsWith('ele')) ? 'mec' : ''; }
 /* ---------- Área de las piezas: Automática, CVT, Mecánica o Eléctrica ----------
    En el producto: tipo = 'mec' (pieza, vive en el área tr) o 'ins' (insumo, va aparte; ver usos). */
 const TRS = { aut: 'Automática', cvt: 'CVT', mec: 'Mecánica', ele: 'Eléctrica' };
@@ -1397,10 +1397,10 @@ function ensureTipo(a){ let n = 0; a.items.forEach(i => { if (i.tipo === 'ele') 
 /* Pestaña activa: todo (escanear, buscar, crear, eliminar, movimientos) trabaja solo con sus productos.
    Las piezas viven en su área (aut_mec, cvt_mec, mec_mec, ele_mec). Los insumos van aparte, en una sola
    pestaña 'ins', y cada uno dice para qué áreas sirve (it.usos: ['aut', 'cvt'…], puede ser una, varias o ninguna). */
-const CAT_LBL = { mec: 'Piezas', ins: 'Insumos' };
+const CAT_LBL = { mec: 'Piezas', ins: 'Uso general' };
 const SEC_LBL = { tab: 'Tablero', ser: 'Servicios', cat: 'Catálogo', com: 'Compras', req: 'Requisiciones' };
 Object.keys(TRS).forEach(t => { SEC_LBL[t + '_mec'] = TRS[t]; });
-SEC_LBL.ins = 'Insumos';
+SEC_LBL.ins = 'Uso general';   // los insumos (aceites, aditivos, bombillos, silicón…); en el código siguen siendo 'ins'
 // Dónde puede ir un producto: las cuatro áreas de piezas o Insumos
 const LUGARES = Object.keys(SEC_LBL).filter(k => k.includes('_')).concat('ins');
 const SEC_LBL_INV = Object.fromEntries(LUGARES.map(k => [k, SEC_LBL[k]]));
@@ -2033,7 +2033,7 @@ function openNew(pref = {}){
   const m = pref.code ? memByCode(pref.code) : null;
   if (m && CAT_LBL[m.tipo] && K(m) !== SEC) setSec(K(m));
   $('#nUsosW').hidden = !enIns(); $('#nUsos').innerHTML = usosChecks([], 'data-uso');
-  $('#newDlg h2').textContent = enIns() ? 'Nuevo insumo' : 'Nueva pieza · ' + SEC_LBL[SEC]; nScTip(); $('#newDlg').showModal();
+  $('#newDlg h2').textContent = enIns() ? 'Nuevo producto de uso general' : 'Nueva pieza · ' + SEC_LBL[SEC]; nScTip(); $('#newDlg').showModal();
   if (m) { memFillNew(m, 'este código ya se registró antes'); $('#nQty').focus(); $('#nQty').select(); } else $('#nName').focus();
 }
 $('#btnGen').onclick = () => { $('#nCode').value = genCode(); $('#codeHint').textContent = 'Código interno generado. Después de guardar podrás imprimir la etiqueta.'; };
@@ -2124,7 +2124,7 @@ function sacude(el){ if (!el) return; el.classList.remove('sacude'); void el.off
 const stEstado = it => { const m = minDe(it), q = Number(it.qty) || 0; return q <= 0 ? 'cero' : (m > 0 && q <= m) ? 'bajo' : 'ok'; };
 const ST_TXT = { ok: ['Bien', 'check'], bajo: ['Bajo', 'alerta'], cero: ['Agotado', 'alerta'] };
 // Insumo: una marca por cada área para la que sirve
-const usosChips = it => { const u = usosDe(it); return u.length ? u.map(t => `<span class="chip a-${t}">${TRS[t]}</span>`).join('') : '<span class="chip">Uso general</span>'; };
+const usosChips = it => { const u = usosDe(it); return u.length ? u.map(t => `<span class="chip a-${t}">${TRS[t]}</span>`).join('') : '<span class="chip">Sin área marcada</span>'; };
 function pcardHtml(it, i){
   const st = stEstado(it), m = minDe(it), q = Number(it.qty) || 0, tr = TRS[it.tr] ? it.tr : 'aut';
   const p = st === 'cero' ? 0 : m > 0 ? Math.min(100, Math.round(q / (m * 2) * 100)) : 100;
@@ -2153,7 +2153,7 @@ function renderParts(){
   });
   rows.sort((a, b) => COLL.compare(a[0].name, b[0].name));
   $('#partsBody').innerHTML = rows.map(([it, i]) => pcardHtml(it, i)).join('') || '<p class="muted">Sin resultados.</p>';
-  $('#partsCount').textContent = enIns() ? `${rows.length} ${rows.length === 1 ? 'insumo' : 'insumos'}${insUso ? ' que sirven para ' + (insUso === 'gen' ? 'uso general' : TRS[insUso]) : ''}, en orden alfabético` : `${rows.length} piezas de ${SEC_LBL[SEC]}, en orden alfabético`;
+  $('#partsCount').textContent = enIns() ? `${rows.length} ${rows.length === 1 ? 'producto' : 'productos'} de uso general${insUso ? (insUso === 'gen' ? ' sin área marcada' : ' que sirven para ' + TRS[insUso]) : ''}, en orden alfabético` : `${rows.length} piezas de ${SEC_LBL[SEC]}, en orden alfabético`;
 }
 const MOV_TAG = /^(\d+) (.+?) × (\d+)\.?\s*/;
 function movPres(m){
@@ -2180,14 +2180,14 @@ function renderStat(){
   if (SEC === 'com') { $('#stat').textContent = 'Compras: facturas de compra, costos, ITBIS y precios de venta'; return; }
   if (SEC === 'req') { $('#stat').textContent = 'Lo que hace falta comprar para reponer el almacén'; return; }
   const its = SI(), u = its.reduce((a, i) => a + (i.qty || 0), 0);
-  $('#stat').textContent = `${fmt(its.length)} ${enIns() ? (its.length === 1 ? 'insumo' : 'insumos') : its.length === 1 ? 'pieza' : 'piezas'} · ${fmt(u)} unidades en existencia · ${S.name}`;
+  $('#stat').textContent = `${fmt(its.length)} ${enIns() ? (its.length === 1 ? 'producto de uso general' : 'productos de uso general') : its.length === 1 ? 'pieza' : 'piezas'} · ${fmt(u)} unidades en existencia · ${S.name}`;
 }
 function renderSecs(){
   document.body.dataset.sec = SEC; document.body.dataset.inv = enInv() ? 'si' : 'no';
   const n = k => S.items.filter(i => K(i) === k).length, cur = SEC.includes('_') ? 'inv' : SEC, nFal = faltantes(false).length;
   // Menú principal: una entrada por parte del programa (las áreas de piezas se eligen dentro de Inventario; Insumos va aparte)
   const it = (k, txt, icono, c) => `<button type="button" role="tab" data-nav="${k}" aria-selected="${cur === k}">${icono}<span class="fn">${txt}</span>${c === undefined ? '' : `<span class="fc">${fmt(c)}</span>`}</button>`;
-  const h1 = it('tab', 'Tablero', ico('inicio')) + it('inv', 'Inventario', ico('tuerca'), S.items.length - n('ins')) + it('ins', 'Insumos', ico('gota'), n('ins')) + it('ser', 'Servicios', icoArea('ser'), svcOf(S).services.length) +
+  const h1 = it('tab', 'Tablero', ico('inicio')) + it('inv', 'Inventario', ico('tuerca'), S.items.length - n('ins')) + it('ins', 'Uso general', ico('gota'), n('ins')) + it('ser', 'Servicios', icoArea('ser'), svcOf(S).services.length) +
     it('com', 'Compras', icoArea('com'), comOf(S).compras.filter(k => !k.anulada).length) +
     // Requisiciones lleva en rojo cuántos productos hacen falta reponer
     `<button type="button" role="tab" data-nav="req" aria-selected="${cur === 'req'}">${ico('pedido')}<span class="fn">Requisiciones</span><span class="insignia" data-n="${nFal}">${nFal ? fmt(nFal) : ''}</span></button>` +
@@ -2196,9 +2196,9 @@ function renderSecs(){
   // Piezas: las cuatro áreas. Insumos: ver todos o solo los que sirven para un área
   const ins = S.items.filter(i => K(i) === 'ins'), nUso = t => ins.filter(i => t === 'gen' ? !usosDe(i).length : usosDe(i).includes(t)).length;
   $('#trTabs').setAttribute('aria-label', enIns() ? 'Sirve para' : 'Área');
-  $('#tabP').textContent = enIns() ? 'Insumos' : 'Piezas'; $('#btnNew .tx').textContent = enIns() ? 'Nuevo insumo' : 'Nueva pieza'; $('#btnNew').setAttribute('aria-label', $('#btnNew .tx').textContent);
+  $('#tabP').textContent = enIns() ? 'Productos' : 'Piezas'; $('#btnNew .tx').textContent = enIns() ? 'Nuevo producto' : 'Nueva pieza'; $('#btnNew').setAttribute('aria-label', $('#btnNew .tx').textContent);
   $('#trTabs').innerHTML = !enInv() ? '' : enIns()
-    ? [['', 'Todos', ins.length], ...Object.keys(TRS).map(t => [t, TRS[t], nUso(t)]), ['gen', 'Uso general', nUso('gen')]].map(([t, txt, c]) => `<button type="button" role="tab"${TRS[t] ? ` class="a-${t}"` : ''} data-uso="${t}" aria-selected="${insUso === t}">${TRS[t] ? '<i class="dot"></i>' : ''}${txt}<small>${fmt(c)}</small></button>`).join('')
+    ? [['', 'Todos', ins.length], ...Object.keys(TRS).map(t => [t, TRS[t], nUso(t)]), ['gen', 'Sin área marcada', nUso('gen')]].map(([t, txt, c]) => `<button type="button" role="tab"${TRS[t] ? ` class="a-${t}"` : ''} data-uso="${t}" aria-selected="${insUso === t}">${TRS[t] ? '<i class="dot"></i>' : ''}${txt}<small>${fmt(c)}</small></button>`).join('')
     : Object.keys(TRS).map(t => `<button type="button" role="tab" class="a-${t}" data-tr="${t}" aria-selected="${secTr() === t}"><i class="dot"></i>${TRS[t]}<small>${fmt(n(t + '_mec'))}</small></button>`).join('');
 }
 function setSec(t){
@@ -2327,7 +2327,7 @@ $('#editForm').onsubmit = e => {
   if (conv && PACK_UNIT.test(it.unit || '')) { it.unit = 'UNID'; if (!changed.includes('unidad')) changed.push('unidad'); }
   if (it.sc !== sc) { it.sc = sc; changed.push('código corto'); }
   const lugar = $('#eLugar').value;
-  if (LUGARES.includes(lugar) && lugar !== K(it)) { ponLugar(it, lugar); changed.push(lugar === 'ins' ? 'pasó a Insumos' : 'área'); }
+  if (LUGARES.includes(lugar) && lugar !== K(it)) { ponLugar(it, lugar); changed.push(lugar === 'ins' ? 'pasó a Uso general' : 'área'); }
   if (it.tipo === 'ins') { const u = usosSel('#eUsos'); if (u.join() !== usosDe(it).join()) { it.usos = u; changed.push('sirve para'); } }
   if (JSON.stringify(it.pack || null) !== JSON.stringify(newPack)) { it.pack = newPack; changed.push('empaque'); }
   const diff = qty - it.qty;
@@ -2401,7 +2401,7 @@ const fold = s => String(s ?? '').toLowerCase().normalize('NFD').replace(/[\u030
 function seaDetailHTML(it){
   const row = (l, v) => v ? `<dt>${l}</dt><dd>${esc(v)}</dd>` : '';
   return `<div class="name">${scBadge(it)}${esc(it.name)}</div>` +
-    `<dl>${row('Referencia', it.ref)}${row('Marca', it.brand)}${row('Modelo', it.model)}${row('SKU', it.sku)}${row('Categoría', it.cat)}${row('Subcategoría', it.sub)}${row('Año', it.year)}${it.tipo === 'ins' ? row('Sirve para', usosTxt(it) || 'Uso general') : ''}</dl>` +
+    `<dl>${row('Referencia', it.ref)}${row('Marca', it.brand)}${row('Modelo', it.model)}${row('SKU', it.sku)}${row('Categoría', it.cat)}${row('Subcategoría', it.sub)}${row('Año', it.year)}${it.tipo === 'ins' ? row('Sirve para', usosTxt(it) || 'Sin área marcada') : ''}</dl>` +
     `<div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:10px"><span>Stock actual</span><b style="font-size:44px;line-height:1;color:${it.qty <= 0 ? 'var(--out)' : 'var(--look)'}">${fmt(it.qty)}</b><span>${esc(it.unit || 'UNID')}</span></div>` +
     (stockText(it) ? `<div class="muted">En empaques: ${esc(stockText(it))}</div>` : '') + (it.pack && it.pack.n > 1 ? `<div class="muted">Empaque: ${esc(it.pack.name)} de ${it.pack.n} unidades</div>` : '');
 }
@@ -2554,7 +2554,7 @@ function rqFila(it){
   const sub = [it.sc, it.ref, it.brand].filter(Boolean).map(esc).join(' · ');
   return `<tr data-id="${esc(it.id)}"${inc ? '' : ' class="off"'}><td class="rck"><input type="checkbox" data-f="inc" aria-label="Pedir ${nom}"${inc ? ' checked' : ''}></td>` +
     `<td><b>${nom}</b>${sub ? `<br><small>${sub}</small>` : ''}</td>` +
-    `<td><span class="area a-${t}"><i class="dot"></i>${SEC_LBL[K(it)]}</span><br><small>${t === 'ins' ? esc(usosTxt(it) || 'Uso general') : 'Pieza'}</small></td>` +
+    `<td><span class="area a-${t}"><i class="dot"></i>${SEC_LBL[K(it)]}</span><br><small>${t === 'ins' ? esc(usosTxt(it) || 'Sin área marcada') : 'Pieza'}</small></td>` +
     `<td class="num ${q <= 0 ? 'cero' : rqNecesita(it) ? 'bajo' : ''}">${fmt(q)} <small>${esc(it.unit || 'UNID')}</small></td>` +
     `<td class="num"><input type="number" min="0" step="1" inputmode="numeric" data-f="min" value="${m || ''}" placeholder="—" aria-label="Mínimo de ${nom}"></td>` +
     `<td class="num"><input type="number" min="0" step="1" inputmode="numeric" data-f="qty" value="${rqQty(it)}" aria-label="Cuánto pedir de ${nom}"></td>` +
@@ -2578,7 +2578,7 @@ function rqResumen(){
   const sel = rqMarcadas(), u = sel.reduce((s, it) => s + rqQty(it), 0), nf = faltantes(false).length;
   $('#rRes').innerHTML = `<b>${fmt(sel.length)}</b> ${sel.length === 1 ? 'producto marcado' : 'productos marcados'} para pedir · <b>${fmt(u)}</b> ${u === 1 ? 'unidad' : 'unidades'} · ${fmt(nf)} ${nf === 1 ? 'necesita' : 'necesitan'} reposición`;
 }
-$('#rArea').innerHTML = '<option value="">Piezas e insumos</option>' + LUGARES.map(k => `<option value="${k}">${SEC_LBL[k]}</option>`).join('');
+$('#rArea').innerHTML = '<option value="">Todo el inventario</option>' + LUGARES.map(k => `<option value="${k}">${SEC_LBL[k]}</option>`).join('');
 $('#rPor').value = RQ.por;
 $('#rq').addEventListener('input', () => rqRev(true));
 $('#rFil').addEventListener('change', () => rqRev(true));
@@ -2665,7 +2665,7 @@ async function rqDibujar(r){
       if (i % 2) { g.fillStyle = '#f7f8fa'; g.fillRect(M, y, W - 2 * M, RH); }
       g.fillStyle = '#dfe3e8'; g.fillRect(M, y + RH - 1, W - 2 * M, 1);
       g.fillStyle = '#17202a'; g.font = '600 18px ' + F; T(x.sc || '—', C[0][1], y + 27, C[0][2], 'l');
-      g.font = '400 19px ' + F; T(x.name + (x.ref ? ' · ' + x.ref : ''), C[1][1], y + 27, C[1][2], 'l'); T(x.tipo === 'ins' ? 'Insumos' : TRS[x.tr] || '', C[2][1], y + 27, C[2][2], 'l');
+      g.font = '400 19px ' + F; T(x.name + (x.ref ? ' · ' + x.ref : ''), C[1][1], y + 27, C[1][2], 'l'); T(x.tipo === 'ins' ? 'Uso general' : TRS[x.tr] || '', C[2][1], y + 27, C[2][2], 'l');
       g.fillStyle = x.hay <= 0 ? '#c2302d' : '#17202a'; T(fmt(x.hay), C[3][1], y + 27, C[3][2], 'r');
       g.fillStyle = '#17202a'; T(x.min ? fmt(x.min) : '—', C[4][1], y + 27, C[4][2], 'r');
       g.font = '700 21px ' + F; T(fmt(x.pedir), C[5][1], y + 27, C[5][2], 'r');
@@ -3565,8 +3565,8 @@ $('#fileIn').addEventListener('change', e => {
       const curTr = secTr();
       // Un insumo sin columna SIRVE PARA toma el área que diga el archivo (hoja "CVT Insumos" o columna ÁREA de los Excel de antes)
       const usosDeArea = i => { if (i.tipo === 'ins' && !i.usos.length && TRS[i.tr]) i.usos = [i.tr]; };
-      // Hojas con nombre de pestaña ("CVT", "Eléctrica Piezas", "Insumos", "CVT Insumos"…): cada una va a su pestaña
-      const sheetSec = nm => { const k = impKey(nm), tr = trFrom(k.replace(/\b(piezas?|insumos?|suministros?)\b/g, '').trim()), ins = /\b(insumos?|suministros?)\b/.test(k);
+      // Hojas con nombre de pestaña ("CVT", "Eléctrica Piezas", "Uso general", "Insumos", "CVT Insumos"…): cada una va a su pestaña
+      const sheetSec = nm => { const k = impKey(nm), tr = trFrom(k.replace(/\b(piezas?|insumos?|suministros?|uso general)\b/g, '').trim()), ins = /\b(insumos?|suministros?|uso general)\b/.test(k);
         return ins ? { k: 'ins', tr } : tr ? { k: tr + '_mec', tr } : null; };
       wb.SheetNames.forEach(nm => { const t = sheetSec(nm); if (!t) return; const its = impSheet(wb.Sheets[nm]); if (its && its.length) { its.forEach(i => { if (t.tr) i.tr = t.tr; ponLugar(i, t.k); usosDeArea(i); if (!TRS[i.tr]) i.tr = curTr; }); bySec[t.k].push(...its); used.push(nm); } });
       if (!used.length) {
@@ -4082,7 +4082,7 @@ $('#kAnular').onclick = () => {
 /* Precios: la lista de precios de venta; aquí se cambia la ganancia o el precio */
 const kTasaDe = it => +it.v70 > 0 ? Math.round((+it.total / +it.v70 - 1) * 100) / 100 : 0.18;
 function kUltimas(){ const m = new Map(); comOf(S).compras.forEach(k => { if (!k.anulada) (k.lineas || []).forEach(x => { if (!m.has(x.pid)) m.set(x.pid, k); }); }); return m; }
-$('#kpArea').innerHTML = '<option value="">Piezas e insumos</option>' + LUGARES.map(k => `<option value="${k}">${SEC_LBL[k]}</option>`).join('');
+$('#kpArea').innerHTML = '<option value="">Todo el inventario</option>' + LUGARES.map(k => `<option value="${k}">${SEC_LBL[k]}</option>`).join('');
 // Lo que muestra la vista y lo que lleva el reporte: con precio, según la búsqueda y el área elegida
 function kPrecLista(){
   const q = fold($('#kpq').value.trim()), ar = $('#kpArea').value;
@@ -4237,7 +4237,7 @@ function renderInicio(){
   const accH = acc.map(([k, t, i, p]) => `<button type="button" data-ir="${k}"${p ? ' class="prin"' : ''}>${k === 'svc' ? icoArea('ser') : k === 'fac' ? icoArea('com') : ico(i)}${t}</button>`).join('');
 
   const kpi = (dt, dd, sub) => `<div class="t-kpi"><dt>${dt}</dt><dd>${dd}${sub ? `<small>${sub}</small>` : ''}</dd></div>`;
-  const band = kpi('Inventario a costo', rd(valC), `${fmt(its.filter(i => tipoDe(i) === 'mec').length)} piezas · ${fmt(its.filter(i => tipoDe(i) === 'ins').length)} insumos · ${fmt(uds)} unidades`) + kpi('A precio de venta', rd(valV), valC ? `margen ${kPct(valV / 1.18 / valC - 1)} aprox.` : 'según la lista de precios') +
+  const band = kpi('Inventario a costo', rd(valC), `${fmt(its.filter(i => tipoDe(i) === 'mec').length)} piezas · ${fmt(its.filter(i => tipoDe(i) === 'ins').length)} de uso general · ${fmt(uds)} unidades`) + kpi('A precio de venta', rd(valV), valC ? `margen ${kPct(valV / 1.18 / valC - 1)} aprox.` : 'según la lista de precios') +
     kpi('Compras del mes', rd(compMes), `${fmt(kMes.length)} ${kMes.length === 1 ? 'factura' : 'facturas'} · ITBIS ${rd(itbMes)}`) + kpi('Movimiento de hoy', `${fmt(dHoy)} <span class="muted" style="font-size:14px;font-weight:600">despachadas</span>`, `${fmt(eHoy)} unidades entraron`) +
     kpi('Por atender', `${fmt(agot.length + bajo.length)}`, `${fmt(agot.length)} ${agot.length === 1 ? 'agotado' : 'agotados'} · ${fmt(bajo.length)} bajo el mínimo`);
 
@@ -4270,15 +4270,15 @@ function renderInicio(){
     // Piezas: cuántas hay en cada área. Insumos: para qué área sirven (uno puede servir para varias) y los de uso general
     const barra = (b, n, cls, tip) => ({ n, v: b.length, cls, dot: 1, extra: `${fmt(b.reduce((s, i) => s + Math.max(0, +i.qty || 0), 0))} unid.`, tip });
     const pa = tipo === 'ins'
-      ? Object.keys(TRS).map(t => barra(a.filter(i => usosDe(i).includes(t)), TRS[t], 'a-' + t, `Insumos que sirven para ${TRS[t]}: ${fmt(a.filter(i => usosDe(i).includes(t)).length)}`))
-          .concat(barra(a.filter(i => !usosDe(i).length), 'Uso general', '', `Insumos sin área marcada: ${fmt(a.filter(i => !usosDe(i).length).length)}`))
+      ? Object.keys(TRS).map(t => barra(a.filter(i => usosDe(i).includes(t)), TRS[t], 'a-' + t, `De uso general que sirven para ${TRS[t]}: ${fmt(a.filter(i => usosDe(i).includes(t)).length)}`))
+          .concat(barra(a.filter(i => !usosDe(i).length), 'Sin área marcada', '', `Sin área marcada (sirven para todo): ${fmt(a.filter(i => !usosDe(i).length).length)}`))
       : Object.keys(TRS).map(t => { const b = a.filter(i => (TRS[i.tr] ? i.tr : 'aut') === t); return barra(b, TRS[t], 'a-' + t, `Piezas de ${TRS[t]}: ${fmt(b.length)} productos`); });
     const c = (t, x, cls) => `<div><span>${t}</span><b${cls ? ` class="${cls}"` : ''}>${x}</b></div>`;
-    const cuerpo = !a.length ? tVacio(`Todavía no hay ${nom.toLowerCase()} en el inventario.`) :
+    const cuerpo = !a.length ? tVacio(tipo === 'ins' ? 'Todavía no hay productos de uso general en el inventario.' : 'Todavía no hay piezas en el inventario.') :
       `<div class="t-mini">${c('Productos', fmt(a.length))}${c('Unidades', fmt(u))}${c('Valor a costo', rd(v))}${c('Agotados', fmt(ag), ag ? 'cero' : '')}${c('Bajo el mínimo', fmt(bj), bj ? 'bajo' : '')}</div>` +
       `<h4 class="t-h">${tipo === 'ins' ? 'Sirven para' : 'Por área'}</h4>${tBarras(pa, x => fmt(x) + ' prod.')}` +
       `<h4 class="t-h">Lo que más sale (30 días)</h4>${tg.length ? tBarras(tg, x => fmt(x)) : '<p class="t-sub" style="margin:0">Sin despachos en los últimos 30 días.</p>'}`;
-    return tPan(nom, tipo === 'ins' ? 'Aceites, líquidos y materiales que se gastan en el taller' : 'Repuestos y componentes de transmisión', cuerpo, `<button type="button" data-ir="ver-${tipo}">Ver ${nom.toLowerCase()}</button>`);
+    return tPan(nom, tipo === 'ins' ? 'Aceites, aditivos, bombillos, silicón y materiales que se gastan en el taller' : 'Repuestos y componentes de transmisión', cuerpo, `<button type="button" data-ir="ver-${tipo}">Ver ${nom.toLowerCase()}</button>`);
   };
   const pPie = pTipo('mec'), pIns = pTipo('ins');
 
@@ -4339,7 +4339,7 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape' && document.b
 
 /* ---------- Inicio ---------- */
 memLists();
-$('#eLugar').innerHTML = LUGARES.map(k => `<option value="${k}">${k === 'ins' ? 'Insumos (aparte de las áreas)' : 'Pieza de ' + SEC_LBL[k]}</option>`).join('');
+$('#eLugar').innerHTML = LUGARES.map(k => `<option value="${k}">${k === 'ins' ? 'Uso general (aceites, aditivos, bombillos, silicón…)' : 'Pieza de ' + SEC_LBL[k]}</option>`).join('');
 const tipoNew = R.almacenes.reduce((n, a) => n + ensureTipo(a), 0);
 R.almacenes.forEach(stampMovTipo);
 const scNew = R.almacenes.reduce((n, a) => n + ensureSc(a), 0);
