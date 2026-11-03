@@ -61,7 +61,7 @@
   --sombra:0 1px 2px rgba(16,24,32,.05),0 2px 8px rgba(16,24,32,.04);
   --rojo:#c8102e;--onrojo:#fff;--acento:#f2a900;--onacento:#1b1405;--acento-t:#8f5c00;
   --ok:#12794c;--bajo:#8f5a00;--cero:#c2302d;
-  --a-aut:#2a5ca3;--a-cvt:#0a7070;--a-mec:#b8430f;--a-ele:#7a49c4;--a-ser:#5b6572;--a-cat:#8a5a00;--a-com:#3d6b1f;--onarea:#fff;
+  --a-aut:#2a5ca3;--a-cvt:#0a7070;--a-mec:#b8430f;--a-ele:#7a49c4;--a-ser:#5b6572;--a-cat:#8a5a00;--a-com:#3d6b1f;--a-ins:#a0466e;--onarea:#fff;
   --side:#17202a;--side2:#1f2a35;--onside:#e9edf1;--sidemute:#9aa6b2;--sideline:#2c3946;
   --s1:#2a78d6;--s2:#eb6834;   /* gráficas: entradas / despachos (validadas para daltonismo) */
   --area:var(--ink2);
@@ -71,7 +71,7 @@
   --in:#3dbd84;--out:#ff7570;--look:#74a8f0;--onmode:#0c1117;
   --sombra:0 1px 2px rgba(0,0,0,.35);
   --rojo:#ff4f5e;--onrojo:#0c1117;--acento-t:#f2a900;--ok:#3dbd84;--bajo:#ffb020;--cero:#ff7570;
-  --a-aut:#74a8f0;--a-cvt:#3cc7c7;--a-mec:#ff8a50;--a-ele:#b595f0;--a-ser:#aab4c0;--a-cat:#f2a900;--a-com:#9bd36a;--onarea:#0c1117;
+  --a-aut:#74a8f0;--a-cvt:#3cc7c7;--a-mec:#ff8a50;--a-ele:#b595f0;--a-ser:#aab4c0;--a-cat:#f2a900;--a-com:#9bd36a;--a-ins:#e08ab0;--onarea:#0c1117;
   --side:#0b1015;--side2:#141b22;--sideline:#222c36;
   --s1:#3987e5;--s2:#d95926;
 }}
@@ -80,7 +80,7 @@
   --in:#3dbd84;--out:#ff7570;--look:#74a8f0;--onmode:#0c1117;
   --sombra:0 1px 2px rgba(0,0,0,.35);
   --rojo:#ff4f5e;--onrojo:#0c1117;--acento-t:#f2a900;--ok:#3dbd84;--bajo:#ffb020;--cero:#ff7570;
-  --a-aut:#74a8f0;--a-cvt:#3cc7c7;--a-mec:#ff8a50;--a-ele:#b595f0;--a-ser:#aab4c0;--a-cat:#f2a900;--a-com:#9bd36a;--onarea:#0c1117;
+  --a-aut:#74a8f0;--a-cvt:#3cc7c7;--a-mec:#ff8a50;--a-ele:#b595f0;--a-ser:#aab4c0;--a-cat:#f2a900;--a-com:#9bd36a;--a-ins:#e08ab0;--onarea:#0c1117;
   --side:#0b1015;--side2:#141b22;--sideline:#222c36;
   --s1:#3987e5;--s2:#d95926;
 }
@@ -95,7 +95,8 @@ body[data-sec^=ele]{--area:var(--a-ele)}
 body[data-sec^=ser]{--area:var(--a-ser)}
 body[data-sec=cat]{--area:var(--a-cat)}
 body[data-sec=com]{--area:var(--a-com)}
-.a-aut{--area:var(--a-aut)}.a-cvt{--area:var(--a-cvt)}.a-mec{--area:var(--a-mec)}.a-ele{--area:var(--a-ele)}.a-ser{--area:var(--a-ser)}.a-cat{--area:var(--a-cat)}.a-com{--area:var(--a-com)}
+body[data-sec=ins]{--area:var(--a-ins)}
+.a-aut{--area:var(--a-aut)}.a-cvt{--area:var(--a-cvt)}.a-mec{--area:var(--a-mec)}.a-ele{--area:var(--a-ele)}.a-ser{--area:var(--a-ser)}.a-cat{--area:var(--a-cat)}.a-com{--area:var(--a-com)}.a-ins{--area:var(--a-ins)}
 
 /* ---------- 2. Base ---------- */
 *{box-sizing:border-box}
@@ -186,13 +187,12 @@ details.more .menu .zona-roja{margin-top:4px;padding-top:10px;border-top:1px sol
 .trsecs button .dot{width:8px;height:8px;border-radius:50%;background:var(--area)}
 .trsecs button small{font-size:12px;color:var(--mute);font-weight:600;font-variant-numeric:tabular-nums}
 .trsecs button[aria-selected=true]{color:var(--ink);border-bottom-color:var(--area);font-weight:700}
-.subsecs,.modes{display:inline-flex;gap:2px;padding:3px;background:var(--panel2);border:1px solid var(--line);border-radius:9px;max-width:100%}
-.subsecs button,.modes button{border:0;background:transparent;color:var(--mute);font-weight:600;font-size:14px;height:32px;min-height:32px;padding:0 14px;border-radius:6px}
-.subsecs button:hover,.modes button:hover{background:transparent;color:var(--ink)}
-.subsecs button small,.modes button small{display:none}
-.subsecs button .ico,.modes button .ico{width:16px;height:16px}
-.subsecs button[aria-selected=true]{background:var(--panel);color:var(--ink);box-shadow:0 1px 2px rgba(16,24,32,.12)}
-body[data-inv=no] .subsecs,body[data-inv=no] .trsecs{display:none}
+.modes{display:inline-flex;gap:2px;padding:3px;background:var(--panel2);border:1px solid var(--line);border-radius:9px;max-width:100%}
+.modes button{border:0;background:transparent;color:var(--mute);font-weight:600;font-size:14px;height:32px;min-height:32px;padding:0 14px;border-radius:6px}
+.modes button:hover{background:transparent;color:var(--ink)}
+.modes button small{display:none}
+.modes button .ico{width:16px;height:16px}
+body[data-inv=no] .trsecs{display:none}
 .modes{margin-left:auto}
 .modes button[data-mode=in]{--c:var(--in)}.modes button[data-mode=out]{--c:var(--out)}.modes button[data-mode=look]{--c:var(--look)}
 .modes button[aria-pressed=true]{background:var(--c);color:var(--onmode)}
@@ -319,7 +319,9 @@ button.kx{flex:0 0 auto;width:36px;padding:0;font-size:20px;line-height:1;color:
 .kl-hay.si{color:var(--look)}
 .kl-campos{display:grid;gap:8px;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));margin-top:8px}
 .kl-campos label{display:grid;gap:3px;font-size:12px;font-weight:600;color:var(--mute);margin:0}
-.kl-campos [hidden]{display:none}
+.kl-campos [hidden],.kl-usos[hidden]{display:none}
+.kl-usos{margin-top:8px;align-items:center}
+.kl-usos>span{font-size:12px;font-weight:600;color:var(--mute);margin-right:4px}
 .kl-campos input,.kl-campos select{padding:7px 9px;height:36px;font-size:14px;color:var(--ink)}
 .kl-res{margin-top:9px;padding-top:7px;border-top:1px dashed var(--line);display:flex;flex-wrap:wrap;gap:2px 16px;font-size:13px;font-variant-numeric:tabular-nums}
 .kl-res span{white-space:nowrap;color:var(--mute)}
@@ -571,7 +573,15 @@ dialog h2{margin:0 0 14px;font-size:19px}
 #editDlg{--dw:680px}#seaDlg,#iaDlg,#reaDlg{--dw:760px}
 .fg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
 .fg .full{grid-column:1/-1}
-.fg label{font-size:13px;font-weight:600;display:block;margin-bottom:4px;color:var(--ink2)}
+.fg label,.fg .lbl{font-size:13px;font-weight:600;display:block;margin-bottom:4px;color:var(--ink2)}
+.fg .lbl small{font-weight:500;color:var(--mute)}
+.fg [hidden]{display:none}
+/* Sirve para: una casilla por área (insumos) */
+.usos{display:flex;flex-wrap:wrap;gap:6px}
+.usos .uso{display:inline-flex;align-items:center;gap:7px;height:34px;padding:0 12px;margin:0;border:1px solid var(--line2);border-radius:7px;background:var(--panel);font-size:14px;font-weight:600;color:var(--ink2);cursor:pointer;white-space:nowrap}
+.usos .uso input{width:16px;height:16px;min-height:0;margin:0;accent-color:var(--area)}
+.usos .uso .dot{width:8px;height:8px;border-radius:50%;background:var(--area)}
+.usos .uso:has(input:checked){border-color:var(--area);background:color-mix(in srgb,var(--area) 10%,var(--panel));color:var(--ink)}
 .codebox{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:8px}
 .err{color:var(--cero);font-weight:700;min-height:1.4em;margin-top:8px}
 .dlgbtns{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end;margin-top:14px}
@@ -642,8 +652,8 @@ body.locked .app,body.locked dialog{display:none!important}
   .almrow{grid-template-columns:repeat(2,minmax(0,1fr))}.almrow input{grid-column:1/-1}
   .appbar h1{font-size:17px}
   .ctl{gap:8px}
-  .subsecs,.modes{flex:1 1 100%}
-  .subsecs button,.modes button{flex:1 1 0;padding:0 8px}
+  .modes{flex:1 1 100%}
+  .modes button{flex:1 1 0;padding:0 8px}
   .t-kpi dd{font-size:19px;white-space:normal}
   .t-bar{grid-template-columns:minmax(80px,110px) minmax(0,1fr) auto}
   /* diálogo como hoja inferior */
@@ -655,7 +665,7 @@ body.locked .app,body.locked dialog{display:none!important}
 @media (pointer:coarse),(max-width:760px){
   button,.btn{min-height:40px}
   input:not([type=checkbox]):not([type=radio]),select{min-height:40px}
-  .subsecs button,.modes button{min-height:36px;height:36px}
+  .modes button{min-height:36px;height:36px}
   .pc-acts button{min-height:32px;height:32px}
   .t-lista button{min-height:32px;height:32px}
 }
@@ -795,7 +805,6 @@ body[data-inv=no] #btnReacomodar,body[data-inv=no] #btnImport,body[data-inv=no] 
   </header>
   <div class="ctl">
     <div class="trsecs" role="tablist" aria-label="Área" id="trTabs"></div>
-    <div class="subsecs" role="tablist" aria-label="Sección del inventario" id="subTabs"></div>
     <div class="modes" role="group" aria-label="Modo de trabajo">
       <button data-mode="in" aria-pressed="true" title="Suma al stock"><svg class="ico" aria-hidden="true"><use href="#i-entrada"/></svg>Entrada<small>suma al stock</small></button>
       <button data-mode="out" aria-pressed="false" title="Descuenta del stock"><svg class="ico" aria-hidden="true"><use href="#i-despacho"/></svg>Despacho<small>descuenta del stock</small></button>
@@ -1010,6 +1019,7 @@ body[data-inv=no] #btnReacomodar,body[data-inv=no] #btnImport,body[data-inv=no] 
     <h2>Nueva pieza</h2>
     <div class="fg">
       <div class="full"><label for="nName">Nombre de la pieza</label><input id="nName" list="namesList" autocomplete="off" required></div>
+      <div class="full" id="nUsosW"><span class="lbl">Sirve para <small>(marca una, varias o ninguna)</small></span><div class="usos" id="nUsos"></div></div>
       <div class="full"><label for="nSc">Código corto</label><input id="nSc" class="mono" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="12" style="font-weight:800;text-transform:uppercase"><div class="muted" id="nScHint" style="font-size:13px;margin-top:4px">Déjalo vacío y se asigna solo. Si quieres, escribe el tuyo.</div></div>
       <div><label for="nRef">Referencia</label><input id="nRef" list="refList" autocomplete="off"></div>
       <div><label for="nBrand">Familia / marca</label><input id="nBrand" list="brandList" autocomplete="off"></div>
@@ -1038,8 +1048,8 @@ body[data-inv=no] #btnReacomodar,body[data-inv=no] #btnImport,body[data-inv=no] 
       <div class="full"><label for="eSc">Código corto</label>
         <div class="codebox" style="grid-template-columns:1fr auto"><input id="eSc" class="mono" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="12" style="font-weight:800;text-transform:uppercase"><button type="button" id="eScGen">Asignar automático</button></div>
       </div>
-      <div><label for="eTr">Área (mover a Automática, CVT, Mecánica o Eléctrica)</label><select id="eTr"></select></div>
-      <div><label for="eTipo">Pieza o insumo</label><select id="eTipo"></select></div>
+      <div class="full"><label for="eLugar">Va en (pieza de un área, o insumo)</label><select id="eLugar"></select></div>
+      <div class="full" id="eUsosW"><span class="lbl">Sirve para <small>(marca una, varias o ninguna)</small></span><div class="usos" id="eUsos"></div></div>
       <div class="full"><label for="eCode">Código de barras</label>
         <div class="codebox"><input id="eCode" class="mono" inputmode="numeric" autocomplete="off"><button type="button" id="eGen">Generar código interno</button><button type="button" id="ePhoto">Escanear con la cámara</button></div>
       </div>
@@ -1218,8 +1228,8 @@ body[data-inv=no] #btnReacomodar,body[data-inv=no] #btnImport,body[data-inv=no] 
 const SEED = {"items": [], "names": ["Aceite de Motor", "Aceite de Trans.", "Aditivo de Convertidor", "Aditivo de Trans", "Alternador", "Bandas", "Bomba", "Bomba de Aceite", "Bujia", "Cable", "Cadena CVT", "Caja de Transmision", "Caja de valvula", "Caja de vola", "Carter", "Cola de Trans.", "computadora", "Convertidor", "Cooland", "Diferencial", "Disco de Clucht", "Disco de Freno", "Eje", "Eje de Salida", "El tren de Engranaje", "Embrague de Clucht", "Envolvente", "Episenso", "Filtro  Metal", "Filtro Aceite", "Fresa de 1ra", "Fresa de 2da", "Fresa de 3ra", "Juego de planetarios", "Juego de sellos", "Junta de Trans.", "Liquido de Freno", "Pastilla de Freno", "Piston", "Piston de Reversa", "Piñon", "Piñon de Avance", "Radiador", "Ramal", "Retenedora", "Retenedora del cigüeñal", "Selenoide", "Selenoide de Presion", "Sello de Trans.", "Sensor", "Sepertin", "Sincronico", "Tapa", "Transfer", "Transmision", "varilla de aceite"], "serialFloor": 356};
 const KEY = 'palacio_scan_v1';
 // Orden del Excel (decisión del dueño): primero el código interno, nombre, referencia y marca; después todo lo demás
-const HEAD = ['CODIGO INTERNO','Nombre unico','REFERENCIA','FAMILIA /MARCA','CODIGO DE BARRAS','MODELO','Categoria','Subcategoria','SKU','Cantidad de Item','Unidad de Medida','UBICACION','RAC','AÑO','PRECIO Comp','Valor 70%','Importe','PRECIO TOTAL','EMPAQUE','UNIDADES POR EMPAQUE','TIPO','AREA','MINIMO'];
-const KEYS = ['sc','name','ref','brand','code','model','cat','sub','sku','qty','unit','loc','rac','year','price','v70','imp','total','packName','packN','tipo','tr','min'];
+const HEAD = ['CODIGO INTERNO','Nombre unico','REFERENCIA','FAMILIA /MARCA','CODIGO DE BARRAS','MODELO','Categoria','Subcategoria','SKU','Cantidad de Item','Unidad de Medida','UBICACION','RAC','AÑO','PRECIO Comp','Valor 70%','Importe','PRECIO TOTAL','EMPAQUE','UNIDADES POR EMPAQUE','TIPO','AREA','MINIMO','SIRVE PARA'];
+const KEYS = ['sc','name','ref','brand','code','model','cat','sub','sku','qty','unit','loc','rac','year','price','v70','imp','total','packName','packN','tipo','tr','min','usos'];
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const norm = c => String(c ?? '').replace(/\D/g, '').replace(/^0+/, '');
@@ -1287,9 +1297,8 @@ function ensureSc(a){
   [...a.items].filter(i => !i.sc).sort((x, y) => COLL.compare(x.name, y.name)).forEach(i => { i.sc = genSc(i.name, a.items, i); n++; });
   return n;
 }
-/* ---------- Tipo de pieza: mecánica, eléctrica o insumo ---------- */
+/* ---------- Tipo: pieza o insumo ---------- */
 const TIPOS = { mec: 'Pieza', ins: 'Insumo / gastable' };
-const tipoOpts = () => Object.entries(TIPOS).map(([k, v]) => `<option value="${k}">${v}</option>`).join('');
 const TIPO_INS0 = /^(aceite|liquido|aditivo|cooland|coolant|grasa|refrigerante|valvulina|atf)\b/;
 const TIPO_INS = /\b(guantes?|tie ?w?rap|tirr?ap|tira ?rap|cintas?|tape|bombill[oa]s?|limpiador|desengrasante|trapos?|lijas?|pega|silicon[ae]?|tornillos?|tuercas?|arandelas?|abrazaderas?|teflon|spray|jabon|papel|fundas?|mascarillas?|escobas?|brochas?|thinner)\b/;
 const TIPO_ELE = /\b(alternador|arranque|marcha|baterias?|bujias?|cables?|computadora|sensor(es)?|selenoides?|solenoides?|ramal|fusibles?|reles?|relay|switch|interruptor|modulo|ecu|bobinas?|faros?|electric[oa]s?|electronic[oa]s?)\b/;
@@ -1299,10 +1308,9 @@ function guessTipo(name){
   return 'mec';
 }
 function tipoFrom(v){ const f = fold(v).trim(); return (f.startsWith('ins') || f.startsWith('gast')) ? 'ins' : (f.startsWith('pie') || f.startsWith('rep') || f.startsWith('mec') || f.startsWith('ele')) ? 'mec' : ''; }
-/* ---------- Área: Automática, CVT, Mecánica o Eléctrica. Cada una tiene Piezas e Insumos ----------
-   En la pieza: tr = área, tipo = 'mec' (pieza) o 'ins' (insumo). */
+/* ---------- Área de las piezas: Automática, CVT, Mecánica o Eléctrica ----------
+   En el producto: tipo = 'mec' (pieza, vive en el área tr) o 'ins' (insumo, va aparte; ver usos). */
 const TRS = { aut: 'Automática', cvt: 'CVT', mec: 'Mecánica', ele: 'Eléctrica' };
-const trOpts = () => Object.entries(TRS).map(([k, v]) => `<option value="${k}">${v}</option>`).join('');
 // Piezas que no dicen a qué área van (las de antes en Eléctrica siguen en Eléctrica): si el nombre o la referencia dice CVT (o un modelo CVT conocido) a CVT; si no, a Automática
 const TR_CVT = /\b(cvt|e-?cvt|jf0?1[0-9][a-z]?|jf02[0-9][a-z]?|re0f1[0-9][a-z]?|k11[0-9]|k31[0-9]|k120|vt[23]|vt-?[23]|cvt[0-9]+|ccvt|multitronic|01j|0aw|0an|tr580|tr690|ek[0-9]|vt1f|vt2f|ivt|xtronic|lineartronic|hyper ?cvt)\b/;
 function guessTr(it){ return TR_CVT.test(fold([it.name, it.ref, it.model, it.cat, it.sub].join(' ')).replace(/[^a-z0-9 -]/g, ' ')) ? 'cvt' : 'aut'; }
@@ -1347,6 +1355,7 @@ function sugerirArea(it){ const r = clasificarArea(it); return r && TRS[r.tr] ? 
 function planReacomodo(items){
   const mover = [], dudosas = [];
   items.forEach(it => {
+    if (it.tipo === 'ins') return;   // los insumos no viven en un área
     const r = clasificarArea(it); if (!r) return;
     const de = TRS[it.tr] ? it.tr : 'aut';
     if (TRS[r.tr]) { if (r.tr !== de) mover.push({ it, de, a: r.tr, motivo: r.motivo, conf: r.conf }); }
@@ -1383,24 +1392,45 @@ function deshacerReacomodo(){
   showMsg('warn', 'Reacomodo deshecho', fmt(n) + (n === 1 ? ' pieza volvió' : ' piezas volvieron') + ' al área donde estaba.');
 }
 function trFrom(v){ const f = fold(v).trim(); return f.includes('cvt') ? 'cvt' : f.startsWith('aut') ? 'aut' : f.startsWith('mec') ? 'mec' : f.startsWith('ele') ? 'ele' : ''; }
-function ensureTipo(a){ let n = 0; a.items.forEach(i => { if (i.tipo === 'ele') { i.tipo = 'mec'; if (!TRS[i.tr]) i.tr = 'ele'; n++; } if (!TIPOS[i.tipo]) { i.tipo = guessTipo(i.name); n++; } if (!TRS[i.tr]) { i.tr = guessTr(i); n++; } }); return n; }
-// Pestaña activa (área + sección): todo (escanear, buscar, crear, eliminar, movimientos) trabaja solo con sus piezas
+// Arregla lo de versiones anteriores; los insumos de antes sirven para el área donde estaban (igual que la migración de la nube)
+function ensureTipo(a){ let n = 0; a.items.forEach(i => { if (i.tipo === 'ele') { i.tipo = 'mec'; if (!TRS[i.tr]) i.tr = 'ele'; n++; } if (!TIPOS[i.tipo]) { i.tipo = guessTipo(i.name); n++; } if (!TRS[i.tr]) { i.tr = guessTr(i); n++; } if (i.tipo === 'ins' && !Array.isArray(i.usos)) { i.usos = [i.tr]; n++; } }); return n; }
+/* Pestaña activa: todo (escanear, buscar, crear, eliminar, movimientos) trabaja solo con sus productos.
+   Las piezas viven en su área (aut_mec, cvt_mec, mec_mec, ele_mec). Los insumos van aparte, en una sola
+   pestaña 'ins', y cada uno dice para qué áreas sirve (it.usos: ['aut', 'cvt'…], puede ser una, varias o ninguna). */
 const CAT_LBL = { mec: 'Piezas', ins: 'Insumos' };
 const SEC_LBL = { tab: 'Tablero', ser: 'Servicios', cat: 'Catálogo', com: 'Compras', req: 'Requisiciones' };
-Object.keys(TRS).forEach(t => Object.keys(CAT_LBL).forEach(c => { SEC_LBL[t + '_' + c] = TRS[t] + ' · ' + CAT_LBL[c]; }));
-const K = x => (TRS[x.tr] ? x.tr : 'aut') + '_' + (CAT_LBL[x.tipo] ? x.tipo : 'mec');
-// Las pestañas de inventario son área_sección (aut_mec…); Tablero, Servicios, Catálogo, Compras y Requisiciones no son inventario
-const enInv = () => SEC.includes('_');
-const secTr = () => enInv() ? SEC.split('_')[0] : 'aut';
-const secCat = () => enInv() ? SEC.split('_')[1] : 'mec';
+Object.keys(TRS).forEach(t => { SEC_LBL[t + '_mec'] = TRS[t]; });
+SEC_LBL.ins = 'Insumos';
+// Dónde puede ir un producto: las cuatro áreas de piezas o Insumos
+const LUGARES = Object.keys(SEC_LBL).filter(k => k.includes('_')).concat('ins');
+const SEC_LBL_INV = Object.fromEntries(LUGARES.map(k => [k, SEC_LBL[k]]));
+// Filtros por área (Requisiciones, Precios): el área lleva sus piezas y también los insumos que sirven para ella
+const enLugar = (it, k) => K(it) === k || (k !== 'ins' && usosDe(it).includes(k.split('_')[0]));
+const K = x => x.tipo === 'ins' ? 'ins' : (TRS[x.tr] ? x.tr : 'aut') + '_mec';
+// Pone un producto en un lugar: en Insumos conserva su área (la nube la exige) pero ya no se usa
+const ponLugar = (it, k) => { if (k === 'ins') it.tipo = 'ins'; else { it.tipo = 'mec'; it.tr = k.split('_')[0]; } };
+// Para qué áreas sirve un insumo, en el orden de las áreas
+const usosDe = x => x && Array.isArray(x.usos) ? Object.keys(TRS).filter(t => x.usos.includes(t)) : [];
+const usosTxt = x => usosDe(x).map(t => TRS[t]).join(', ');
+const usosFrom = v => { const p = String(v ?? '').split(/[,;/+]|\by\b/).map(trFrom).filter(Boolean); return Object.keys(TRS).filter(t => p.includes(t)); };
+// Casillas "Sirve para" (formularios de insumo y factura)
+const usosSel = box => { const v = [...document.querySelectorAll(box + ' input[data-uso]:checked')].map(x => x.dataset.uso); return Object.keys(TRS).filter(t => v.includes(t)); };
+const usosPon = (box, v) => document.querySelectorAll(box + ' input[data-uso]').forEach(x => { x.checked = v.includes(x.dataset.uso); });
+const usosChecks = (sel, attr) => Object.keys(TRS).map(t => `<label class="uso a-${t}"><input type="checkbox" ${attr}="${t}"${sel.includes(t) ? ' checked' : ''}><i class="dot"></i>${TRS[t]}</label>`).join('');
+// Inventario = las áreas de piezas y la pestaña Insumos; Tablero, Servicios, Catálogo, Compras y Requisiciones no son inventario
+const enIns = () => SEC === 'ins';
+const enInv = () => SEC.includes('_') || enIns();
+const secTr = () => SEC.includes('_') ? SEC.split('_')[0] : lastTr;
+const secCat = () => enIns() ? 'ins' : 'mec';
 const SEC_KEY = 'palacio_sec_v1';
 // Catálogo de suplidor (lo trae catPull de la nube; ver la sección Catálogo más abajo)
 const CAT_VER = 150;
 let CAT = [], catEstado = 'cargando', catVer = CAT_VER;
 const catSel = new Set();
-// Al abrir, siempre el Tablero; del último uso se recuerda en qué área y sección del inventario se trabajaba
-let SEC = 'tab', lastTr = 'aut', lastCat0 = 'mec';
-try { let v = localStorage.getItem(SEC_KEY); if (v === 'mec' || v === 'ins') v = 'aut_' + v; if (v === 'ele') v = 'ele_mec'; if (SEC_LBL[v] && v.includes('_')) [lastTr, lastCat0] = v.split('_'); } catch(e) {}
+// Al abrir, siempre el Tablero; del último uso se recuerda en qué área de piezas (o en Insumos) se trabajaba
+let SEC = 'tab', lastTr = 'aut', lastInv = 'aut_mec';
+try { let v = localStorage.getItem(SEC_KEY) || ''; if (/(^|_)ins$/.test(v)) v = 'ins'; if (v === 'mec') v = 'aut_mec'; if (v === 'ele') v = 'ele_mec';
+  if (LUGARES.includes(v)) { lastInv = v; if (v !== 'ins') lastTr = v.split('_')[0]; } } catch(e) {}
 const SI = () => S.items.filter(i => K(i) === SEC);
 const SM = () => S.movements.filter(m => K(m) === SEC);
 // Movimientos de antes de las pestañas (o de antes de Automática / CVT): toman la pestaña de su pieza
@@ -1451,10 +1481,10 @@ const minDe = (it) => Math.max(0, Math.round(Number(it.min) || 0));
 const pRow = (it, almId) => ({ id: it.id, almacen_id: almId, seccion: it.tipo || 'mec', area: TRS[it.tr] ? it.tr : 'aut', codigo_barras: String(it.code || ''), codigo_corto: it.sc || '', nombre: it.name || '',
   referencia: it.ref || '', marca: it.brand || '', modelo: it.model || '', categoria: it.cat || '', subcategoria: it.sub || '', sku: it.sku || '', unidad: it.unit || '',
   ubicacion: it.loc || '', rac: it.rac || '', anio: String(it.year ?? ''), precio_compra: +it.price || 0, valor_70: +it.v70 || 0, importe: +it.imp || 0, precio_total: +it.total || 0,
-  empaque_nombre: it.pack && it.pack.n > 1 ? it.pack.name : null, empaque_unidades: it.pack && it.pack.n > 1 ? it.pack.n : null, creado_ms: it.added || null, foto: it.foto || '', minimo: minDe(it) });
+  empaque_nombre: it.pack && it.pack.n > 1 ? it.pack.name : null, empaque_unidades: it.pack && it.pack.n > 1 ? it.pack.n : null, creado_ms: it.added || null, foto: it.foto || '', minimo: minDe(it), usos: it.tipo === 'ins' ? usosDe(it).join(',') : '' });
 const pFrom = r => ({ id: r.id, tipo: r.seccion, tr: r.area || '', code: r.codigo_barras, sc: r.codigo_corto, name: r.nombre, ref: r.referencia, brand: r.marca, model: r.modelo, cat: r.categoria,
   sub: r.subcategoria, sku: r.sku, unit: r.unidad, loc: r.ubicacion, rac: r.rac || '', year: r.anio, price: +r.precio_compra, v70: +r.valor_70, imp: +r.importe, total: +r.precio_total,
-  pack: r.empaque_unidades > 1 ? { name: r.empaque_nombre || 'Empaque', n: r.empaque_unidades } : null, added: r.creado_ms ? +r.creado_ms : undefined, foto: r.foto || '', min: Math.max(0, Math.round(+r.minimo || 0)) });
+  pack: r.empaque_unidades > 1 ? { name: r.empaque_nombre || 'Empaque', n: r.empaque_unidades } : null, added: r.creado_ms ? +r.creado_ms : undefined, foto: r.foto || '', min: Math.max(0, Math.round(+r.minimo || 0)), usos: usosFrom(r.usos) });
 const mRow = (m, almId) => ({ id: m.id, almacen_id: almId, seccion: m.tipo || 'mec', area: TRS[m.tr] ? m.tr : 'aut', fecha_ms: m.t, tipo: m.type, codigo_barras: String(m.code || ''), pieza: m.name || '',
   cantidad: Math.round(+m.qty || 0), stock_despues: Math.round(+m.after || 0), presentacion: m.pres || '', nota: m.note || '' });
 const mFrom = r => ({ id: r.id, t: +r.fecha_ms, type: r.tipo, tipo: r.seccion, tr: r.area || '', code: r.codigo_barras, name: r.pieza, qty: r.cantidad, after: r.stock_despues, note: r.nota, pres: r.presentacion || undefined });
@@ -1465,7 +1495,7 @@ const jbRow = (x, almId) => ({ id: x.id, almacen_id: almId, fecha_ms: x.t, servi
 const jbFrom = r => ({ id: r.id, t: +r.fecha_ms, sid: r.servicio_id, name: r.servicio, cli: r.cliente, veh: r.vehiculo, mec: r.mecanico, note: r.nota,
   parts: (r.piezas || []).map(p => ({ id: p.id, sc: p.sc || '', name: p.name || '', qty: +p.qty || 0 })), void: !!r.anulado });
 // Compras: cada línea con sus campos en orden fijo (jsonb reordena las llaves y así la comparación no falla)
-const kLin = x => ({ pid: x.pid || '', sc: x.sc || '', name: x.name || '', ref: x.ref || '', code: String(x.code || ''), tr: x.tr || '', tipo: x.tipo || '', nuevo: !!x.nuevo, como: x.como || '',
+const kLin = x => ({ pid: x.pid || '', sc: x.sc || '', name: x.name || '', ref: x.ref || '', code: String(x.code || ''), tr: x.tr || '', tipo: x.tipo || '', usos: usosDe(x), nuevo: !!x.nuevo, como: x.como || '',
   pk: x.pk && +x.pk.n > 1 ? { name: x.pk.name || 'Empaque', n: +x.pk.n } : null, cant: +x.cant || 0, regalo: +x.regalo || 0, uds: +x.uds || 0, precio: +(+x.precio || 0).toFixed(4), tasa: +x.tasa || 0,
   sub: +(+x.sub || 0).toFixed(2), itb: +(+x.itb || 0).toFixed(2), costo: +(+x.costo || 0).toFixed(4), gan: +(+x.gan || 0).toFixed(4), venta: +(+x.venta || 0).toFixed(2), oferta: !!x.oferta, ganancia: +(+x.ganancia || 0).toFixed(2) });
 const kRow = (x, almId) => ({ id: x.id, almacen_id: almId, registrado_ms: x.t, fecha: x.fecha || '', suplidor: x.sup || '', factura: x.fac || '', ncf: x.ncf || '', digito: x.dig || '', recibio: x.rec || '',
@@ -1764,7 +1794,8 @@ function setResult(color, html){
 }
 function itemHead(it){
   const bits = [it.ref, it.brand].filter(Boolean).map(esc).join(' · ');
-  return `<div class="name">${scBadge(it)}${esc(it.name)}</div><div class="meta">${bits}</div>`;
+  return `<div class="name">${scBadge(it)}${esc(it.name)}</div><div class="meta">${bits}</div>` +
+    (it.tipo === 'ins' ? `<div class="pc-chips" style="margin-top:4px">${usosChips(it)}</div>` : '');
 }
 function showItem(kind, it, o = {}){
   const u = esc(it.unit || 'UNID');
@@ -2000,8 +2031,9 @@ function openNew(pref = {}){
   $('#codeHint').textContent = pref.code ? 'Código leído con el lector. Puedes conservarlo o generar uno interno.' : 'Si la pieza no trae código, genera uno interno e imprime la etiqueta.';
   $('#codeHint').style.color = '';
   const m = pref.code ? memByCode(pref.code) : null;
-  if (m && CAT_LBL[m.tipo]) { const k = (TRS[m.tr] ? m.tr : secTr()) + '_' + m.tipo; if (k !== SEC) setSec(k); }
-  $('#newDlg h2').textContent = 'Nueva pieza · ' + SEC_LBL[SEC]; nScTip(); $('#newDlg').showModal();
+  if (m && CAT_LBL[m.tipo] && K(m) !== SEC) setSec(K(m));
+  $('#nUsosW').hidden = !enIns(); $('#nUsos').innerHTML = usosChecks([], 'data-uso');
+  $('#newDlg h2').textContent = enIns() ? 'Nuevo insumo' : 'Nueva pieza · ' + SEC_LBL[SEC]; nScTip(); $('#newDlg').showModal();
   if (m) { memFillNew(m, 'este código ya se registró antes'); $('#nQty').focus(); $('#nQty').select(); } else $('#nName').focus();
 }
 $('#btnGen').onclick = () => { $('#nCode').value = genCode(); $('#codeHint').textContent = 'Código interno generado. Después de guardar podrás imprimir la etiqueta.'; };
@@ -2028,7 +2060,7 @@ $('#newForm').onsubmit = e => {
   if (inPack && q0 === pack.n && !confirm(`Escribiste ${q0} y elegiste contar en ${plural(pack.name, 2).toLowerCase()}.\n\nEso es ${q0} ${plural(pack.name, q0).toLowerCase()} × ${pack.n} = ${fmt(q0 * pack.n)} unidades.\n\n¿Es correcto? (Si querías decir ${q0} unidades, pulsa Cancelar y cambia "Contar en" a Unidades.)`)) { $('#nQtyIn').value = 'unit'; nQtyInTouched = true; updNTotal(); return $('#newErr').textContent = 'Revisa la cantidad: ahora está en unidades.'; }
   const qty = inPack ? q0 * pack.n : q0;
   // Los precios los pone la pestaña Compras al registrar la factura
-  const it = { added: Date.now(), pack, sc: sc || genSc(name, S.items), tipo: secCat(), tr: secTr(), code, name, ref: $('#nRef').value.trim(), brand: $('#nBrand').value.trim(), model: '', cat: '', sub: '', sku: '', qty, unit: $('#nUnit').value, loc: $('#nLoc').value.trim(), rac: $('#nRac').value.trim(), year: '', price: 0, v70: 0, imp: 0, total: 0 };
+  const it = { added: Date.now(), pack, sc: sc || genSc(name, S.items), tipo: secCat(), tr: secTr(), ...(enIns() ? { usos: usosSel('#nUsos') } : {}), code, name, ref: $('#nRef').value.trim(), brand: $('#nBrand').value.trim(), model: '', cat: '', sub: '', sku: '', qty, unit: $('#nUnit').value, loc: $('#nLoc').value.trim(), rac: $('#nRac').value.trim(), year: '', price: 0, v70: 0, imp: 0, total: 0 };
   S.items.push(it); log('Alta', it, qty, 'Stock inicial', { pres: inPack ? `${fmt(q0)} ${plural(pack.name, q0)} × ${pack.n} = ${fmt(qty)} ${it.unit}` : `${fmt(qty)} ${unitWord(it, qty)}` }); $('#q').value = ''; lastAdded = it; tab(true); save(); renderAll();
   $('#newDlg').close(); beep('in');
   showItem('in', it, { before: 0, after: qty, qty, label: true });
@@ -2091,6 +2123,8 @@ function okGiro(){ const b = document.querySelector('.appbar'); if (!b) return; 
 function sacude(el){ if (!el) return; el.classList.remove('sacude'); void el.offsetWidth; el.classList.add('sacude'); setTimeout(() => el.classList.remove('sacude'), 400); }
 const stEstado = it => { const m = minDe(it), q = Number(it.qty) || 0; return q <= 0 ? 'cero' : (m > 0 && q <= m) ? 'bajo' : 'ok'; };
 const ST_TXT = { ok: ['Bien', 'check'], bajo: ['Bajo', 'alerta'], cero: ['Agotado', 'alerta'] };
+// Insumo: una marca por cada área para la que sirve
+const usosChips = it => { const u = usosDe(it); return u.length ? u.map(t => `<span class="chip a-${t}">${TRS[t]}</span>`).join('') : '<span class="chip">Uso general</span>'; };
 function pcardHtml(it, i){
   const st = stEstado(it), m = minDe(it), q = Number(it.qty) || 0, tr = TRS[it.tr] ? it.tr : 'aut';
   const p = st === 'cero' ? 0 : m > 0 ? Math.min(100, Math.round(q / (m * 2) * 100)) : 100;
@@ -2099,24 +2133,27 @@ function pcardHtml(it, i){
   return `<article class="pcard st-${st}${it === lastAdded ? ' hl' : ''}${it.foto ? ' con-foto' : ''}">` +
     (it.foto ? `<img class="pc-foto" src="${esc(it.foto)}" alt="" loading="lazy" decoding="async" onerror="this.remove()">` : '') +
     `<div class="pc-top">${it.sc ? `<span class="scb">${esc(it.sc)}</span>` : ''}<span class="pc-st">${ico(ST_TXT[st][1])}${ST_TXT[st][0]}</span></div>` +
-    `<div class="pc-main"><h3 class="pc-name">${esc(it.name)}</h3><div class="pc-chips"><span class="chip a-${tr}">${AREA_PILL[tr]}</span>${it.ref ? `<span class="chip">Ref ${esc(it.ref)}</span>` : ''}${it.brand ? `<span class="chip">${esc(it.brand)}</span>` : ''}</div>` +
+    `<div class="pc-main"><h3 class="pc-name">${esc(it.name)}</h3><div class="pc-chips">${it.tipo === 'ins' ? usosChips(it) : `<span class="chip a-${tr}">${AREA_PILL[tr]}</span>`}${it.ref ? `<span class="chip">Ref ${esc(it.ref)}</span>` : ''}${it.brand ? `<span class="chip">${esc(it.brand)}</span>` : ''}</div>` +
     `${rac ? `<p class="pc-rac">${ico('estante')}${esc(rac)}</p>` : ''}</div>` +
     `<div class="pc-stock"><b class="pc-q">${fmt(q)}</b><span class="pc-u">${esc(unitWord(it, q).toLowerCase())}</span><span class="pc-bar" aria-hidden="true"><i style="--p:${p}%"></i></span>${txt ? `<span class="pc-txt">${esc(txt)}</span>` : ''}</div>` +
     `<div class="pc-acts">${it.code ? `<button data-act="label" data-i="${i}">Etiqueta</button>` : `<button data-act="gen" data-i="${i}">Crear código</button>`}<button data-act="adj" data-i="${i}">Ajustar</button></div></article>`;
 }
 
 /* ---------- Tablas ---------- */
+// En Insumos se puede ver solo lo que sirve para un área ('' = todos, 'gen' = sin área marcada)
+let insUso = '';
+const pasaUso = it => !enIns() || !insUso || (insUso === 'gen' ? !usosDe(it).length : usosDe(it).includes(insUso));
 function renderParts(){
   const words = $('#q').value.trim().toLowerCase().split(/\s+/).filter(Boolean);
   const rows = [];
   S.items.forEach((it, i) => {
-    if (K(it) !== SEC) return;
+    if (K(it) !== SEC || !pasaUso(it)) return;
     const h = ((it.sc || '') + ' ' + scKey(it.sc) + ' ' + it.name + ' ' + it.code + ' ' + it.ref + ' ' + it.brand + ' ' + it.model + ' ' + it.loc + ' ' + (it.rac || '')).toLowerCase();
     if (words.every(w => h.includes(w))) rows.push([it, i]);
   });
   rows.sort((a, b) => COLL.compare(a[0].name, b[0].name));
   $('#partsBody').innerHTML = rows.map(([it, i]) => pcardHtml(it, i)).join('') || '<p class="muted">Sin resultados.</p>';
-  $('#partsCount').textContent = `${rows.length} piezas de ${SEC_LBL[SEC]}, en orden alfabético`;
+  $('#partsCount').textContent = enIns() ? `${rows.length} ${rows.length === 1 ? 'insumo' : 'insumos'}${insUso ? ' que sirven para ' + (insUso === 'gen' ? 'uso general' : TRS[insUso]) : ''}, en orden alfabético` : `${rows.length} piezas de ${SEC_LBL[SEC]}, en orden alfabético`;
 }
 const MOV_TAG = /^(\d+) (.+?) × (\d+)\.?\s*/;
 function movPres(m){
@@ -2143,34 +2180,39 @@ function renderStat(){
   if (SEC === 'com') { $('#stat').textContent = 'Compras: facturas de compra, costos, ITBIS y precios de venta'; return; }
   if (SEC === 'req') { $('#stat').textContent = 'Lo que hace falta comprar para reponer el almacén'; return; }
   const its = SI(), u = its.reduce((a, i) => a + (i.qty || 0), 0);
-  $('#stat').textContent = `${fmt(its.length)} ${its.length === 1 ? 'pieza' : 'piezas'} · ${fmt(u)} unidades en existencia · ${S.name}`;
+  $('#stat').textContent = `${fmt(its.length)} ${enIns() ? (its.length === 1 ? 'insumo' : 'insumos') : its.length === 1 ? 'pieza' : 'piezas'} · ${fmt(u)} unidades en existencia · ${S.name}`;
 }
 function renderSecs(){
   document.body.dataset.sec = SEC; document.body.dataset.inv = enInv() ? 'si' : 'no';
-  const n = k => S.items.filter(i => K(i).startsWith(k)).length, cur = enInv() ? 'inv' : SEC, nFal = faltantes(false).length;
-  // Menú principal: una entrada por parte del programa (las áreas se eligen dentro de Inventario)
+  const n = k => S.items.filter(i => K(i) === k).length, cur = SEC.includes('_') ? 'inv' : SEC, nFal = faltantes(false).length;
+  // Menú principal: una entrada por parte del programa (las áreas de piezas se eligen dentro de Inventario; Insumos va aparte)
   const it = (k, txt, icono, c) => `<button type="button" role="tab" data-nav="${k}" aria-selected="${cur === k}">${icono}<span class="fn">${txt}</span>${c === undefined ? '' : `<span class="fc">${fmt(c)}</span>`}</button>`;
-  const h1 = it('tab', 'Tablero', ico('inicio')) + it('inv', 'Inventario', ico('tuerca'), S.items.length) + it('ser', 'Servicios', icoArea('ser'), svcOf(S).services.length) +
+  const h1 = it('tab', 'Tablero', ico('inicio')) + it('inv', 'Inventario', ico('tuerca'), S.items.length - n('ins')) + it('ins', 'Insumos', ico('gota'), n('ins')) + it('ser', 'Servicios', icoArea('ser'), svcOf(S).services.length) +
     it('com', 'Compras', icoArea('com'), comOf(S).compras.filter(k => !k.anulada).length) +
     // Requisiciones lleva en rojo cuántos productos hacen falta reponer
     `<button type="button" role="tab" data-nav="req" aria-selected="${cur === 'req'}">${ico('pedido')}<span class="fn">Requisiciones</span><span class="insignia" data-n="${nFal}">${nFal ? fmt(nFal) : ''}</span></button>` +
     it('cat', 'Catálogo', icoArea('cat'), CAT.length);
   if ($('#secTabs').dataset.h !== h1) { $('#secTabs').innerHTML = h1; $('#secTabs').dataset.h = h1; }
-  $('#trTabs').innerHTML = !enInv() ? '' : Object.keys(TRS).map(t => `<button type="button" role="tab" class="a-${t}" data-tr="${t}" aria-selected="${secTr() === t}"><i class="dot"></i>${TRS[t]}<small>${fmt(n(t + '_'))}</small></button>`).join('');
-  $('#subTabs').innerHTML = !enInv() ? '' : Object.keys(CAT_LBL).map(c => { const k = secTr() + '_' + c; return `<button type="button" role="tab" data-sec="${k}" aria-selected="${k === SEC}">${ico(c === 'ins' ? 'gota' : 'tuerca')}${CAT_LBL[c]}<small>${fmt(n(k))} piezas</small></button>`; }).join('');
+  // Piezas: las cuatro áreas. Insumos: ver todos o solo los que sirven para un área
+  const ins = S.items.filter(i => K(i) === 'ins'), nUso = t => ins.filter(i => t === 'gen' ? !usosDe(i).length : usosDe(i).includes(t)).length;
+  $('#trTabs').setAttribute('aria-label', enIns() ? 'Sirve para' : 'Área');
+  $('#tabP').textContent = enIns() ? 'Insumos' : 'Piezas'; $('#btnNew .tx').textContent = enIns() ? 'Nuevo insumo' : 'Nueva pieza'; $('#btnNew').setAttribute('aria-label', $('#btnNew .tx').textContent);
+  $('#trTabs').innerHTML = !enInv() ? '' : enIns()
+    ? [['', 'Todos', ins.length], ...Object.keys(TRS).map(t => [t, TRS[t], nUso(t)]), ['gen', 'Uso general', nUso('gen')]].map(([t, txt, c]) => `<button type="button" role="tab"${TRS[t] ? ` class="a-${t}"` : ''} data-uso="${t}" aria-selected="${insUso === t}">${TRS[t] ? '<i class="dot"></i>' : ''}${txt}<small>${fmt(c)}</small></button>`).join('')
+    : Object.keys(TRS).map(t => `<button type="button" role="tab" class="a-${t}" data-tr="${t}" aria-selected="${secTr() === t}"><i class="dot"></i>${TRS[t]}<small>${fmt(n(t + '_mec'))}</small></button>`).join('');
 }
-// Al volver a una transmisión se abre la última sección que se usó en ella
-const lastCat = { aut: 'mec', cvt: 'mec', mec: 'mec', ele: 'mec' };
-lastCat[lastTr] = lastCat0;
 function setSec(t){
   if (!SEC_LBL[t]) return;
-  SEC = t; if (enInv()) { lastTr = secTr(); lastCat[lastTr] = secCat(); } try { localStorage.setItem(SEC_KEY, t); } catch(e) {}
+  SEC = t; if (enInv()) { lastInv = t; if (t !== 'ins') lastTr = secTr(); } try { localStorage.setItem(SEC_KEY, t); } catch(e) {}
   window.scrollTo(0, 0);
-  lastAdded = null; $('#q').value = ''; renderAll(); setMode(mode); okGiro();
+  lastAdded = null; insUso = ''; $('#q').value = ''; renderAll(); setMode(mode); okGiro();
 }
-$('#secTabs').addEventListener('click', e => { const b = e.target.closest('button[data-nav]'); if (!b) return; const k = b.dataset.nav === 'inv' ? lastTr + '_' + lastCat[lastTr] : b.dataset.nav; if (k !== SEC) setSec(k); });
-$('#trTabs').addEventListener('click', e => { const b = e.target.closest('button[data-tr]'); if (!b) return; const k = b.dataset.tr + '_' + lastCat[b.dataset.tr]; if (k !== SEC) setSec(k); });
-$('#subTabs').addEventListener('click', e => { const b = e.target.closest('button[data-sec]'); if (b && b.dataset.sec !== SEC) setSec(b.dataset.sec); });
+$('#secTabs').addEventListener('click', e => { const b = e.target.closest('button[data-nav]'); if (!b) return; const k = b.dataset.nav === 'inv' ? lastTr + '_mec' : b.dataset.nav; if (k !== SEC) setSec(k); });
+$('#trTabs').addEventListener('click', e => {
+  const b = e.target.closest('button[data-tr], button[data-uso]'); if (!b) return;
+  if (b.dataset.tr) { const k = b.dataset.tr + '_mec'; if (k !== SEC) setSec(k); return; }
+  insUso = b.dataset.uso; renderSecs(); renderParts();
+});
 function renderAll(){ R.almacenes.forEach(a => comOf(svcOf(a))); renderSecs(); renderParts(); renderMoves(); renderSvc(); renderCat(); renderCom(); renderReq(); renderInicio(); renderStat(); renderAlmBar(); scanList(); renderTablero(); }
 // Franja de cifras (solo texto)
 function renderTablero(){
@@ -2180,7 +2222,7 @@ function renderTablero(){
   const ped = its.filter(i => fs.has(i)).length, ago = its.filter(i => (Number(i.qty) || 0) <= 0).length;
   const rea = planReacomodo(S.items).mover.filter(x => x.conf === 'alta').length;
   el.innerHTML = `<span class="tb-st pedir"><b>${fmt(ped)}</b> por pedir</span><span class="tb-st agot"><b>${fmt(ago)}</b> ${ago === 1 ? 'agotada' : 'agotadas'}</span>` +
-    (rea ? `<p class="tb-rea">${ico('alerta')}Hay ${fmt(rea)} ${rea === 1 ? 'pieza que parece estar' : 'piezas que parecen estar'} en otra área. Se revisan en Más › Reacomodar piezas.</p>` : '');
+    (rea && !enIns() ? `<p class="tb-rea">${ico('alerta')}Hay ${fmt(rea)} ${rea === 1 ? 'pieza que parece estar' : 'piezas que parecen estar'} en otra área. Se revisan en Más › Reacomodar piezas.</p>` : '');
 }
 
 $('#partsBody').addEventListener('click', e => {
@@ -2217,7 +2259,7 @@ let eNameBefore = '';
 
 /* ---------- Ajustar pieza (editar todos los datos) ---------- */
 const EDIT_FIELDS = [
-  ['name','#eName','nombre','s'],['tr','#eTr','área','s'],['tipo','#eTipo','tipo','s'],['code','#eCode','código','c'],['ref','#eRef','referencia','s'],['brand','#eBrand','marca','s'],
+  ['name','#eName','nombre','s'],['code','#eCode','código','c'],['ref','#eRef','referencia','s'],['brand','#eBrand','marca','s'],
   ['model','#eModel','modelo','s'],['sku','#eSku','SKU','s'],['cat','#eCat','categoría','s'],['sub','#eSub','subcategoría','s'],
   ['year','#eYear','año','s'],['loc','#eLoc','ubicación','s'],['rac','#eRac','RAC','s'],['unit','#eUnit','unidad','s'],
   ['min','#eMin','mínimo','n']
@@ -2231,6 +2273,7 @@ function openEdit(it){
   units.forEach(u => { const o = document.createElement('option'); o.value = u; o.textContent = u || '(sin unidad)'; sel.appendChild(o); });
   EDIT_FIELDS.forEach(([k, id]) => { $(id).value = it[k] ?? ''; });
   $('#eQty').value = it.qty; $('#eSc').value = it.sc || ''; $('#eAlm').value = S.name;
+  $('#eLugar').value = K(it); $('#eUsos').innerHTML = usosChecks(usosDe(it), 'data-uso'); $('#eUsosW').hidden = K(it) !== 'ins';
   $('#ePackName').value = it.pack ? it.pack.name : ''; $('#ePackN').value = it.pack ? it.pack.n : ''; $('#eConv').checked = false;
   const ee = $('#editErr'); ee.style.color = '';
   if (looksCode(it.name)) {
@@ -2243,6 +2286,7 @@ function openEdit(it){
   $('#editDlg').showModal(); $('#eName').focus();
 }
 $('#eGen').onclick = () => { $('#eCode').value = genCode(); };
+$('#eLugar').addEventListener('change', () => { $('#eUsosW').hidden = $('#eLugar').value !== 'ins'; });
 $('#eScGen').onclick = () => { $('#eSc').value = genSc($('#eName').value.trim() || editItem.name, S.items, editItem); };
 $('#editCancel').onclick = () => $('#editDlg').close();
 guardName('#eName', '#eCode', () => eNameBefore);
@@ -2282,6 +2326,9 @@ $('#editForm').onsubmit = e => {
   });
   if (conv && PACK_UNIT.test(it.unit || '')) { it.unit = 'UNID'; if (!changed.includes('unidad')) changed.push('unidad'); }
   if (it.sc !== sc) { it.sc = sc; changed.push('código corto'); }
+  const lugar = $('#eLugar').value;
+  if (LUGARES.includes(lugar) && lugar !== K(it)) { ponLugar(it, lugar); changed.push(lugar === 'ins' ? 'pasó a Insumos' : 'área'); }
+  if (it.tipo === 'ins') { const u = usosSel('#eUsos'); if (u.join() !== usosDe(it).join()) { it.usos = u; changed.push('sirve para'); } }
   if (JSON.stringify(it.pack || null) !== JSON.stringify(newPack)) { it.pack = newPack; changed.push('empaque'); }
   const diff = qty - it.qty;
   if (diff) it.qty = qty;
@@ -2354,7 +2401,7 @@ const fold = s => String(s ?? '').toLowerCase().normalize('NFD').replace(/[\u030
 function seaDetailHTML(it){
   const row = (l, v) => v ? `<dt>${l}</dt><dd>${esc(v)}</dd>` : '';
   return `<div class="name">${scBadge(it)}${esc(it.name)}</div>` +
-    `<dl>${row('Referencia', it.ref)}${row('Marca', it.brand)}${row('Modelo', it.model)}${row('SKU', it.sku)}${row('Categoría', it.cat)}${row('Subcategoría', it.sub)}${row('Año', it.year)}</dl>` +
+    `<dl>${row('Referencia', it.ref)}${row('Marca', it.brand)}${row('Modelo', it.model)}${row('SKU', it.sku)}${row('Categoría', it.cat)}${row('Subcategoría', it.sub)}${row('Año', it.year)}${it.tipo === 'ins' ? row('Sirve para', usosTxt(it) || 'Uso general') : ''}</dl>` +
     `<div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:10px"><span>Stock actual</span><b style="font-size:44px;line-height:1;color:${it.qty <= 0 ? 'var(--out)' : 'var(--look)'}">${fmt(it.qty)}</b><span>${esc(it.unit || 'UNID')}</span></div>` +
     (stockText(it) ? `<div class="muted">En empaques: ${esc(stockText(it))}</div>` : '') + (it.pack && it.pack.n > 1 ? `<div class="muted">Empaque: ${esc(it.pack.name)} de ${it.pack.n} unidades</div>` : '');
 }
@@ -2494,7 +2541,7 @@ $('#rVistas').addEventListener('click', e => { const b = e.target.closest('butto
 function rqLista(){
   const q = fold($('#rq').value.trim()), f = $('#rFil').value, ar = $('#rArea').value;
   let l = f === 'need' ? S.items.filter(it => rqNecesita(it) || rqInc(it)) : f === 'near' ? faltantes(true) : f === 'sin' ? S.items.filter(it => !minDe(it)) : S.items.slice();
-  if (ar) l = l.filter(it => (TRS[it.tr] ? it.tr : 'aut') === ar);
+  if (ar) l = l.filter(it => enLugar(it, ar));
   if (q) l = l.filter(it => fold([it.sc, it.name, it.ref, it.brand, it.model, it.code].join(' ')).includes(q));
   return l.sort((a, b) => {
     const na = rqNecesita(a), nb = rqNecesita(b);
@@ -2503,11 +2550,11 @@ function rqLista(){
   });
 }
 function rqFila(it){
-  const m = minDe(it), q = Math.round(+it.qty || 0), inc = rqInc(it), t = TRS[it.tr] ? it.tr : 'aut', nom = esc(it.name);
+  const m = minDe(it), q = Math.round(+it.qty || 0), inc = rqInc(it), t = K(it).split('_')[0], nom = esc(it.name);
   const sub = [it.sc, it.ref, it.brand].filter(Boolean).map(esc).join(' · ');
   return `<tr data-id="${esc(it.id)}"${inc ? '' : ' class="off"'}><td class="rck"><input type="checkbox" data-f="inc" aria-label="Pedir ${nom}"${inc ? ' checked' : ''}></td>` +
     `<td><b>${nom}</b>${sub ? `<br><small>${sub}</small>` : ''}</td>` +
-    `<td><span class="area a-${t}"><i class="dot"></i>${TRS[t]}</span><br><small>${CAT_LBL[tipoDe(it)]}</small></td>` +
+    `<td><span class="area a-${t}"><i class="dot"></i>${SEC_LBL[K(it)]}</span><br><small>${t === 'ins' ? esc(usosTxt(it) || 'Uso general') : 'Pieza'}</small></td>` +
     `<td class="num ${q <= 0 ? 'cero' : rqNecesita(it) ? 'bajo' : ''}">${fmt(q)} <small>${esc(it.unit || 'UNID')}</small></td>` +
     `<td class="num"><input type="number" min="0" step="1" inputmode="numeric" data-f="min" value="${m || ''}" placeholder="—" aria-label="Mínimo de ${nom}"></td>` +
     `<td class="num"><input type="number" min="0" step="1" inputmode="numeric" data-f="qty" value="${rqQty(it)}" aria-label="Cuánto pedir de ${nom}"></td>` +
@@ -2531,7 +2578,7 @@ function rqResumen(){
   const sel = rqMarcadas(), u = sel.reduce((s, it) => s + rqQty(it), 0), nf = faltantes(false).length;
   $('#rRes').innerHTML = `<b>${fmt(sel.length)}</b> ${sel.length === 1 ? 'producto marcado' : 'productos marcados'} para pedir · <b>${fmt(u)}</b> ${u === 1 ? 'unidad' : 'unidades'} · ${fmt(nf)} ${nf === 1 ? 'necesita' : 'necesitan'} reposición`;
 }
-$('#rArea').innerHTML = '<option value="">Todas las áreas</option>' + Object.keys(TRS).map(t => `<option value="${t}">${TRS[t]}</option>`).join('');
+$('#rArea').innerHTML = '<option value="">Piezas e insumos</option>' + LUGARES.map(k => `<option value="${k}">${SEC_LBL[k]}</option>`).join('');
 $('#rPor').value = RQ.por;
 $('#rq').addEventListener('input', () => rqRev(true));
 $('#rFil').addEventListener('change', () => rqRev(true));
@@ -2563,10 +2610,10 @@ $('#rBody').addEventListener('change', e => {
 $('#rGen').onclick = () => {
   const sel = rqMarcadas();
   if (!sel.length) { $('#rErr').textContent = 'Marca al menos un producto y escribe cuánto pedir.'; return; }
-  const n = Math.max(0, ...R.almacenes.flatMap(a => reqOf(a).reqs.map(r => +r.n || 0))) + 1, orden = Object.keys(TRS);
-  const area = it => TRS[it.tr] ? it.tr : 'aut';
-  const lineas = sel.slice().sort((a, b) => orden.indexOf(area(a)) - orden.indexOf(area(b)) || COLL.compare(a.name, b.name))
-    .map(it => rqLin({ pid: it.id, sc: it.sc, name: it.name, ref: it.ref, brand: it.brand, tr: area(it), tipo: tipoDe(it), unit: it.unit, hay: it.qty, min: minDe(it), pedir: rqQty(it) }));
+  const n = Math.max(0, ...R.almacenes.flatMap(a => reqOf(a).reqs.map(r => +r.n || 0))) + 1;
+  // En la hoja: primero las piezas por área y al final los insumos
+  const lineas = sel.slice().sort((a, b) => LUGARES.indexOf(K(a)) - LUGARES.indexOf(K(b)) || COLL.compare(a.name, b.name))
+    .map(it => rqLin({ pid: it.id, sc: it.sc, name: it.name, ref: it.ref, brand: it.brand, tr: TRS[it.tr] ? it.tr : 'aut', tipo: tipoDe(it), unit: it.unit, hay: it.qty, min: minDe(it), pedir: rqQty(it) }));
   const r = { id: newId(), n, t: Date.now(), por: $('#rPor').value.trim(), nota: $('#rNota').value.trim(), lineas };
   reqOf(S).reqs.unshift(r);
   RQ.por = r.por; rqPref(); rqSel.clear(); $('#rNota').value = ''; $('#rErr').textContent = '';
@@ -2618,7 +2665,7 @@ async function rqDibujar(r){
       if (i % 2) { g.fillStyle = '#f7f8fa'; g.fillRect(M, y, W - 2 * M, RH); }
       g.fillStyle = '#dfe3e8'; g.fillRect(M, y + RH - 1, W - 2 * M, 1);
       g.fillStyle = '#17202a'; g.font = '600 18px ' + F; T(x.sc || '—', C[0][1], y + 27, C[0][2], 'l');
-      g.font = '400 19px ' + F; T(x.name + (x.ref ? ' · ' + x.ref : ''), C[1][1], y + 27, C[1][2], 'l'); T(TRS[x.tr] || '', C[2][1], y + 27, C[2][2], 'l');
+      g.font = '400 19px ' + F; T(x.name + (x.ref ? ' · ' + x.ref : ''), C[1][1], y + 27, C[1][2], 'l'); T(x.tipo === 'ins' ? 'Insumos' : TRS[x.tr] || '', C[2][1], y + 27, C[2][2], 'l');
       g.fillStyle = x.hay <= 0 ? '#c2302d' : '#17202a'; T(fmt(x.hay), C[3][1], y + 27, C[3][2], 'r');
       g.fillStyle = '#17202a'; T(x.min ? fmt(x.min) : '—', C[4][1], y + 27, C[4][2], 'r');
       g.font = '700 21px ' + F; T(fmt(x.pedir), C[5][1], y + 27, C[5][2], 'r');
@@ -3176,8 +3223,8 @@ async function iaAsk(){
 }
 $('#iaSend').onclick = iaAsk;
 $('#iaQ').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); iaAsk(); } });
-// La IA dice mec / ele / ins: eléctrica va al área Eléctrica; lo demás, al área en que se está
-const iaSec = x => x.pestana === 'ele' ? 'ele_mec' : secTr() + (x.pestana === 'ins' ? '_ins' : '_mec');
+// La IA dice mec / ele / ins: eléctrica va al área Eléctrica, insumo a Insumos; lo demás, al área en que se está
+const iaSec = x => x.pestana === 'ele' ? 'ele_mec' : x.pestana === 'ins' ? 'ins' : secTr() + '_mec';
 function iaShow(x, usadas, limite){
   const li = a => (a || []).filter(Boolean);
   const veh = li(x.vehiculos_compatibles), refs = li(x.referencias);
@@ -3216,7 +3263,7 @@ try { MEM = new Map(Object.entries(JSON.parse(localStorage.getItem(MEM_KEY) || '
 const memKey = it => it.code && norm(it.code) ? 'c:' + norm(it.code) : 'n:' + fold(it.name || '').replace(/\s+/g, ' ').trim();
 // Solo datos que no cambian: nada de stock, cantidades ni precios
 const memData = it => ({ code: String(it.code || ''), name: it.name || '', ref: it.ref || '', brand: it.brand || '', model: it.model || '', cat: it.cat || '', sub: it.sub || '',
-  unit: it.unit || '', pack: it.pack && it.pack.n > 1 ? { name: it.pack.name, n: it.pack.n } : null, tipo: it.tipo || '', tr: it.tr || '', rac: it.rac || '', loc: it.loc || '', sc: it.sc || '' });
+  unit: it.unit || '', pack: it.pack && it.pack.n > 1 ? { name: it.pack.name, n: it.pack.n } : null, tipo: it.tipo || '', tr: it.tr || '', rac: it.rac || '', loc: it.loc || '', sc: it.sc || '', ...(it.tipo === 'ins' ? { usos: usosDe(it) } : {}) });
 function memRemember(){
   let changed = false;
   R.almacenes.forEach(a => a.items.forEach(it => {
@@ -3273,6 +3320,7 @@ function memFillNew(d, why){
   if (d.unit && [...$('#nUnit').options].some(o => o.value === d.unit)) $('#nUnit').value = d.unit;
   if (d.pack && !$('#nPackN').value) { $('#nPackName').value = d.pack.name; $('#nPackN').value = d.pack.n; }
   if (d.sc && !$('#nSc').value && !findSc(d.sc, S.items).length) $('#nSc').value = d.sc;
+  if (enIns() && usosDe(d).length && !usosSel('#nUsos').length) usosPon('#nUsos', usosDe(d));
   nScTip(); updNTotal();
   const h = $('#codeHint'); h.style.color = 'var(--look)';
   h.textContent = `Datos sugeridos de la memoria (${why}). Revísalos; la cantidad la pones tú.`;
@@ -3447,11 +3495,11 @@ $('#btnExport').onclick = () => {
   if (SEC === 'ser') return exportSvc();
   try {
     const stamp = new Date().toISOString().slice(0, 10);
-    const itemRows = [HEAD, ...SI().map(i => KEYS.map(k => k === 'code' ? (i.code ? Number(i.code) : '') : k === 'packName' ? (i.pack ? i.pack.name : '') : k === 'packN' ? (i.pack ? i.pack.n : '') : k === 'tipo' ? (TIPOS[i.tipo] || '') : k === 'tr' ? (TRS[i.tr] || '') : i[k]))];
+    const itemRows = [HEAD, ...SI().map(i => KEYS.map(k => k === 'code' ? (i.code ? Number(i.code) : '') : k === 'packName' ? (i.pack ? i.pack.name : '') : k === 'packN' ? (i.pack ? i.pack.n : '') : k === 'tipo' ? (TIPOS[i.tipo] || '') : k === 'tr' ? (i.tipo === 'ins' ? '' : TRS[i.tr] || '') : k === 'usos' ? usosTxt(i) : i[k]))];
     const scOf = new Map(); S.items.forEach(i => { if (i.code) scOf.set(String(i.code), i.sc); scOf.set('n:' + i.name, i.sc); });
     const movRows = [['Fecha', 'Tipo', 'Código interno', 'Pieza', 'Código de barras', 'Presentación', 'Unidades', 'Stock después', 'Nota'], ...SM().map(m => [new Date(m.t).toLocaleString('es-DO'), m.type, (m.code && scOf.get(String(m.code))) || scOf.get('n:' + m.name) || '', m.name, m.code ? Number(m.code) : '', movPres(m), movSigned(m), m.after, movNote(m)])];
     const blob = makeXlsx([
-      { name: 'ITEM', rows: itemRows, widths: [15, 38, 18, 18, 17, 18, 12, 12, 14, 12, 10, 14, 10, 8, 12, 12, 12, 12, 12, 12, 14, 14, 10], styles: { 4: 1, 14: 3, 15: 3, 16: 3, 17: 3 } },
+      { name: 'ITEM', rows: itemRows, widths: [15, 38, 18, 18, 17, 18, 12, 12, 14, 12, 10, 14, 10, 8, 12, 12, 12, 12, 12, 12, 14, 14, 10, 30], styles: { 4: 1, 14: 3, 15: 3, 16: 3, 17: 3 } },
       { name: 'MOVIMIENTOS', rows: movRows, widths: [20, 11, 15, 38, 17, 22, 10, 13, 30], styles: { 4: 1 } }
     ]);
     const fname = `inventario_${slug(S.name)}_${slug(SEC_LBL[SEC])}_${stamp}.xlsx`;
@@ -3475,7 +3523,7 @@ const IMP_ALIAS = {
   year: ['ano', 'anio', 'año'],
   price: ['precio comp', 'precio compra', 'precio de compra', 'costo'], v70: ['valor 70%'], imp: ['importe'], total: ['precio total', 'precio venta', 'precio'],
   packName: ['empaque'], packN: ['unidades por empaque', 'unid. por empaque', 'unid por empaque'],
-  tipo: ['tipo', 'pestana', 'seccion', 'pieza o insumo'], tr: ['area', 'transmision', 'departamento'],
+  tipo: ['tipo', 'pestana', 'seccion', 'pieza o insumo'], tr: ['area', 'transmision', 'departamento'], usos: ['sirve para', 'usos', 'uso'],
 };
 const impKey = h => fold(h).replace(/\s+/g, ' ').trim();
 function impHeader(rows){
@@ -3500,7 +3548,7 @@ function impSheet(ws){
     let code = g('code');
     code = typeof code === 'number' ? (Number.isInteger(code) ? String(code) : '') : String(code ?? '').replace(/\D/g, '');
     const pn = t('packName'), pq = Math.round(n('packN'));
-    items.push({ pack: (pn && pq >= 2) ? { name: pn, n: pq } : null, sc: scClean(t('sc')), tipo: tipoFrom(t('tipo')), tr: trFrom(t('tr')), code, name, ref: t('ref'), brand: t('brand'), model: t('model'),
+    items.push({ pack: (pn && pq >= 2) ? { name: pn, n: pq } : null, sc: scClean(t('sc')), tipo: tipoFrom(t('tipo')), tr: trFrom(t('tr')), usos: usosFrom(t('usos')), code, name, ref: t('ref'), brand: t('brand'), model: t('model'),
       cat: t('cat'), sub: t('sub'), sku: t('sku'), qty: Math.round(n('qty')), unit: t('unit') || 'UNID', loc: t('loc'), rac: t('rac'), year: t('year'),
       price: n('price'), v70: n('v70'), imp: n('imp'), total: n('total') });
   }
@@ -3513,16 +3561,18 @@ $('#fileIn').addEventListener('change', e => {
   rd.onload = ev => {
     try {
       const wb = XLSX.read(ev.target.result, { type: 'array' });
-      const bySec = {}; Object.keys(SEC_LBL).forEach(k => { if (k.includes('_')) bySec[k] = []; }); const used = [];
+      const bySec = {}; LUGARES.forEach(k => { bySec[k] = []; }); const used = [];
       const curTr = secTr();
-      // Hojas con nombre de pestaña ("CVT", "CVT Insumos", "Eléctrica Piezas", "Insumos"…): cada una va a su pestaña
+      // Un insumo sin columna SIRVE PARA toma el área que diga el archivo (hoja "CVT Insumos" o columna ÁREA de los Excel de antes)
+      const usosDeArea = i => { if (i.tipo === 'ins' && !i.usos.length && TRS[i.tr]) i.usos = [i.tr]; };
+      // Hojas con nombre de pestaña ("CVT", "Eléctrica Piezas", "Insumos", "CVT Insumos"…): cada una va a su pestaña
       const sheetSec = nm => { const k = impKey(nm), tr = trFrom(k.replace(/\b(piezas?|insumos?|suministros?)\b/g, '').trim()), ins = /\b(insumos?|suministros?)\b/.test(k);
-        return tr ? tr + (ins ? '_ins' : '_mec') : ins ? curTr + '_ins' : ''; };
-      wb.SheetNames.forEach(nm => { const t = sheetSec(nm); if (!t) return; const its = impSheet(wb.Sheets[nm]); if (its && its.length) { its.forEach(i => { [i.tr, i.tipo] = t.split('_'); }); bySec[t].push(...its); used.push(nm); } });
+        return ins ? { k: 'ins', tr } : tr ? { k: tr + '_mec', tr } : null; };
+      wb.SheetNames.forEach(nm => { const t = sheetSec(nm); if (!t) return; const its = impSheet(wb.Sheets[nm]); if (its && its.length) { its.forEach(i => { if (t.tr) i.tr = t.tr; ponLugar(i, t.k); usosDeArea(i); if (!TRS[i.tr]) i.tr = curTr; }); bySec[t.k].push(...its); used.push(nm); } });
       if (!used.length) {
-        // Una sola hoja de piezas (la primera que tenga columna de nombre): usa las columnas ÁREA y TIPO si las trae, si no la pestaña activa
+        // Una sola hoja de piezas (la primera que tenga columna de nombre): usa las columnas ÁREA, TIPO y SIRVE PARA si las trae; si no, la pestaña activa
         const nm = ['ITEM', ...wb.SheetNames].find(x => wb.Sheets[x] && (impSheet(wb.Sheets[x]) || []).length);
-        if (nm) { impSheet(wb.Sheets[nm]).forEach(i => { if (!TRS[i.tr]) i.tr = curTr; if (!TIPOS[i.tipo]) i.tipo = secCat(); bySec[K(i)].push(i); }); used.push(nm); }
+        if (nm) { impSheet(wb.Sheets[nm]).forEach(i => { if (!TIPOS[i.tipo]) i.tipo = secCat(); usosDeArea(i); if (!TRS[i.tr]) i.tr = curTr; bySec[K(i)].push(i); }); used.push(nm); }
       }
       const secs = Object.keys(bySec).filter(k => bySec[k].length), total = secs.reduce((a, k) => a + bySec[k].length, 0);
       if (!total) return alert('No se encontraron piezas en el archivo. El Excel debe tener una columna con el nombre de la pieza (por ejemplo "Pieza", "Nombre" o "Descripción").');
@@ -3553,7 +3603,7 @@ async function catPull(){
 }
 function catLista(){
   const words = fold($('#cq').value.trim()).split(/\s+/).filter(Boolean), f = $('#cFil').value;
-  return CAT.filter(c => (!f || c.tr + '_' + c.tipo === f) && words.every(w => fold(c.name + ' ' + c.ref).includes(w)));
+  return CAT.filter(c => (!f || K(c) === f) && words.every(w => fold(c.name + ' ' + c.ref).includes(w)));
 }
 function catMarcas(){
   const n = catSel.size, lista = catLista();
@@ -3565,8 +3615,8 @@ function catMarcas(){
 function renderCat(){
   if (SEC !== 'cat') return;
   // Filtro y destino: los lugares del inventario (el filtro dice cuántos sugiere el catálogo para cada uno)
-  const cuenta = {}; CAT.forEach(c => { const k = c.tr + '_' + c.tipo; cuenta[k] = (cuenta[k] || 0) + 1; });
-  const lugares = Object.keys(SEC_LBL).filter(k => k.includes('_'));
+  const cuenta = {}; CAT.forEach(c => { const k = K(c); cuenta[k] = (cuenta[k] || 0) + 1; });
+  const lugares = LUGARES;
   const fil = $('#cFil').value, hf = `<option value="">Todo el catálogo (${fmt(CAT.length)})</option>` + lugares.filter(k => cuenta[k]).map(k => `<option value="${k}">Sugeridos para ${esc(SEC_LBL[k])} (${fmt(cuenta[k])})</option>`).join('');
   if ($('#cFil').dataset.h !== hf) { $('#cFil').innerHTML = hf; $('#cFil').dataset.h = hf; $('#cFil').value = cuenta[fil] ? fil : ''; }
   if (!$('#cDest').options.length) $('#cDest').innerHTML = `<option value="">El lugar que sugiere el catálogo</option>` + lugares.map(k => `<option value="${k}">${esc(SEC_LBL[k])}</option>`).join('');
@@ -3578,7 +3628,7 @@ function renderCat(){
   }
   $('#cGrid').innerHTML = lista.slice(0, catVer).map(c => `<label class="ccard${catSel.has(c.id) ? ' sel' : ''}"><input type="checkbox" data-id="${esc(c.id)}"${catSel.has(c.id) ? ' checked' : ''}>` +
     (c.foto ? `<img class="cc-foto" src="${esc(c.foto)}" alt="" loading="lazy" decoding="async" data-foto="${esc(c.id)}" title="Ver la foto en grande">` : `<span class="cc-foto cc-sin">Sin foto</span>`) +
-    `<span class="cc-txt"><span class="cc-name">${esc(c.name)}</span><span class="pc-chips">${c.ref ? `<span class="chip">Ref ${esc(c.ref)}</span>` : ''}<span class="chip a-${c.tr}">${esc(SEC_LBL[c.tr + '_' + c.tipo])}</span></span></span></label>`).join('')
+    `<span class="cc-txt"><span class="cc-name">${esc(c.name)}</span><span class="pc-chips">${c.ref ? `<span class="chip">Ref ${esc(c.ref)}</span>` : ''}<span class="chip a-${K(c).split('_')[0]}">${esc(SEC_LBL[K(c)])}</span></span></span></label>`).join('')
     || '<p class="muted">Sin resultados.</p>';
   $('#cMas').classList.toggle('hide', lista.length <= catVer);
   $('#cMas').textContent = `Ver más (quedan ${fmt(lista.length - catVer)})`;
@@ -3609,8 +3659,8 @@ async function catBorrarNube(ids){
 function catSacar(marcados){ const ids = new Set(marcados.map(c => c.id)); CAT = CAT.filter(c => !ids.has(c.id)); ids.forEach(id => catSel.delete(id)); }
 $('#cPasar').onclick = async () => {
   const marcados = CAT.filter(c => catSel.has(c.id)); if (!marcados.length) return;
-  const dest = $('#cDest').value, lugar = c => (dest || c.tr + '_' + c.tipo).split('_');
-  const cuenta = {}; marcados.forEach(c => { const k = lugar(c).join('_'); cuenta[k] = (cuenta[k] || 0) + 1; });
+  const dest = $('#cDest').value, lugar = c => dest || K(c);
+  const cuenta = {}; marcados.forEach(c => { const k = lugar(c); cuenta[k] = (cuenta[k] || 0) + 1; });
   const unir = marcados.map(catIgual).filter(Boolean);
   const det = Object.keys(cuenta).map(k => `• ${SEC_LBL[k]}: ${fmt(cuenta[k])}`).join('\n');
   const ej = unir.slice(0, 10).map(it => `• ${it.sc ? it.sc + ' ' : ''}${it.name} (se queda con ${fmt(it.qty)} en existencia)`).join('\n');
@@ -3622,17 +3672,21 @@ $('#cPasar').onclick = async () => {
   catch(e) { return alert('No se pudo pasar: hace falta internet para sacar los productos del catálogo. No se cambió nada.'); }
   let unidos = 0;
   marcados.forEach(c => {
-    const [tr, tipo] = lugar(c);
+    const k = lugar(c);
     // Se busca en el momento: dos productos con el mismo nombre en el mismo pase quedan en una sola pieza
     const it = catIgual(c);
     if (it) {
       const oldCode = it.code, oldName = it.name;
-      S.movements.forEach(m => { if (oldCode ? m.code === oldCode : m.name === oldName) { if (!oldCode) m.name = c.name; m.tipo = tipo; m.tr = tr; } });
-      Object.assign(it, { name: c.name, ref: c.ref, foto: c.foto, tr, tipo });
+      ponLugar(it, k);
+      // Si pasa a Insumos sin decir para qué sirve, toma el área que sugiere el catálogo
+      if (it.tipo === 'ins' && !usosDe(it).length) it.usos = [c.tr];
+      S.movements.forEach(m => { if (oldCode ? m.code === oldCode : m.name === oldName) { if (!oldCode) m.name = c.name; m.tipo = it.tipo; m.tr = it.tr; } });
+      Object.assign(it, { name: c.name, ref: c.ref, foto: c.foto });
       log('Edición', it, 0, 'Datos tomados del catálogo (se conservó el código y la existencia)');
       unidos++; return;
     }
-    const nu = { added: Date.now(), pack: null, sc: '', tipo, tr, code: '', name: c.name, ref: c.ref, brand: '', model: '', cat: '', sub: '', sku: '', qty: 0, unit: 'UNID', loc: '', rac: '', year: '', price: 0, v70: 0, imp: 0, total: 0, foto: c.foto };
+    const nu = { added: Date.now(), pack: null, sc: '', tipo: 'mec', tr: c.tr, code: '', name: c.name, ref: c.ref, brand: '', model: '', cat: '', sub: '', sku: '', qty: 0, unit: 'UNID', loc: '', rac: '', year: '', price: 0, v70: 0, imp: 0, total: 0, foto: c.foto };
+    ponLugar(nu, k); if (nu.tipo === 'ins') nu.usos = [c.tr];
     S.items.push(nu); nu.code = genCode();
   });
   ensureSc(S); catSacar(marcados);
@@ -3727,15 +3781,18 @@ const kOpts = (obj, v) => Object.entries(obj).map(([k, t]) => `<option value="${
 const kCab = ['kFecha', 'kSup', 'kFac', 'kNcf', 'kDig', 'kRec', 'kFlete', 'kNota', 'kPapel'];
 
 let KL = [];   // productos de la factura que se está digitando
-const kNueva = () => ({ name: '', ref: '', code: '', como: 'caja', pkName: '', pkN: '', cant: '', regalo: '', precio: '', tasa: '18', gan: String(COM.gan), ganTocada: false, venta: '', fijo: 'gan', tr: 'aut', tipo: 'mec', lugarTocado: false });
+const kNueva = () => ({ name: '', ref: '', code: '', como: 'caja', pkName: '', pkN: '', cant: '', regalo: '', precio: '', tasa: '18', gan: String(COM.gan), ganTocada: false, venta: '', fijo: 'gan', tr: 'aut', tipo: 'mec', usos: [], lugarTocado: false, usosTocado: false, usosDe: '' });
 
-// A dónde va un producto nuevo: las mismas reglas de "Reacomodar" para el área; Piezas o Insumos por el nombre
+// A dónde va un producto nuevo: las mismas reglas de "Reacomodar" para el área; Piezas o Insumos por el nombre.
+// Si es insumo y las reglas reconocen el área con seguridad (ATF → Automática, fluido CVT → CVT…), se marca que sirve para ella
 function kLugar(l){
   const t = { name: l.name, ref: l.ref }, r = clasificarArea(t);
   const tr = r && TRS[r.tr] ? r.tr : r && r.cand && TRS[r.cand[0]] ? r.cand[0] : guessTr(t);
-  const f = fold(l.name + ' ' + l.ref).replace(/[^a-z0-9 ]/g, ' ');
+  // "Bomba de aceite", "filtro de aceite": el aceite es el complemento de una pieza, no el producto
+  const f = fold(l.name + ' ' + l.ref).replace(/[^a-z0-9 ]/g, ' ').replace(/\b(de|del|para) (aceites?|liquidos?|grasas?|atf)\b/g, ' ');
   const tipo = (r && r.tipo === 'ins') || guessTipo(l.name) === 'ins' || KTIPO_INS.test(f) ? 'ins' : 'mec';
-  return { tr, tipo, motivo: r && TRS[r.tr] ? r.motivo : '' };
+  const usos = tipo === 'ins' && r && TRS[r.tr] && r.conf !== 'baja' ? [r.tr] : [];
+  return { tr, tipo, usos, motivo: r && TRS[r.tr] ? r.motivo : '' };
 }
 // ¿Ya está en el inventario? Código de barras, nombre, código corto, o la referencia si solo una pieza la tiene
 function kBusca(l){
@@ -3794,9 +3851,9 @@ function kLineaHTML(l, i){
       <label>ITBIS<select data-f="tasa">${kOpts(KTASAS, l.tasa)}</select></label>
       <label>Ganancia %<input data-f="gan" type="number" step="0.1" inputmode="decimal" value="${esc(l.gan)}"></label>
       <label>Venta c/u con ITBIS<input data-f="venta" type="number" min="0" step="0.01" inputmode="decimal" value="${esc(l.venta)}"></label>
-      <label data-ver="lugar">Área<select data-f="tr">${kOpts(TRS, l.tr)}</select></label>
-      <label data-ver="lugar">Sección<select data-f="tipo">${kOpts(CAT_LBL, l.tipo)}</select></label>
+      <label data-ver="lugar">Va a<select data-f="lugar">${kOpts(SEC_LBL_INV, K(l))}</select></label>
     </div>
+    <div class="kl-usos usos" data-ver="usos"><span>Sirve para</span>${usosChecks(usosDe(l), 'data-uso')}</div>
     <div class="kl-res"></div>
   </div>`;
 }
@@ -3821,6 +3878,10 @@ function kPintaLinea(box, c, foco, previa){
   q('[data-ver=pkName]').hidden = l.como !== 'otro';
   q('[data-ver=pkN]').hidden = l.como !== 'caja' && l.como !== 'otro';
   box.querySelectorAll('[data-ver=lugar]').forEach(x => { x.hidden = !!it || !!igual || c.vacia; });
+  // Insumo que ya existe: sus casillas "Sirve para" empiezan como las tiene y se pueden cambiar al darle entrada
+  if (it && it.tipo === 'ins' && l.usosDe !== it.id) { l.usos = usosDe(it); l.usosDe = it.id; l.usosTocado = false; box.querySelectorAll('input[data-uso]').forEach(x => { x.checked = l.usos.includes(x.dataset.uso); }); }
+  if (!it && l.usosDe) l.usosDe = '';
+  q('[data-ver=usos]').hidden = c.vacia || !!igual || (it ? it.tipo !== 'ins' : l.tipo !== 'ins');
   const pw = c.pkName ? c.pkName.toLowerCase() : 'unidad';
   q('[data-t=cant]').textContent = c.pkName ? `${plural(c.pkName, 2)} compradas` : 'Unidades compradas';
   q('[data-t=precio]').textContent = 'Precio por ' + pw;
@@ -3834,7 +3895,7 @@ function kPintaLinea(box, c, foco, previa){
   else {
     const sc = genSc(l.name.trim() || 'X', S.items.concat(previa)); previa.push({ sc, name: l.name.trim(), n: +box.dataset.i + 1 });
     const por = l.lugarTocado ? 'lo elegiste tú' : kLugar(l).motivo || 'no se reconoce el área: revísala';
-    hay.textContent = `Nuevo: va a ${SEC_LBL[l.tr + '_' + l.tipo]} (${por}) · código corto ${sc} · ${norm(l.code) ? 'con su código de barras' : 'código de barras nuevo y etiqueta'}.`;
+    hay.textContent = `Nuevo: va a ${SEC_LBL[K(l)]} (${por}) · código corto ${sc} · ${norm(l.code) ? 'con su código de barras' : 'código de barras nuevo y etiqueta'}.`;
   }
   const s = (t, v, cls) => `<span class="${cls || ''}">${t} <b>${v}</b></span>`;
   q('.kl-res').innerHTML = c.vacia || !c.uds ? '' :
@@ -3881,12 +3942,17 @@ function kLimpiar(todo){
 }
 
 $('#kLineas').addEventListener('input', e => {
-  const box = e.target.closest('.klin'), f = e.target.dataset.f; if (!box || !f) return;
-  const i = +box.dataset.i, l = KL[i]; l[f] = e.target.value;
+  const box = e.target.closest('.klin'), f = e.target.dataset.f || (e.target.dataset.uso ? 'uso' : ''); if (!box || !f) return;
+  const i = +box.dataset.i, l = KL[i];
+  if (f === 'lugar') { ponLugar(l, e.target.value); l.lugarTocado = true; }
+  else if (f === 'uso') { l.usos = usosSel(`#kLineas .klin[data-i="${i}"]`); l.usosTocado = true; }
+  else l[f] = e.target.value;
   if (f === 'gan') { l.fijo = 'gan'; l.ganTocada = true; }
   if (f === 'venta') l.fijo = 'venta';
-  if (f === 'tr' || f === 'tipo') l.lugarTocado = true;
-  if ((f === 'name' || f === 'ref') && !l.lugarTocado) { const g = kLugar(l); l.tr = g.tr; l.tipo = g.tipo; box.querySelector('[data-f=tr]').value = g.tr; box.querySelector('[data-f=tipo]').value = g.tipo; }
+  if ((f === 'name' || f === 'ref') && !l.lugarTocado) {
+    const g = kLugar(l); l.tr = g.tr; l.tipo = g.tipo; box.querySelector('[data-f=lugar]').value = K(l);
+    if (!l.usosTocado) { l.usos = g.usos; box.querySelectorAll('input[data-uso]').forEach(x => { x.checked = l.usos.includes(x.dataset.uso); }); }
+  }
   kRefrescar(i, f);
 });
 $('#kLineas').addEventListener('click', e => {
@@ -3952,16 +4018,17 @@ $('#kForm').onsubmit = e => {
       if (!it.code && norm(l.code)) it.code = l.code.replace(/\D/g, '');
       if (pk && !it.pack) it.pack = pk;
       if (l.ref.trim() && !it.ref) it.ref = l.ref.trim();
+      if (it.tipo === 'ins' && l.usosDe === it.id && usosDe(l).join() !== usosDe(it).join()) { it.usos = usosDe(l); log('Edición', it, 0, 'Editado: sirve para'); }
       log('Entrada', it, c.uds, nota, { pres });
     } else {
       const own = l.code.replace(/\D/g, '');
-      it = { id: newId(), added: Date.now(), pack: pk, sc: genSc(l.name.trim(), S.items), tipo: l.tipo, tr: l.tr, code: own || genCode(), name: l.name.trim(), ref: l.ref.trim(), brand: '',
+      it = { id: newId(), added: Date.now(), pack: pk, sc: genSc(l.name.trim(), S.items), tipo: l.tipo, tr: l.tr, ...(l.tipo === 'ins' ? { usos: usosDe(l) } : {}), code: own || genCode(), name: l.name.trim(), ref: l.ref.trim(), brand: '',
         model: '', cat: '', sub: '', sku: '', qty: c.uds, unit: 'UNID', loc: '', rac: '', year: '', price: 0, v70: 0, imp: 0, total: 0, ...(precios || {}) };
       S.items.push(it); log('Alta', it, c.uds, nota, { pres });
       if (!own) etiquetas.push(it);
     }
     if (!it.id) it.id = newId();
-    lineas.push({ pid: it.id, sc: it.sc || '', name: it.name, ref: l.ref.trim(), code: String(it.code || ''), tr: it.tr, tipo: it.tipo, nuevo, como: l.como, pk, cant: c.cant, regalo: c.regalo, uds: c.uds,
+    lineas.push({ pid: it.id, sc: it.sc || '', name: it.name, ref: l.ref.trim(), code: String(it.code || ''), tr: it.tr, tipo: it.tipo, usos: usosDe(it), nuevo, como: l.como, pk, cant: c.cant, regalo: c.regalo, uds: c.uds,
       precio: c.precio, tasa: +l.tasa || 0, sub: +c.sub.toFixed(2), itb: +c.itb.toFixed(2), costo: +c.costo.toFixed(4), gan: +c.gan.toFixed(4), venta: +c.venta.toFixed(2), oferta: c.oferta, ganancia: +c.ganancia.toFixed(2) });
   });
   const k = { id: newId(), t: Date.now(), fecha, sup, fac, ncf, dig, rec, incl: T.incl, flete: T.flete, nota: v('kNota'), lineas, sub: +T.sub.toFixed(2), itb: +T.itb.toFixed(2), total: +T.total.toFixed(2), anulada: false };
@@ -4015,12 +4082,11 @@ $('#kAnular').onclick = () => {
 /* Precios: la lista de precios de venta; aquí se cambia la ganancia o el precio */
 const kTasaDe = it => +it.v70 > 0 ? Math.round((+it.total / +it.v70 - 1) * 100) / 100 : 0.18;
 function kUltimas(){ const m = new Map(); comOf(S).compras.forEach(k => { if (!k.anulada) (k.lineas || []).forEach(x => { if (!m.has(x.pid)) m.set(x.pid, k); }); }); return m; }
-$('#kpArea').innerHTML = '<option value="">Todas las áreas</option>' + Object.keys(TRS).map(t => `<option value="${t}">${TRS[t]}</option>`).join('') +
-  Object.keys(SEC_LBL).filter(k => k.includes('_')).map(k => `<option value="${k}">${SEC_LBL[k]}</option>`).join('');
+$('#kpArea').innerHTML = '<option value="">Piezas e insumos</option>' + LUGARES.map(k => `<option value="${k}">${SEC_LBL[k]}</option>`).join('');
 // Lo que muestra la vista y lo que lleva el reporte: con precio, según la búsqueda y el área elegida
 function kPrecLista(){
   const q = fold($('#kpq').value.trim()), ar = $('#kpArea').value;
-  return S.items.filter(i => (+i.total > 0 || +i.price > 0) && (!ar || K(i) === ar || K(i).startsWith(ar + '_')) && (!q || fold([i.sc, i.name, i.ref, i.code].join(' ')).includes(q)));
+  return S.items.filter(i => (+i.total > 0 || +i.price > 0) && (!ar || enLugar(i, ar)) && (!q || fold([i.sc, i.name, i.ref, i.code].join(' ')).includes(q)));
 }
 function renderPrecios(){
   const ult = kUltimas(), con = S.items.filter(i => +i.total > 0 || +i.price > 0);
@@ -4175,8 +4241,8 @@ function renderInicio(){
     kpi('Compras del mes', rd(compMes), `${fmt(kMes.length)} ${kMes.length === 1 ? 'factura' : 'facturas'} · ITBIS ${rd(itbMes)}`) + kpi('Movimiento de hoy', `${fmt(dHoy)} <span class="muted" style="font-size:14px;font-weight:600">despachadas</span>`, `${fmt(eHoy)} unidades entraron`) +
     kpi('Por atender', `${fmt(agot.length + bajo.length)}`, `${fmt(agot.length)} ${agot.length === 1 ? 'agotado' : 'agotados'} · ${fmt(bajo.length)} bajo el mínimo`);
 
-  // Inventario por área (valor a costo)
-  const porArea = Object.keys(TRS).map(t => { const a = its.filter(i => (TRS[i.tr] ? i.tr : 'aut') === t); return { n: TRS[t], v: a.reduce((s, i) => s + Math.max(0, +i.qty || 0) * (+i.price || 0), 0), cls: 'a-' + t, dot: 1, extra: `${fmt(a.length)} prod.`, tip: `${TRS[t]}: ${fmt(a.length)} productos, ${fmt(a.reduce((s, i) => s + Math.max(0, +i.qty || 0), 0))} unidades` }; });
+  // Inventario por área (valor a costo): las piezas en su área y los insumos aparte
+  const porArea = LUGARES.map(k => { const a = its.filter(i => K(i) === k), t = k.split('_')[0]; return { n: SEC_LBL[k], v: a.reduce((s, i) => s + Math.max(0, +i.qty || 0) * (+i.price || 0), 0), cls: 'a-' + t, dot: 1, extra: `${fmt(a.length)} prod.`, tip: `${SEC_LBL[k]}: ${fmt(a.length)} productos, ${fmt(a.reduce((s, i) => s + Math.max(0, +i.qty || 0), 0))} unidades` }; });
   const pArea = tPan('Inventario por área', 'Valor a costo de lo que hay en existencia', valC ? tBarras(porArea, v => rd(v)) : tVacio('Todavía no hay costos: salen de las facturas que registres en Compras.') + tBarras(porArea.map(a => ({ ...a, v: 0 })), () => '—'));
 
   // Compras por mes (6 meses)
@@ -4201,11 +4267,16 @@ function renderInicio(){
     const ag = a.filter(i => (+i.qty || 0) <= 0).length, bj = a.filter(i => { const m = minDe(i), q = +i.qty || 0; return q > 0 && m > 0 && q <= m; }).length;
     const g = new Map(); movs.filter(m => esOut(m) && ahora - m.t < 30 * DIA && tipoDe(m) === tipo).forEach(m => { const k = m.code || 'n:' + m.name; const x = g.get(k) || { n: m.name, v: 0 }; x.v += Math.abs(m.qty || 0); g.set(k, x); });
     const tg = [...g.values()].sort((x, y) => y.v - x.v).slice(0, 5).map(x => ({ ...x, tip: `${x.n}: ${fmt(x.v)} unidades despachadas en 30 días` }));
-    const pa = Object.keys(TRS).map(t => { const b = a.filter(i => (TRS[i.tr] ? i.tr : 'aut') === t); return { n: TRS[t], v: b.length, cls: 'a-' + t, dot: 1, extra: `${fmt(b.reduce((s, i) => s + Math.max(0, +i.qty || 0), 0))} unid.`, tip: `${nom} de ${TRS[t]}: ${fmt(b.length)} productos` }; });
+    // Piezas: cuántas hay en cada área. Insumos: para qué área sirven (uno puede servir para varias) y los de uso general
+    const barra = (b, n, cls, tip) => ({ n, v: b.length, cls, dot: 1, extra: `${fmt(b.reduce((s, i) => s + Math.max(0, +i.qty || 0), 0))} unid.`, tip });
+    const pa = tipo === 'ins'
+      ? Object.keys(TRS).map(t => barra(a.filter(i => usosDe(i).includes(t)), TRS[t], 'a-' + t, `Insumos que sirven para ${TRS[t]}: ${fmt(a.filter(i => usosDe(i).includes(t)).length)}`))
+          .concat(barra(a.filter(i => !usosDe(i).length), 'Uso general', '', `Insumos sin área marcada: ${fmt(a.filter(i => !usosDe(i).length).length)}`))
+      : Object.keys(TRS).map(t => { const b = a.filter(i => (TRS[i.tr] ? i.tr : 'aut') === t); return barra(b, TRS[t], 'a-' + t, `Piezas de ${TRS[t]}: ${fmt(b.length)} productos`); });
     const c = (t, x, cls) => `<div><span>${t}</span><b${cls ? ` class="${cls}"` : ''}>${x}</b></div>`;
     const cuerpo = !a.length ? tVacio(`Todavía no hay ${nom.toLowerCase()} en el inventario.`) :
       `<div class="t-mini">${c('Productos', fmt(a.length))}${c('Unidades', fmt(u))}${c('Valor a costo', rd(v))}${c('Agotados', fmt(ag), ag ? 'cero' : '')}${c('Bajo el mínimo', fmt(bj), bj ? 'bajo' : '')}</div>` +
-      `<h4 class="t-h">Por área</h4>${tBarras(pa, x => fmt(x) + ' prod.')}` +
+      `<h4 class="t-h">${tipo === 'ins' ? 'Sirven para' : 'Por área'}</h4>${tBarras(pa, x => fmt(x) + ' prod.')}` +
       `<h4 class="t-h">Lo que más sale (30 días)</h4>${tg.length ? tBarras(tg, x => fmt(x)) : '<p class="t-sub" style="margin:0">Sin despachos en los últimos 30 días.</p>'}`;
     return tPan(nom, tipo === 'ins' ? 'Aceites, líquidos y materiales que se gastan en el taller' : 'Repuestos y componentes de transmisión', cuerpo, `<button type="button" data-ir="ver-${tipo}">Ver ${nom.toLowerCase()}</button>`);
   };
@@ -4244,9 +4315,10 @@ $('#panelT').addEventListener('click', e => {
   if (v) { const it = itemById(v.dataset.ver); if (!it) return; setSec(K(it)); tab(true); $('#q').value = it.sc || it.name; renderParts(); return; }
   const b = e.target.closest('[data-ir]'); if (!b) return;
   const k = b.dataset.ir;
-  if (k === 'in' || k === 'out' || k === 'look') { setSec(lastTr + '_' + lastCat[lastTr]); setMode(k); return; }
+  if (k === 'in' || k === 'out' || k === 'look') { setSec(lastInv); setMode(k); return; }
   if (k === 'fac' || k === 'lis' || k === 'pre') { setSec('com'); kVista(k); return; }
-  if (k === 'ver-mec' || k === 'ver-ins') { setSec(lastTr + '_' + k.slice(4)); return; }
+  if (k === 'ver-mec') { setSec(lastTr + '_mec'); return; }
+  if (k === 'ver-ins') { setSec('ins'); return; }
   if (k === 'svc') { setSec('ser'); $('#rSvc').focus(); return; }
   if (k === 'req') { setSec('req'); rqVista('rev'); }
 });
@@ -4267,7 +4339,7 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape' && document.b
 
 /* ---------- Inicio ---------- */
 memLists();
-$('#eTipo').innerHTML = tipoOpts(); $('#eTr').innerHTML = trOpts();
+$('#eLugar').innerHTML = LUGARES.map(k => `<option value="${k}">${k === 'ins' ? 'Insumos (aparte de las áreas)' : 'Pieza de ' + SEC_LBL[k]}</option>`).join('');
 const tipoNew = R.almacenes.reduce((n, a) => n + ensureTipo(a), 0);
 R.almacenes.forEach(stampMovTipo);
 const scNew = R.almacenes.reduce((n, a) => n + ensureSc(a), 0);
