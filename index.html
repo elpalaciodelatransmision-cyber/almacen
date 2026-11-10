@@ -1444,8 +1444,11 @@ function fresh(){
   const id = newId();
   return { almacenes: [{ id, name: 'Almacén 1', items: SEED.items.map(x => ({...x})), movements: [] }], activeId: id, serialFloor: SEED.serialFloor || 0 };
 }
+// true si este equipo no tenía su copia del inventario (la perdió o nunca la tuvo): entonces no puede mandar nada a la nube hasta cargarla
+let LOCAL_NUEVO = false;
 function loadState(){
   try { const r = localStorage.getItem(KEY2); if (r) { const o = JSON.parse(r); if (o && Array.isArray(o.almacenes) && o.almacenes.length) return o; } } catch(e) {}
+  LOCAL_NUEVO = true;
   // Datos de la versión anterior (un solo almacén): se conservan como "Almacén interno"
   try {
     const r = localStorage.getItem(KEY);
@@ -1458,6 +1461,15 @@ let R = loadState();
 let S = R.almacenes.find(a => a.id === R.activeId) || R.almacenes[0];
 R.activeId = S.id;
 function save(){ saveLocal(); memRemember(); cloudQueue(); }
+// Lo que se borró a mano en este equipo (a almacenes, p piezas, m movimientos, s servicios, j servicios hechos, k compras, r requisiciones).
+// La nube SOLO borra lo que está anotado aquí. Si a un equipo le falta algo que nadie borró (perdió su copia o quedó a medio guardar),
+// se vuelve a traer de la nube en vez de borrarlo allá.
+const NUBE_TIPOS = ['a', 'p', 'm', 's', 'j', 'k', 'r'];
+function marcarBorrado(t, ids){
+  const b = R.borrados || (R.borrados = {}), l = b[t] || (b[t] = []);
+  ids.forEach(id => { if (id && !l.includes(id)) l.push(id); });
+}
+const borradoAMano = (t, id) => !!(R.borrados && R.borrados[t] && R.borrados[t].includes(id));
 
 /* ---------- Nube (Supabase): almacenes, piezas, stock y movimientos compartidos entre equipos ---------- */
 // Sin usuarios (decisión del dueño): se usa la llave pública del proyecto.
@@ -1470,9 +1482,17 @@ const emptySnap = () => ({ a: {}, p: {}, m: {}, s: {}, j: {}, k: {}, r: {}, seri
 let SNAP = null;
 try { SNAP = JSON.parse(localStorage.getItem(SNAP_KEY) || 'null'); } catch(e) {}
 if (SNAP) { SNAP.s = SNAP.s || {}; SNAP.j = SNAP.j || {}; SNAP.k = SNAP.k || {}; SNAP.r = SNAP.r || {}; }
+// La copia del inventario y el recuerdo de la nube se guardan juntos con el mismo número (gen). Si no cuadran
+// (el equipo perdió su copia o una de las dos no se pudo guardar), ese recuerdo no sirve: se olvida y manda la nube.
+if (SNAP && (LOCAL_NUEVO || SNAP.gen !== R.gen)) { SNAP = null; try { localStorage.removeItem(SNAP_KEY); } catch(e) {} }
 const cloud = { chain: Promise.resolve(), timer: 0, pushQueued: false, drainQueued: false, inbox: [], loaded: !!SNAP, state: '' };
-const saveSnap = () => { try { localStorage.setItem(SNAP_KEY, JSON.stringify(SNAP)); } catch(e) {} };
-const saveLocal = () => { try { localStorage.setItem(KEY2, JSON.stringify(R)); $('#saveWarn').classList.add('hide'); } catch(e) { $('#saveWarn').classList.remove('hide'); } };
+const saveLocal = () => {
+  R.gen = (R.gen || 0) + 1;
+  try { localStorage.setItem(KEY2, JSON.stringify(R)); $('#saveWarn').classList.add('hide'); }
+  catch(e) { $('#saveWarn').classList.remove('hide'); return; }
+  if (SNAP) { SNAP.gen = R.gen; try { localStorage.setItem(SNAP_KEY, JSON.stringify(SNAP)); } catch(e) {} }
+};
+const saveSnap = saveLocal;
 const inChain = fn => { cloud.chain = cloud.chain.then(fn, fn); return cloud.chain; };
 
 function ensureIds(){ R.almacenes.forEach(a => { svcOf(a); a.services.forEach(x => { if (!x.id) x.id = newId(); }); a.jobs.forEach(x => { if (!x.id) x.id = newId(); }); comOf(a).compras.forEach(x => { if (!x.id) x.id = newId(); }); reqOf(a).reqs.forEach(x => { if (!x.id) x.id = newId(); }); a.items.forEach(i => { if (!i.id) i.id = newId(); }); a.movements.forEach(m => { if (!m.id) m.id = newId(); }); }); }
@@ -1545,9 +1565,11 @@ async function cloudPush(){
     for (const x of comOf(a).compras) { const row = kRow(x, a.id), js = jrow(row); next.k[x.id] = js; if (snap.k[x.id] !== js) upK.push(row); }
     for (const x of reqOf(a).reqs) { const row = rqRow(x, a.id), js = jrow(row); next.r[x.id] = js; if (snap.r[x.id] !== js) upR.push(row); }
   }
-  const delA = Object.keys(snap.a).filter(id => !(id in next.a)), delP = Object.keys(snap.p).filter(id => !(id in next.p)), delM = Object.keys(snap.m).filter(id => !(id in next.m));
-  const delS = Object.keys(snap.s).filter(id => !(id in next.s)), delJ = Object.keys(snap.j).filter(id => !(id in next.j)), delK = Object.keys(snap.k).filter(id => !(id in next.k)), delR = Object.keys(snap.r).filter(id => !(id in next.r));
-  if (!upA.length && !newP.length && !upP.length && !deltas.length && !upM.length && !delA.length && !delP.length && !delM.length && !upS.length && !upJ.length && !delS.length && !delJ.length && !upK.length && !delK.length && !upR.length && !delR.length && snap.serial === next.serial) {
+  // Falta aquí y estaba en la nube: se borra allá solo si alguien lo borró a mano en este equipo; lo demás se vuelve a traer
+  const del = {}; let perdidos = 0;
+  for (const t of NUBE_TIPOS) del[t] = Object.keys(snap[t]).filter(id => !(id in next[t])).filter(id => borradoAMano(t, id) || (perdidos++, false));
+  const { a: delA, p: delP, m: delM, s: delS, j: delJ, k: delK, r: delR } = del;
+  if (!perdidos && !upA.length && !newP.length && !upP.length && !deltas.length && !upM.length && !delA.length && !delP.length && !delM.length && !upS.length && !upJ.length && !delS.length && !delJ.length && !upK.length && !delK.length && !upR.length && !delR.length && snap.serial === next.serial) {
     if (cloud.state !== 'ok') cloudStatus('ok'); return;
   }
   cloudStatus('sync', newP.length + upM.length > 200 ? `subiendo ${fmt(newP.length)} piezas y ${fmt(upM.length)} movimientos` : '');
@@ -1575,9 +1597,13 @@ async function cloudPush(){
     await chunked(delP, 150, ids => sb.from('piezas').delete().in('id', ids));
     await chunked(delA, 150, ids => sb.from('almacenes').delete().in('id', ids));
     if (snap.serial !== next.serial) { const { error } = await sb.from('config').upsert({ clave: 'serialFloor', valor: next.serial }); if (error) throw error; }
-    SNAP = next; saveSnap(); saveLocal();
+    // Lo perdido no queda en el recuerdo de la nube: así la próxima carga lo trae de vuelta a este equipo
+    SNAP = next;
+    if (R.borrados) NUBE_TIPOS.forEach(t => { if (R.borrados[t]) R.borrados[t] = R.borrados[t].filter(id => id in SNAP[t]); });
+    saveLocal();
     if (deltas.length) renderAll();
     cloudStatus('ok');
+    if (perdidos) { console.warn('Nube: a este equipo le faltaban ' + perdidos + ' registros que nadie borró; se traen de la nube.'); inChain(cloudPull); }
   } catch (e) {
     saveSnap();
     cloudStatus('off'); console.warn('Nube:', e && e.message);
@@ -1782,7 +1808,7 @@ function beep(kind){
 /* ---------- Movimientos ---------- */
 function log(type, item, qty, note, extra){
   S.movements.unshift({ id: newId(), t: Date.now(), type, tipo: item.tipo, tr: item.tr, code: item.code, name: item.name, qty, after: item.qty, note: note || '', ...(extra || {}) });
-  if (S.movements.length > 20000) S.movements.length = 20000;
+  if (S.movements.length > 20000) { marcarBorrado('m', S.movements.slice(20000).map(m => m.id)); S.movements.length = 20000; }
 }
 
 /* ---------- Resultado ---------- */
@@ -2010,7 +2036,7 @@ function undo(){
   const it = S.items.find(i => i.code === m.code && i.name === m.name);
   if (!it) return showMsg('err', 'No se encontró la pieza', m.name);
   it.qty += (m.type === 'Despacho' ? m.qty : -m.qty);
-  S.movements.splice(k, 1); save(); renderAll(); beep('ok');
+  marcarBorrado('m', [m.id]); S.movements.splice(k, 1); save(); renderAll(); beep('ok');
   setResult('var(--look)', `<div class="tag">Movimiento deshecho (${esc(m.type)} de ${fmt(Math.abs(m.qty))})</div>${itemHead(it)}<div class="stock"><span>Stock</span><b>${fmt(it.qty)}</b><span>${esc(it.unit)}</span></div>`);
   focusScan();
 }
@@ -2389,7 +2415,7 @@ $('#dClose').onclick = () => $('#delDlg').close();
 $('#dOk').onclick = () => {
   const it = delItem; if (!it) return;
   const i = S.items.indexOf(it); if (i < 0) return delReset('La pieza ya no existe.', true);
-  S.items.splice(i, 1);
+  marcarBorrado('p', [it.id]); S.items.splice(i, 1);
   S.movements.unshift({ id: newId(), t: Date.now(), type: 'Baja', tipo: it.tipo, tr: it.tr, code: it.code, name: it.name, qty: it.qty, after: 0, note: 'Pieza eliminada' });
   save(); renderAll(); beep('out');
   delReset('Eliminada: ' + it.name, false); $('#dScan').focus();
@@ -2752,7 +2778,7 @@ $('#rDoc').addEventListener('click', async e => {
   }
   if (a === 'del') {
     if (!confirm(`¿Eliminar la requisición ${reqNum(r.n)}? Se borra del historial en todos los equipos.`)) return;
-    reqOf(S).reqs = S.reqs.filter(x => x.id !== r.id); RQ.cur = ''; save(); renderAll(); return;
+    marcarBorrado('r', [r.id]); reqOf(S).reqs = S.reqs.filter(x => x.id !== r.id); RQ.cur = ''; save(); renderAll(); return;
   }
   if (!n) { rqAviso('La hoja todavía no está lista o este aparato no pudo dibujarla.'); return; }
   if (a === 'png') {
@@ -3113,7 +3139,7 @@ $('#sdSel').addEventListener('change', sdShow);
 $('#sdCancel').onclick = () => $('#svcDelDlg').close();
 $('#sdOk').onclick = () => {
   const a = svcOf(S), s = a.services.find(x => x.id === $('#sdSel').value); if (!s) return;
-  a.services = a.services.filter(x => x !== s);
+  marcarBorrado('s', [s.id]); a.services = a.services.filter(x => x !== s);
   $('#svcDelDlg').close(); save(); renderAll(); beep('out');
   const err = $('#rErr'); err.style.color = 'var(--in)'; err.textContent = `Se eliminó del catálogo: ${svLbl(s)}.`; setTimeout(() => { err.style.color = ''; }, 6000);
 };
@@ -3397,6 +3423,9 @@ function renderAlmList(){
     row.querySelector('[data-act=del]').onclick = () => {
       if (R.almacenes.length === 1) { $('#almErr').textContent = 'No puedes eliminar el único almacén.'; return; }
       if (!confirm(`¿Eliminar el almacén "${a.name}" con ${a.items.length} piezas y ${a.movements.length} movimientos? Esto no se puede deshacer.`)) return;
+      const ids = l => (l || []).map(x => x.id);
+      marcarBorrado('a', [a.id]); marcarBorrado('p', ids(a.items)); marcarBorrado('m', ids(a.movements)); marcarBorrado('s', ids(a.services));
+      marcarBorrado('j', ids(a.jobs)); marcarBorrado('k', ids(a.compras)); marcarBorrado('r', ids(a.reqs));
       R.almacenes = R.almacenes.filter(x => x.id !== a.id);
       if (S.id === a.id) setActive(R.almacenes[0].id); else { save(); renderAll(); }
       $('#almErr').textContent = ''; renderAlmList();
@@ -3578,6 +3607,7 @@ $('#fileIn').addEventListener('change', e => {
       if (!total) return alert('No se encontraron piezas en el archivo. El Excel debe tener una columna con el nombre de la pieza (por ejemplo "Pieza", "Nombre" o "Descripción").');
       const det = secs.map(k => `• ${SEC_LBL[k]}: ${bySec[k].length} piezas, ${fmt(bySec[k].reduce((a, i) => a + i.qty, 0))} unidades`).join('\n');
       if (!confirm(`Se cargará desde "${f.name}" (hoja${used.length > 1 ? 's' : ''}: ${used.join(', ')}):\n\n${det}\n\nEsto REEMPLAZA las piezas que tienen ahora esas pestañas en el almacén "${S.name}". Las demás pestañas no se tocan. ¿Continuar?`)) return;
+      marcarBorrado('p', S.items.filter(i => secs.includes(K(i))).map(i => i.id));
       S.items = S.items.filter(i => !secs.includes(K(i))).concat(...secs.map(k => bySec[k]));
       const nsc = ensureSc(S); save(); renderAll();
       if (!secs.includes(SEC)) setSec(secs[0]);
@@ -3706,6 +3736,7 @@ $('#cQuitar').onclick = async () => {
 $('#btnRestore').onclick = () => {
   document.querySelector('details.more').open = false;
   if (!confirm(`Se borrarán TODAS las piezas y movimientos de la pestaña ${SEC_LBL[SEC]} del almacén "${S.name}". Las otras pestañas y almacenes no se tocan. ¿Continuar?`)) return;
+  marcarBorrado('p', S.items.filter(i => K(i) === SEC).map(i => i.id)); marcarBorrado('m', S.movements.filter(m => K(m) === SEC).map(m => m.id));
   S.items = S.items.filter(i => K(i) !== SEC); S.movements = S.movements.filter(m => K(m) !== SEC); save(); renderAll(); showMsg('warn', SEC_LBL[SEC] + ' vaciada', 'No hay piezas en esta pestaña. Empieza escaneando en modo Entrada.');
 };
 
